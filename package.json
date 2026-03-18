@@ -1,37 +1,45 @@
 {
-  "name": "paskihub-fe",
-  "version": "1.0.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
-  },
-  "dependencies": {
-    "axios": "^1.13.6",
-    "framer-motion": "^12.36.0",
-    "next": "16.1.6",
-    "next-auth": "^4.24.13",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
-    "react-hook-form": "^7.71.2",
-    "zod": "^4.3.6"
-  },
-  "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.1.6",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-prettier": "^5.5.5",
-    "eslint-plugin-react": "^7.37.5",
-    "prettier": "^3.8.1",
-    "prettier-plugin-tailwindcss": "^0.7.2",
-    "tailwindcss": "^4",
-    "typescript": "^5",
-    "typescript-eslint": "^8.57.0"
-  }
+    "name": "paskihub-fe",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "dev": "next dev --turbopack",
+        "build:prod": "prettier --check . && next build",
+        "build:local": "prettier --write . && next build",
+        "lint": "eslint ./src --ext ts,tsx,js,jsx --report-unused-disable-directives --no-warn-ignored --max-warnings 0",
+        "format": "prettier --check .",
+        "format:fix": "prettier --write .",
+        "start": "next start"
+    },
+    "dependencies": {
+        "axios": "^1.13.6",
+        "flowbite-react": "^0.12.17",
+        "framer-motion": "^12.36.0",
+        "next": "16.1.6",
+        "next-auth": "^4.24.13",
+        "react": "19.2.3",
+        "react-dom": "19.2.3",
+        "react-hook-form": "^7.71.2",
+        "react-icons": "^5.6.0",
+        "zod": "^4.3.6"
+    },
+    "devDependencies": {
+        "@iconify/json": "^2.2.450",
+        "@iconify/react": "^6.0.2",
+        "@iconify/tailwind4": "^1.2.3",
+        "@tailwindcss/postcss": "^4",
+        "@types/node": "^20",
+        "@types/react": "^19",
+        "@types/react-dom": "^19",
+        "eslint": "^9",
+        "eslint-config-next": "16.1.6",
+        "eslint-config-prettier": "^10.1.8",
+        "eslint-plugin-prettier": "^5.5.5",
+        "eslint-plugin-react": "^7.37.5",
+        "prettier": "^3.8.1",
+        "prettier-plugin-tailwindcss": "^0.7.2",
+        "tailwindcss": "^4",
+        "typescript": "^5",
+        "typescript-eslint": "^8.57.0"
+    }
 }

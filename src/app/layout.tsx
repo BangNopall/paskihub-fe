@@ -1,16 +1,10 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import Providers from "@/components/Providers";
+import { Poppins, Montserrat } from "@/libs/fonts";
 import "@/styles/globals.css";
-
-const geistSans = Geist({
-    variable: "--font-geist-sans",
-    subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-    variable: "--font-geist-mono",
-    subsets: ["latin"],
-});
+import { Header } from "@/components/header";
+import { Fouter } from "@/components/footer";
+import { ThemeModeScript } from 'flowbite-react';
 
 export const metadata: Metadata = {
     metadataBase: new URL(
@@ -47,11 +41,20 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en">
-            <body
-                className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-            >
-                {children}
+        <html
+            lang="en"
+            suppressHydrationWarning
+            className="no-scrollbar scroll-smooth"
+        >
+            <head>
+                <ThemeModeScript />
+            </head>
+            <body className={`${Poppins.variable} ${Montserrat.variable} ${Poppins.className} antialiased`}>
+                <Providers>
+                    <Header />
+                    {children}
+                    <Fouter />
+                </Providers>
             </body>
         </html>
     );
