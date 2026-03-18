@@ -10,7 +10,7 @@ import { Montserrat } from "@/libs/fonts";
 
 export function Header() {
     return (
-        <Navbar fluid rounded>
+        <Navbar className="container mx-auto sm:px-12" fluid rounded>
             <NavbarBrand href="https://paskihub.com">
                 <span
                     className={`self-center text-3xl font-bold whitespace-nowrap ${Montserrat.className}`}
