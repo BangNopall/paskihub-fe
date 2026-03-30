@@ -47,7 +47,7 @@ export default function RootLayout({
             className="no-scrollbar scroll-smooth"
         >
             <head>
-                {/* <ThemeModeScript /> */}
+                <ThemeModeScript />
             </head>
             <body
                 className={`${Poppins.variable} ${Montserrat.variable} ${Poppins.className} antialiased`}
