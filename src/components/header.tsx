@@ -19,7 +19,9 @@ export function Header() {
                 </span>
             </NavbarBrand>
             <div className="flex md:order-2">
-                <Button className="bg-secondary-500 rounded-full font-bold px-12 hover:bg-secondary-600">Masuk</Button>
+                <Button className="bg-secondary-500 hover:bg-secondary-600 rounded-full px-12 font-bold">
+                    Masuk
+                </Button>
                 <NavbarToggle />
             </div>
             <NavbarCollapse>

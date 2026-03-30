@@ -4,7 +4,7 @@ import { Poppins, Montserrat } from "@/libs/fonts";
 import "@/styles/globals.css";
 import { Header } from "@/components/header";
 import { Fouter } from "@/components/footer";
-import { ThemeModeScript } from 'flowbite-react';
+import { ThemeModeScript } from "flowbite-react";
 
 export const metadata: Metadata = {
     metadataBase: new URL(
@@ -47,9 +47,11 @@ export default function RootLayout({
             className="no-scrollbar scroll-smooth"
         >
             <head>
-                <ThemeModeScript />
+                {/* <ThemeModeScript /> */}
             </head>
-            <body className={`${Poppins.variable} ${Montserrat.variable} ${Poppins.className} antialiased`}>
+            <body
+                className={`${Poppins.variable} ${Montserrat.variable} ${Poppins.className} antialiased`}
+            >
                 <Providers>
                     <Header />
                     {children}

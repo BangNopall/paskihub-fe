@@ -13,9 +13,16 @@ export const authOptions: NextAuthOptions = {
                 // This is a placeholder. You should implement your own logic here.
                 // For example, calling your API:
                 // const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, { ... })
-                
-                if (credentials?.username === "admin" && credentials?.password === "admin") {
-                    return { id: "1", name: "Admin", email: "admin@example.com" };
+
+                if (
+                    credentials?.username === "admin" &&
+                    credentials?.password === "admin"
+                ) {
+                    return {
+                        id: "1",
+                        name: "Admin",
+                        email: "admin@example.com",
+                    };
                 }
                 return null;
             },

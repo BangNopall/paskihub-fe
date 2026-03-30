@@ -6,15 +6,5 @@
     "class",
     "className",
     "theme"
-  ],
-  "tailwindCSS.experimental.classRegex": [
-    [
-      "twMerge\\(([^)]*)\\)",
-      "[\"'`]([^\"'`]*).*?[\"'`]"
-    ],
-    [
-      "createTheme(?:<\\w+>)?\\s*\\(([^)]*)\\)",
-      "{?\\s?[\\w].*:\\s*?[\"'`]([^\"'`]*).*?,?\\s?}?"
-    ]
   ]
 }
