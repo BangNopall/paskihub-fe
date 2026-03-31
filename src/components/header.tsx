@@ -1,3 +1,4 @@
+"use client";
 import {
     Button,
     Navbar,
@@ -6,11 +7,35 @@ import {
     NavbarLink,
     NavbarToggle,
 } from "flowbite-react";
+import { useEffect, useState } from "react";
 import { Montserrat } from "@/libs/fonts";
 
 export function Header() {
+    const [isScrolled, setIsScrolled] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            if (window.scrollY > 10) {
+                setIsScrolled(true);
+            } else {
+                setIsScrolled(false);
+            }
+        };
+
+        window.addEventListener("scroll", handleScroll);
+
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+        };
+    }, []);
     return (
-        <Navbar className="container mx-auto sm:px-12 bg-transparent" fluid rounded>
+        <Navbar
+            className={`fixed top-0 left-0 z-50 w-full py-4 transition-all duration-300 ${
+                isScrolled ? "bg-white drop-shadow-lg" : "bg-transparent"
+            }`}
+            fluid
+            rounded
+        >
             <NavbarBrand href="https://paskihub.com">
                 <span
                     className={`self-center text-3xl font-bold whitespace-nowrap ${Montserrat.className}`}

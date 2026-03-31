@@ -1,7 +1,7 @@
 @source "../../.flowbite-react/class-list.json";
 @plugin "@iconify/tailwind4";
 @import "tailwindcss";
-/* @import "flowbite-react/plugin/tailwindcss"; */
+@import "flowbite-react/plugin/tailwindcss";
 
 :root {
     --background: #ffffff;

@@ -13,7 +13,7 @@ export default function HomePage() {
     return (
         <div className="container mx-auto px-6 sm:px-10 lg:px-12 overflow-x-hidden">
             {/* Hero Section */}
-            <section className="my-12 md:my-20 flex h-full w-full flex-col items-center justify-center space-y-12 md:space-y-20">
+            <section className="my-20 mt-32 md:my-20 flex h-full w-full flex-col items-center justify-center space-y-12 md:space-y-20">
                 <div className="flex flex-col gap-4 md:gap-5 text-center max-w-4xl">
                     <div
                         className={`text-dark-blue text-5xl sm:text-7xl lg:text-8xl ${Montserrat.className} font-bold leading-tight`}
@@ -31,9 +31,8 @@ export default function HomePage() {
                         alt="Home"
                         width={1000}
                         height={1000}
-                        className="h-full w-full rounded-2xl md:rounded-4xl object-cover object-top shadow-lg"
+                        className="h-full w-full rounded-2xl md:rounded-4xl object-cover object-top-left shadow-lg"
                     />
-                    {/* Floating elements - Hiding on small mobile to prevent overflow */}
                     <div className="hidden sm:block absolute -right-10 md:-right-20 bottom-10 md:bottom-20 w-32 md:w-50 transition-transform hover:scale-105">
                         <Image
                             src={commentCursorImg}
