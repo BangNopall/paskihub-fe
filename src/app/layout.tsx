@@ -5,6 +5,7 @@ import "@/styles/globals.css";
 import { Header } from "@/components/header";
 import { Fouter } from "@/components/footer";
 import { ThemeModeScript } from "flowbite-react";
+import frame from "../../public/frame.png";
 
 export const metadata: Metadata = {
     metadataBase: new URL(
@@ -52,11 +53,13 @@ export default function RootLayout({
             <body
                 className={`${Poppins.variable} ${Montserrat.variable} ${Poppins.className} antialiased`}
             >
-                <Providers>
-                    <Header />
-                    {children}
-                    <Fouter />
-                </Providers>
+                <div className="bg-[url('/frame.png')] bg-cover bg-center bg-no-repeat">
+                    <Providers>
+                        <Header />
+                        {children}
+                        <Fouter />
+                    </Providers>
+                </div>
             </body>
         </html>
     );

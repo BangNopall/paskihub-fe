@@ -1,5 +1,13 @@
 import { Montserrat } from "@/libs/fonts";
 import Image from "next/image";
+import about1Img from "../../../public/home/about1.jpg";
+import about2Img from "../../../public/home/about2.jpg";
+import home1img from "../../../public/home/home1.jpg";
+import home2img from "../../../public/home/home2.jpg";
+import home3img from "../../../public/home/home3.jpg";
+import dashboardImg from "../../../public/home/dashboard.jpg";
+import commentCursorImg from "../../../public/home/comment-cursor.png";
+import commentCursor2Img from "../../../public/home/comment-cursor2.png";
 
 export default function HomePage() {
     return (
@@ -19,7 +27,7 @@ export default function HomePage() {
                 </div>
                 <div className="bg-primary-200 relative h-125 w-[80%] overflow-visible rounded-4xl p-5">
                     <Image
-                        src="/home/dashboard.jpg"
+                        src={dashboardImg}
                         alt="Home"
                         width={1000}
                         height={1000}
@@ -27,7 +35,7 @@ export default function HomePage() {
                     />
                     <div className="absolute -right-20 bottom-20 w-50">
                         <Image
-                            src="/home/comment-cursor.png"
+                            src={commentCursorImg}
                             alt="Comment Cursor"
                             width={500}
                             height={500}
@@ -36,7 +44,7 @@ export default function HomePage() {
                     </div>
                     <div className="absolute top-30 -left-18 w-35">
                         <Image
-                            src="/home/comment-cursor2.png"
+                            src={commentCursor2Img}
                             alt="Comment Cursor 2"
                             width={500}
                             height={500}
@@ -67,7 +75,7 @@ export default function HomePage() {
                             <div className="relative w-full">
                                 <div className="bg-primary-100 absolute h-full w-full rounded-3xl opacity-50 group-hover:opacity-0"></div>
                                 <Image
-                                    src="/home/about1.jpg"
+                                    src={about1Img}
                                     alt="About"
                                     width={1000}
                                     height={1000}
@@ -94,7 +102,7 @@ export default function HomePage() {
                             <div className="relative w-full">
                                 <div className="bg-primary-100 absolute h-full w-full rounded-3xl opacity-50 group-hover:opacity-0"></div>
                                 <Image
-                                    src="/home/about2.jpg"
+                                    src={about2Img}
                                     alt="About"
                                     width={1000}
                                     height={1000}
@@ -187,8 +195,13 @@ export default function HomePage() {
                                 {/* iPhone Mockup */}
                                 <div className="absolute -bottom-4 flex h-[85%] w-[65%] justify-center rounded-t-[40px] border-10 border-gray-900 bg-gray-900 shadow-xl md:h-78 md:w-66.75">
                                     <div className="bg-primary-50 relative h-full w-full overflow-hidden rounded-t-[30px]">
-                                        <div className="absolute top-0 left-1/2 z-10 h-6 w-32 -translate-x-1/2 rounded-b-[20px] bg-gray-900"></div>
-                                        <div className="from-primary-100/50 to-primary-200 absolute inset-0 bg-linear-to-br"></div>
+                                        <Image
+                                            src={home1img}
+                                            alt="why-paskihub"
+                                            width={1000}
+                                            height={1000}
+                                            className="h-full w-full object-cover object-top"
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -215,7 +228,13 @@ export default function HomePage() {
                                 {/* Macbook Mockup */}
                                 <div className="absolute top-[45%] flex h-[55%] w-[85%] -translate-y-[45%] justify-center rounded-t-xl border-8 border-gray-900 bg-gray-900 shadow-xl md:h-50 md:w-80">
                                     <div className="bg-primary-50 relative h-full w-full overflow-hidden rounded-t-lg">
-                                        <div className="from-primary-100/50 to-primary-200 absolute inset-0 bg-linear-to-b"></div>
+                                        <Image
+                                            src={home2img}
+                                            alt="why-paskihub"
+                                            width={1000}
+                                            height={1000}
+                                            className="h-full w-full object-cover object-top"
+                                        />
                                     </div>
                                 </div>
                                 {/* Macbook base */}
@@ -246,8 +265,13 @@ export default function HomePage() {
                                 {/* iPhone Mockup */}
                                 <div className="absolute -bottom-4 flex h-[85%] w-[65%] justify-center rounded-t-[40px] border-10 border-gray-900 bg-gray-900 shadow-xl md:h-78 md:w-66.75">
                                     <div className="bg-primary-50 relative h-full w-full overflow-hidden rounded-t-[30px]">
-                                        <div className="absolute top-0 left-1/2 z-10 h-6 w-32 -translate-x-1/2 rounded-b-[20px] bg-gray-900"></div>
-                                        <div className="from-primary-100/50 to-primary-200 absolute inset-0 bg-linear-to-br"></div>
+                                        <Image
+                                            src={home3img}
+                                            alt="why-paskihub"
+                                            width={1000}
+                                            height={1000}
+                                            className="h-full w-full object-cover object-top"
+                                        />
                                     </div>
                                 </div>
                             </div>
