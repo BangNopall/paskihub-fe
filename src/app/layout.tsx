@@ -51,7 +51,7 @@ export default function RootLayout({
                 <ThemeModeScript />
             </head>
             <body
-                className={`${Poppins.variable} ${Montserrat.variable} ${Poppins.className} antialiased`}
+                className={`${Poppins.variable} ${Montserrat.variable} ${Poppins.className} antialiased text-neutral-500`}
             >
                 <div className="bg-[url('/frame.png')] bg-cover bg-center bg-no-repeat">
                     <Providers>

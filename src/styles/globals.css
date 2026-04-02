@@ -101,10 +101,6 @@
     /* gradient color */
     --color-glassmorphism-50: linear-gradient(180deg, rgba(255, 255, 255, 0.70) 0%, rgba(255, 255, 255, 0.60) 100%);
     --color-glassmorphism-100: linear-gradient(180deg, rgba(255, 255, 255, 0.50) 0%, rgba(255, 255, 255, 0.05) 100%);
-
-    /* fonts */
-    --font-sans: var(--font-geist-sans);
-    --font-mono: var(--font-geist-mono);
 }
 
 body {
