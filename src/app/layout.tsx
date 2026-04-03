@@ -5,7 +5,6 @@ import "@/styles/globals.css";
 import { Header } from "@/components/header";
 import { Fouter } from "@/components/footer";
 import { ThemeModeScript } from "flowbite-react";
-import frame from "../../public/frame.png";
 
 export const metadata: Metadata = {
     metadataBase: new URL(
