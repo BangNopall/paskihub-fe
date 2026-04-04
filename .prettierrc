@@ -1,9 +1,11 @@
 {
-    "trailingComma": "es5",
-    "semi": true,
-    "tabWidth": 4,
-    "singleQuote": false,
-    "jsxSingleQuote": false,
-    "plugins": ["prettier-plugin-tailwindcss"],
-    "tailwindStylesheet": "app/globals.css"
+  "endOfLine": "lf",
+  "semi": false,
+  "singleQuote": false,
+  "tabWidth": 2,
+  "trailingComma": "es5",
+  "printWidth": 80,
+  "plugins": ["prettier-plugin-tailwindcss"],
+  "tailwindStylesheet": "src/styles/globals.css",
+  "tailwindFunctions": ["cn", "cva"]
 }

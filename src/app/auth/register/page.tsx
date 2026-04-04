@@ -1,20 +1,11 @@
-import {
-    TabItem,
-    Tabs,
-    Card,
-    Label,
-    Button,
-    Checkbox,
-    TextInput,
-} from "flowbite-react";
-import { Montserrat } from "@/libs/fonts";
+import { Montserrat } from "@/lib/fonts";
 import Link from "next/link";
 
 export default function Register() {
     return (
         <div className="container mx-auto h-screen w-full overflow-x-hidden px-6 sm:px-10 lg:px-12">
             <div className="flex h-full w-full flex-col items-center justify-center">
-                <div className="overflow-x-auto">
+                {/* <div className="overflow-x-auto">
             
                 </div>
                 <Card className="bg-glassmorphism-50 w-full max-w-[90vw] rounded-2xl border-0 shadow-lg backdrop-blur-xl transition-all duration-300 ease-in-out sm:max-w-md sm:rounded-3xl md:max-w-lg lg:max-w-xl [&>div]:p-6 sm:[&>div]:p-8 md:[&>div]:p-12">
@@ -91,7 +82,7 @@ export default function Register() {
                             Daftar Sekarang
                         </Link>
                     </div>
-                </Card>
+                </Card> */}
             </div>
         </div>
     );

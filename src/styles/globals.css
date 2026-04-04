@@ -1,20 +1,16 @@
-@source "../../.flowbite-react/class-list.json";
-@plugin "@iconify/tailwind4";
 @import "tailwindcss";
-@import "flowbite-react/plugin/tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-    --background: #ffffff;
-    --foreground: #020304;
-}
+@theme inline {
+    /* --- CUSTOM FONTS --- */
+    --font-poppins: "Poppins", ui-sans-serif, system-ui, sans-serif;
+    --font-montserrat: "Montserrat", ui-sans-serif, system-ui, sans-serif;
 
-@theme {
-    /* colors */
-    --color-background: var(--background);
-    --color-foreground: var(--foreground);
+    /* --- CUSTOM COLOR PALETTES (Dari Project Lama) --- */
     --color-dark-blue: #031629;
 
-    /* primary */
+    /* Primary (Blue) */
     --color-primary-50: #f4faff;
     --color-primary-100: #ddf0fe;
     --color-primary-200: #cce8fe;
@@ -26,7 +22,7 @@
     --color-primary-800: #50718b;
     --color-primary-900: #3d576a;
 
-    /* secondary */
+    /* Secondary (Orange) */
     --color-secondary-50: #fff1ee;
     --color-secondary-100: #ffd4cb;
     --color-secondary-200: #ffc0b2;
@@ -38,7 +34,7 @@
     --color-secondary-800: #8c4030;
     --color-secondary-900: #6b3125;
 
-    /* neutral */
+    /* Neutral */
     --color-neutral-50: #fdfdfd;
     --color-neutral-100: #efefef;
     --color-neutral-200: #d6d6d6;
@@ -50,7 +46,7 @@
     --color-neutral-800: #1f1f1f;
     --color-neutral-900: #181818;
 
-    /* info */
+    /* Info */
     --color-info-50: #eff6ff;
     --color-info-100: #dbeafe;
     --color-info-200: #bfdbfe;
@@ -62,7 +58,7 @@
     --color-info-800: #1e40af;
     --color-info-900: #1e3a8a;
 
-    /* success */
+    /* Success */
     --color-success-50: #f0fdf4;
     --color-success-100: #dcfce7;
     --color-success-200: #bbf7d0;
@@ -74,7 +70,7 @@
     --color-success-800: #166534;
     --color-success-900: #14532d;
 
-    /* warning */
+    /* Warning */
     --color-warning-50: #fff6e6;
     --color-warning-100: #fef9c3;
     --color-warning-200: #fef08a;
@@ -86,7 +82,7 @@
     --color-warning-800: #854d0e;
     --color-warning-900: #713f12;
 
-    /* danger */
+    /* Danger */
     --color-danger-50: #fef2f2;
     --color-danger-100: #fee2e2;
     --color-danger-200: #fecaca;
@@ -98,12 +94,120 @@
     --color-danger-800: #991b1b;
     --color-danger-900: #7f1d1d;
 
-    /* gradient color */
-    --color-glassmorphism-50: linear-gradient(180deg, rgba(255, 255, 255, 0.70) 0%, rgba(255, 255, 255, 0.60) 100%);
-    --color-glassmorphism-100: linear-gradient(180deg, rgba(255, 255, 255, 0.50) 0%, rgba(255, 255, 255, 0.05) 100%);
+    /* Glassmorphism Gradients */
+    --image-glassmorphism-50: linear-gradient(180deg, rgba(255, 255, 255, 0.70) 0%, rgba(255, 255, 255, 0.60) 100%);
+    --image-glassmorphism-100: linear-gradient(180deg, rgba(255, 255, 255, 0.50) 0%, rgba(255, 255, 255, 0.05) 100%);
+
+    /* --- SHADCN VARIABLES MAP --- */
+    --color-sidebar-ring: var(--sidebar-ring);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar: var(--sidebar);
+    --color-chart-5: var(--chart-5);
+    --color-chart-4: var(--chart-4);
+    --color-chart-3: var(--chart-3);
+    --color-chart-2: var(--chart-2);
+    --color-chart-1: var(--chart-1);
+    --color-ring: var(--ring);
+    --color-input: var(--input);
+    --color-border: var(--border);
+    --color-destructive: var(--destructive);
+    --color-destructive-foreground: var(--destructive-foreground);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-accent: var(--accent);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-muted: var(--muted);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-secondary: var(--secondary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-primary: var(--primary);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-popover: var(--popover);
+    --color-card-foreground: var(--card-foreground);
+    --color-card: var(--card);
+    --color-foreground: var(--foreground);
+    --color-background: var(--background);
+    --radius-sm: calc(var(--radius) * 0.6);
+    --radius-md: calc(var(--radius) * 0.8);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) * 1.4);
+    --radius-2xl: calc(var(--radius) * 1.8);
+    --radius-3xl: calc(var(--radius) * 2.2);
+    --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-body {
-    background: var(--background);
-    color: var(--foreground);
+:root {
+    /* Base */
+    --background: #ffffff;
+    --foreground: #020304;
+
+    /* Card & Popover (Neutral) */
+    --card: #ffffff;
+    --card-foreground: #020304;
+    --popover: #ffffff;
+    --popover-foreground: #020304;
+
+    /* Primary (Dari Blue / Primary-500) */
+    --primary: #91cefc;
+    --primary-foreground: #031629; 
+
+    /* Secondary (Dari Orange / Secondary-500) - Untuk Buttons/Accents */
+    --secondary: #ff7558;
+    --secondary-foreground: #ffffff;
+
+    /* Muted (Dari Neutral-100 & Neutral-500) */
+    --muted: #efefef;
+    --muted-foreground: #7a7a7a;
+
+    /* Accent (Hover states) */
+    --accent: #fdfdfd;
+    --accent-foreground: #181818;
+
+    /* Destructive (Dari Danger-500) */
+    --destructive: #ef4444;
+    --destructive-foreground: #ffffff;
+
+    /* Borders & Inputs (Dari Neutral-200) */
+    --border: #d6d6d6;
+    --input: #d6d6d6;
+
+    /* Focus Ring (Dari Primary-500 atau Info-500) */
+    --ring: #91cefc;
+
+    /* Border Radius - Sesuai rounded yang ada di figma */
+    --radius: 0.5rem; 
+
+    /* Charts (Dipetakan ke warna palet yang ada) */
+    --chart-1: #91cefc; /* Primary */
+    --chart-2: #ff7558; /* Secondary */
+    --chart-3: #eab308; /* Warning */
+    --chart-4: #22c55e; /* Success */
+    --chart-5: #3b82f6; /* Info */
+
+    /* Sidebar Defaults */
+    --sidebar: #fdfdfd;
+    --sidebar-foreground: #333333;
+    --sidebar-primary: #91cefc;
+    --sidebar-primary-foreground: #031629;
+    --sidebar-accent: #efefef;
+    --sidebar-accent-foreground: #181818;
+    --sidebar-border: #d6d6d6;
+    --sidebar-ring: #91cefc;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-poppins;
+  }
+  /* Menerapkan font Montserrat ke seluruh heading secara otomatis */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-montserrat;
+  }
 }
