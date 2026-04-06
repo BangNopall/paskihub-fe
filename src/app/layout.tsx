@@ -41,25 +41,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const navigationData = [
-    {
-      title: "Home",
-      href: "#",
-    },
-    {
-      title: "About Us",
-      href: "#",
-    },
-    {
-      title: "Service",
-      href: "#",
-    },
-    {
-      title: "Contacts",
-      href: "#",
-    },
-  ]
-
   return (
     <html
       lang="en"
@@ -71,16 +52,14 @@ export default function RootLayout({
         Poppins.variable
       )}
     >
-      <body className="bg-[url('/frame.png')] bg-cover bg-center bg-no-repeat">
+      <body className="bg-[url('/frame.png')] bg-cover bg-no-repeat">
         <TooltipProvider>
           <ThemeProvider
             attribute={"class"}
             defaultTheme="light"
             forcedTheme="light"
           >
-            <Navbar navigationData={navigationData} />
             {children}
-            <Footer />
           </ThemeProvider>
         </TooltipProvider>
       </body>

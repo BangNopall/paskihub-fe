@@ -1,12 +1,15 @@
-import Navbar from "@/components/ui/navbar"
-import HomePage from "./(home)/page"
 import Footer from "@/components/ui/footer"
+import Navbar from "@/components/ui/navbar"
 
-export default function Page() {
+export default function AuthLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode
+}>) {
   const navigationData = [
     {
       title: "Home",
-      href: "#",
+      href: "/",
     },
     {
       title: "About Us",
@@ -21,10 +24,11 @@ export default function Page() {
       href: "#",
     },
   ]
+
   return (
     <>
       <Navbar navigationData={navigationData} />
-      <HomePage />
+      {children}
       <Footer />
     </>
   )
