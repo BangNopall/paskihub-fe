@@ -132,7 +132,7 @@ export default function Page({
               <Dialog>
                 <DialogTrigger asChild>
                   <Button
-                    variant="secondary"
+                    variant="default"
                     size="sm"
                     className="w-full sm:w-auto"
                   >
@@ -377,7 +377,7 @@ export default function Page({
               </DropdownMenu>
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button variant="secondary" size="sm" className="w-auto">
+                  <Button variant="default" size="sm" className="w-auto">
                     <Plus className="mr-2 h-4 w-4" />
                     Tambah Kategori
                   </Button>
@@ -479,7 +479,6 @@ export default function Page({
                                 return (
                                   <Badge
                                     key={key}
-                                    variant="secondary"
                                     className={`${bgColor} font-medium text-white`}
                                   >
                                     {label}: {rangeText}
@@ -718,7 +717,7 @@ export default function Page({
                       <Dialog>
                         <DialogTrigger asChild>
                           <Button
-                            variant="secondary"
+                            variant="default"
                             className="w-full sm:w-auto"
                           >
                             <Plus className="mr-1 h-4 w-4" />

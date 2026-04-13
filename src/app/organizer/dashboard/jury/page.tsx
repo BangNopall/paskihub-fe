@@ -38,7 +38,7 @@ export default function Page() {
             <CardAction>
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button variant="secondary" size="sm">
+                  <Button variant="default" size="sm">
                     <Plus className="mr-2 h-4 w-4" />
                     Tambah Juri
                   </Button>
