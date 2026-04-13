@@ -27,6 +27,10 @@ export function SiteHeader() {
       url: "/organizer/dashboard/assessment",
     },
     {
+      title: "Sistem Juara",
+      url: "/organizer/dashboard/ranking-system",
+    },
+    {
       title: "Rekap Nilai",
       url: "/organizer/dashboard/score-recap",
     },

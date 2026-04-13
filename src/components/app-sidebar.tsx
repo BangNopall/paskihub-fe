@@ -13,7 +13,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { LayoutDashboardIcon, ListIcon, Wallet, FolderIcon, UsersIcon, FileChartColumnIcon, UserRound, UsersRound } from "lucide-react"
+import { LayoutDashboardIcon, ListIcon, Wallet, FolderIcon, UsersIcon, FileChartColumnIcon, TrophyIcon, UsersRound } from "lucide-react"
 import { Montserrat } from "@/lib/fonts"
 
 const data = {
@@ -66,6 +66,14 @@ const data = {
       url: "/organizer/dashboard/assessment-system",
       icon: (
         <FolderIcon
+        />
+      ),
+    },
+    {
+      title: "Sistem Juara",
+      url: "/organizer/dashboard/ranking-system",
+      icon: (
+        <TrophyIcon
         />
       ),
     },
