@@ -13,7 +13,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { LayoutDashboardIcon, ListIcon, Wallet, FolderIcon, UsersIcon, FileChartColumnIcon, TrophyIcon, UsersRound } from "lucide-react"
+import { LayoutDashboardIcon, ListIcon, Wallet, FolderIcon, UsersIcon, FileChartColumnIcon, TrophyIcon, UsersRound, FileText } from "lucide-react"
 import { Montserrat } from "@/lib/fonts"
 
 const data = {
@@ -25,7 +25,7 @@ const data = {
   navMain: [
     {
       title: "Beranda",
-      url: "#",
+      url: "/organizer/dashboard/",
       icon: (
         <LayoutDashboardIcon
         />
@@ -74,6 +74,14 @@ const data = {
       url: "/organizer/dashboard/ranking-system",
       icon: (
         <TrophyIcon
+        />
+      ),
+    },
+    {
+      title: "Form Penilaian",
+      url: "/organizer/dashboard/assessment-form",
+      icon: (
+        <FileText
         />
       ),
     },

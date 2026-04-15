@@ -88,16 +88,6 @@ export default function Page() {
   return (
     <div className="flex flex-1 flex-col">
       <div className="flex flex-col gap-4 p-4 md:gap-6 md:p-6 lg:p-8">
-        {/* Stats Tim */}
-        <Card className="border-none bg-glassmorphism-50 shadow-sm">
-          <CardContent className="grid h-full grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-            <StatCard value="45" label="Total Tim" />
-            <StatCard value="12" label="Menunggu Approval" />
-            <StatCard value="20" label="Disetujui" />
-            <StatCard value="5" label="Ditolak" />
-          </CardContent>
-        </Card>
-
         {/* Daftar Tim */}
         <Card className="border-none bg-glassmorphism-50 shadow-sm">
           <CardHeader className="border-b pb-4">
@@ -106,7 +96,7 @@ export default function Page() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            {/* Team Table */}
+            {/* Pilih Tim */}
             <InfoSection>
               <div className="relative w-full overflow-hidden rounded-lg">
                 {/* Table Toolbar (Search & Filter) */}
@@ -138,16 +128,13 @@ export default function Page() {
                       className="w-45 rounded-lg border-neutral-200 bg-white shadow-lg sm:w-32"
                     >
                       <DropdownMenuItem className="cursor-pointer text-neutral-700 hover:bg-neutral-100">
-                        Color
+                        Semua (10)
                       </DropdownMenuItem>
                       <DropdownMenuItem className="cursor-pointer text-neutral-700 hover:bg-neutral-100">
-                        Category
+                        Belum Dinilai (7)
                       </DropdownMenuItem>
                       <DropdownMenuItem className="cursor-pointer text-neutral-700 hover:bg-neutral-100">
-                        Price
-                      </DropdownMenuItem>
-                      <DropdownMenuItem className="cursor-pointer text-red-600 hover:bg-neutral-100">
-                        Sign out
+                        Sudah Dinilai (3)
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -168,9 +155,9 @@ export default function Page() {
                           Kategori
                         </TableHead>
                         <TableHead className="px-6 py-3 font-semibold">
-                          Status Pembayaran
+                          Status Penilaian
                         </TableHead>
-                        <TableHead className="px-6 py-3 font-semibold">
+                        <TableHead className="px-6 py-3 font-semibold text-right">
                           Aksi
                         </TableHead>
                       </TableRow>
@@ -185,40 +172,36 @@ export default function Page() {
                             {index + 1}
                           </TableCell>
                           <TableCell className="max-w-50 px-6 py-4">
-                            <div className="flex items-center gap-3">
-                              <Image
-                                width={40}
-                                height={40}
-                                className="h-10 w-10 shrink-0 rounded-full object-cover"
-                                src={"https://placehold.co/400"}
-                                alt="Tim Avatar"
-                                unoptimized
-                              />
                               <div className="flex flex-col overflow-hidden">
                                 <span className="truncate text-base font-semibold text-neutral-900">
-                                  Bonnie Green
+                                  Garuda Nusantara
                                 </span>
                                 <span className="truncate text-sm font-normal text-neutral-500">
-                                  bonnie@flowbite.com
+                                  SDN 1 Jakarta
                                 </span>
                               </div>
-                            </div>
                           </TableCell>
                           <TableCell className="px-6 py-4 text-neutral-700">
                             SD
                           </TableCell>
                           <TableCell className="px-6 py-4">
-                            <Badge className="border-success-200 bg-success-50 text-success-600 hover:bg-success-50">
-                              Approval
+                            <Badge className="border-neutral-200 bg-neutral-50 text-neutral-600 hover:bg-neutral-50">
+                              Belum Dinilai
                             </Badge>
+                            {/* <Badge className="border-warning-200 bg-warning-50 text-warning-600 hover:bg-warning-50">
+                              Sedang Dinilai
+                            </Badge>
+                            <Badge className="border-success-200 bg-success-50 text-success-600 hover:bg-success-50">
+                              Selesai Dinilai
+                            </Badge> */}
                           </TableCell>
                           <TableCell className="px-6 py-4">
-                            <div className="flex flex-wrap items-center gap-2">
+                            <div className="flex flex-wrap w-full justify-end gap-2">
                               {/* DIALOG DETAIL TIM */}
                               <Dialog>
                                 <DialogTrigger asChild>
-                                  <Button variant="default" size="sm">
-                                    Detail
+                                  <Button variant="secondary" size="sm">
+                                    Nilai
                                   </Button>
                                 </DialogTrigger>
                                 <DialogContent className="flex max-h-[90vh] flex-col overflow-hidden p-0 sm:max-w-xl">
@@ -311,141 +294,6 @@ export default function Page() {
                                   </div>
                                 </DialogContent>
                               </Dialog>
-
-                              {/* DIALOG APPROVE */}
-                              <Dialog>
-                                <DialogTrigger asChild>
-                                  <Button
-                                    size="sm"
-                                    className="bg-success-300 text-white hover:bg-success-400"
-                                  >
-                                    Approved
-                                  </Button>
-                                </DialogTrigger>
-                                <DialogContent className="max-h-[90vh] p-0 sm:max-w-xl">
-                                  <DialogHeader className="p-6 pb-2">
-                                    <DialogTitle className="text-xl font-bold text-dark-blue">
-                                      Konfirmasi
-                                    </DialogTitle>
-                                    <Separator className="mt-4" />
-                                  </DialogHeader>
-                                  <div className="relative w-full px-6 pb-6">
-                                    <div className="mb-10 self-stretch text-center text-sm leading-5 font-normal text-neutral-500">
-                                      Approve peserta ini? Saldo kamu akan{" "}
-                                      <span className="text-sm leading-5 font-semibold text-danger-500">
-                                        terpotong 1 koin
-                                      </span>
-                                    </div>
-                                    <div className="flex w-full flex-row items-center justify-center gap-2">
-                                      <DialogClose asChild>
-                                        <Button
-                                          variant="outline"
-                                          className="flex-1"
-                                        >
-                                          Batal
-                                        </Button>
-                                      </DialogClose>
-                                      <Button
-                                        type="submit"
-                                        className="flex-1 bg-success-500 text-white hover:bg-success-400"
-                                      >
-                                        Approve
-                                      </Button>
-                                    </div>
-                                  </div>
-                                </DialogContent>
-                              </Dialog>
-
-                              {/* DIALOG REJECT */}
-                              <Dialog>
-                                <DialogTrigger asChild>
-                                  <Button variant="destructive" size="sm">
-                                    Reject
-                                  </Button>
-                                </DialogTrigger>
-                                <DialogContent className="max-h-[90vh] p-0 sm:max-w-xl">
-                                  <DialogHeader className="p-6 pb-2">
-                                    <DialogTitle className="text-xl font-bold text-dark-blue">
-                                      Reject Tim
-                                    </DialogTitle>
-                                    <Separator className="mt-4" />
-                                  </DialogHeader>
-                                  <div className="relative w-full px-6 pb-6">
-                                    <div className="mb-10 space-y-2 sm:space-y-1">
-                                      <Label
-                                        htmlFor="rejectReason"
-                                        className="text-sm text-neutral-500"
-                                      >
-                                        Alasan Penolakan
-                                      </Label>
-                                      <Textarea
-                                        id="rejectReason"
-                                        placeholder="Contoh: Bukti transfer tidak jelas atau tidak sesuai jumlah pembayaran"
-                                        className="h-20 sm:h-24"
-                                      />
-                                    </div>
-                                    <div className="flex w-full flex-row items-center justify-center gap-2">
-                                      <DialogClose asChild>
-                                        <Button
-                                          variant="outline"
-                                          className="flex-1"
-                                        >
-                                          Batal
-                                        </Button>
-                                      </DialogClose>
-                                      <Button
-                                        type="submit"
-                                        variant="destructive"
-                                        className="flex-1"
-                                      >
-                                        Approve
-                                      </Button>
-                                    </div>
-                                  </div>
-                                </DialogContent>
-                              </Dialog>
-
-                              {/* DIALOG KICK */}
-                              <Dialog>
-                                <DialogTrigger asChild>
-                                  <Button variant="destructive" size="sm">
-                                    Kick
-                                  </Button>
-                                </DialogTrigger>
-                                <DialogContent className="max-h-[90vh] p-0 sm:max-w-xl">
-                                  <DialogHeader className="p-6 pb-2">
-                                    <DialogTitle className="text-xl font-bold text-dark-blue">
-                                      Konfirmasi Kick Tim
-                                    </DialogTitle>
-                                    <Separator className="mt-4" />
-                                  </DialogHeader>
-                                  <div className="relative w-full px-6 pb-6">
-                                    <div className="mb-10 self-stretch text-center text-sm leading-5 font-normal text-neutral-500">
-                                      Apakah Anda yakin kick peserta ini?{" "}
-                                      <span className="text-sm leading-5 font-semibold text-danger-500">
-                                        SMPN 1 Malang
-                                      </span>
-                                    </div>
-                                    <div className="flex w-full flex-row items-center justify-center gap-2">
-                                      <DialogClose asChild>
-                                        <Button
-                                          variant="outline"
-                                          className="flex-1"
-                                        >
-                                          Batal
-                                        </Button>
-                                      </DialogClose>
-                                      <Button
-                                        type="submit"
-                                        variant="destructive"
-                                        className="flex-1"
-                                      >
-                                        Kick
-                                      </Button>
-                                    </div>
-                                  </div>
-                                </DialogContent>
-                              </Dialog>
                             </div>
                           </TableCell>
                         </TableRow>
@@ -458,19 +306,6 @@ export default function Page() {
           </CardContent>
         </Card>
       </div>
-    </div>
-  )
-}
-
-function StatCard({ value, label }: { value: React.ReactNode; label: string }) {
-  return (
-    <div className="flex w-full flex-1 flex-col items-center justify-center gap-2 rounded-2xl border border-neutral-100 bg-white p-4 text-center shadow-sm transition-all hover:border-primary-200 hover:shadow-md sm:p-6">
-      <span className="text-2xl font-bold text-neutral-700 sm:text-3xl">
-        {value}
-      </span>
-      <span className="text-[10px] font-semibold tracking-wider text-neutral-500 uppercase sm:text-xs">
-        {label}
-      </span>
     </div>
   )
 }

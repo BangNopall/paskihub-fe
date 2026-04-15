@@ -101,7 +101,7 @@ export default function Page({
   // Handler untuk menambah kotak input baru (maksimal 6) per grade
   const handleAddInput = (grade: GradeKey) => {
     setGrades((prev) => {
-      if (prev[grade].length < 6) {
+      if (prev[grade].length < 5) {
         return { ...prev, [grade]: [...prev[grade], ""] }
       }
       return prev

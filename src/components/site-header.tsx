@@ -24,7 +24,11 @@ export function SiteHeader() {
     },
     {
       title: "Sistem Penilaian",
-      url: "/organizer/dashboard/assessment",
+      url: "/organizer/dashboard/assessment-system",
+    },
+    {
+      title: "Form Penilaian",
+      url: "/organizer/dashboard/assessment-form",
     },
     {
       title: "Sistem Juara",
