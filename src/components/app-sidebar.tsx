@@ -87,7 +87,7 @@ const data = {
     },
     {
       title: "Rekap Nilai",
-      url: "#",
+      url: "/organizer/dashboard/score-recap",
       icon: (
         <FileChartColumnIcon
         />

@@ -138,16 +138,19 @@ export default function Page() {
                       className="w-45 rounded-lg border-neutral-200 bg-white shadow-lg sm:w-32"
                     >
                       <DropdownMenuItem className="cursor-pointer text-neutral-700 hover:bg-neutral-100">
-                        Color
+                        SD/MI
                       </DropdownMenuItem>
                       <DropdownMenuItem className="cursor-pointer text-neutral-700 hover:bg-neutral-100">
-                        Category
+                        SMP/MTS
                       </DropdownMenuItem>
                       <DropdownMenuItem className="cursor-pointer text-neutral-700 hover:bg-neutral-100">
-                        Price
+                        SMA/SMK/MA
                       </DropdownMenuItem>
-                      <DropdownMenuItem className="cursor-pointer text-red-600 hover:bg-neutral-100">
-                        Sign out
+                      <DropdownMenuItem className="cursor-pointer text-neutral-700 hover:bg-neutral-100">
+                        PURNA
+                      </DropdownMenuItem>
+                      <DropdownMenuItem className="cursor-pointer text-neutral-700 hover:bg-neutral-100">
+                        UMUM
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>

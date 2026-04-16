@@ -17,7 +17,7 @@ export default function DashboardLayout({
       }
     >
       <AppSidebar variant="inset" />
-      <SidebarInset>
+      <SidebarInset className="overflow-hidden">
         <SiteHeader />
         <div className="h-full w-full bg-[url('/frame.png')] bg-cover bg-no-repeat">
           {children}
