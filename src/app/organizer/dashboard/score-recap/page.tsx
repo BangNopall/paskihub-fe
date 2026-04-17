@@ -235,91 +235,171 @@ export default function Page() {
                                   Detail
                                 </Button>
                               </DialogTrigger>
-                              <DialogContent className="flex max-h-[90vh] flex-col overflow-hidden p-0 sm:max-w-xl">
-                                <DialogHeader className="p-6 pb-2">
-                                  <DialogTitle className="text-xl font-bold text-dark-blue">
-                                    Detail Nilai Tim
-                                  </DialogTitle>
-                                  <Separator className="mt-4" />
-                                </DialogHeader>
-                                <div className="flex-1 overflow-y-auto px-6 pb-6">
-                                  <div className="flex w-full flex-col items-start justify-start gap-6">
-                                    <Card className="mt-2 w-full rounded-2xl border-primary-100 bg-primary-50 shadow-none">
-                                      <CardHeader className="pb-4">
-                                        <CardTitle className="text-lg leading-7 font-semibold text-dark-blue">
-                                          Informasi Tim
-                                        </CardTitle>
-                                      </CardHeader>
-                                      <CardContent className="flex flex-col gap-3">
-                                        <DetailRow
-                                          label="Nama Tim"
-                                          value="Garuda Nusantara"
-                                        />
-                                        <DetailRow
-                                          label="Kategori"
-                                          value="SD"
-                                        />
-                                        <DetailRow
-                                          label="Jumlah Anggota"
-                                          value="15 orang"
-                                        />
-                                        <DetailRow
-                                          label="Status Pembayaran"
-                                          valueNode={
-                                            <Badge
-                                              variant="outline"
-                                              className="border-warning-500 bg-warning-50 px-3 py-1 font-normal text-warning-500"
-                                            >
-                                              Pending
-                                            </Badge>
-                                          }
-                                        />
-                                      </CardContent>
-                                    </Card>
+                              <DialogContent className="flex max-h-[90vh] w-[95vw] flex-col overflow-hidden rounded-2xl border-none p-0 font-['Poppins'] sm:max-w-4xl">
+                                {/* Header Fixed (Gradient Background) */}
+                                <div className="border-b border-neutral-100 bg-gradient-to-b from-white/90 to-white/70 p-6 backdrop-blur-sm">
+                                  <DialogHeader>
+                                    <DialogTitle className="text-center font-['Montserrat'] text-2xl font-bold text-neutral-800">
+                                      Detail Nilai Tim
+                                    </DialogTitle>
+                                  </DialogHeader>
+                                </div>
 
-                                    {/* Card Informasi Sekolah */}
-                                    <Card className="w-full rounded-2xl border-primary-100 bg-primary-50 shadow-none">
-                                      <CardHeader className="pb-4">
-                                        <CardTitle className="text-lg leading-7 font-semibold text-dark-blue">
-                                          Informasi Sekolah
-                                        </CardTitle>
-                                      </CardHeader>
-                                      <CardContent className="flex flex-col gap-3">
-                                        <DetailRow
-                                          label="Nama Sekolah"
-                                          value="SDN 01 Jakarta Pusat"
+                                {/* Body Scrollable */}
+                                <div className="flex-1 space-y-8 overflow-y-auto bg-neutral-50/50 p-4 sm:p-8">
+                                  {/* --- BAGIAN 1: INFO TIM & REKAP SKOR --- */}
+                                  <div className="flex flex-col gap-6">
+                                    {/* Info Tim (Nama, Kategori) */}
+                                    <div className="flex items-center gap-4 rounded-xl border border-sky-100 bg-sky-100/50 p-4">
+                                      <div className="h-12 w-12 shrink-0 overflow-hidden rounded-full bg-neutral-200">
+                                        <Image
+                                          src="https://placehold.co/100"
+                                          width={48}
+                                          height={48}
+                                          alt="Logo Tim"
+                                          unoptimized
                                         />
-                                        <DetailRow
-                                          label="Alamat"
-                                          value="Jl. Merdeka No. 123, Jakarta Pusat"
-                                        />
-                                        <DetailRow
-                                          label="Nama Pelatih"
-                                          value="Budi Santoso, S.Pd"
-                                        />
-                                        <DetailRow
-                                          label="No. Telepon"
-                                          value="+62 812-3456-7890"
-                                        />
-                                        <DetailRow
-                                          label="Email"
-                                          value="garuda.nusantara@email.com"
-                                        />
-                                      </CardContent>
-                                    </Card>
-
-                                    {/* Button / Card Bukti Transfer */}
-                                    <div
-                                      role="button"
-                                      tabIndex={0}
-                                      className="group flex w-full cursor-pointer flex-col items-center justify-center gap-3 rounded-2xl border border-stone-300 bg-primary-50 px-6 py-12 transition-colors hover:border-sky-300 hover:bg-sky-100 focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:outline-none"
-                                    >
-                                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-neutral-200 transition-transform group-hover:scale-110">
-                                        <ImageIcon className="h-5 w-5 text-neutral-600" />
                                       </div>
-                                      <span className="text-center font-montserrat text-sm leading-5 font-semibold text-neutral-700">
-                                        Klik untuk melihat bukti transfer
-                                      </span>
+                                      <div className="flex flex-col">
+                                        <span className="text-base font-semibold text-neutral-800">
+                                          Garuda Nusantara
+                                        </span>
+                                        <span className="text-xs font-medium text-neutral-500">
+                                          Kategori: SD
+                                        </span>
+                                      </div>
+                                    </div>
+
+                                    {/* Cards: Total, Pelanggaran, Nilai Akhir */}
+                                    <div className="flex flex-wrap items-stretch gap-3">
+                                      <StatCard
+                                        title="Total Nilai"
+                                        value={290}
+                                      />
+                                      <StatCard
+                                        title="Pelanggaran"
+                                        value="-5"
+                                        isNegative
+                                      />
+                                      <StatCard
+                                        title="Nilai Akhir"
+                                        value={285}
+                                      />
+                                    </div>
+                                  </div>
+
+                                  <Separator className="bg-neutral-200" />
+
+                                  {/* --- BAGIAN 2: BREAKDOWN NILAI PER JURI --- */}
+                                  <div className="flex flex-col gap-5">
+                                    <h3 className="text-center font-['Montserrat'] text-lg font-bold text-neutral-800">
+                                      Breakdown Nilai per Juri
+                                    </h3>
+
+                                    {/* Container Juri (Warna Biru) */}
+                                    <div className="flex flex-col gap-4 rounded-2xl border border-sky-200 bg-sky-50 p-5">
+                                      <div className="flex flex-col gap-4">
+                                        {/* Juri 1 */}
+                                        <div className="flex flex-col gap-3 border-b border-sky-200/50 pb-4 last:border-0 last:pb-0">
+                                          <div className="flex items-center justify-between">
+                                            <span className="text-sm font-medium text-neutral-800">
+                                              Juri Budi Santoso, S.Pd
+                                            </span>
+                                            <span className="text-base font-bold text-neutral-800">
+                                              98 poin
+                                            </span>
+                                          </div>
+                                          <div className="flex flex-wrap gap-3">
+                                            <ScoreRow
+                                              title="Gerakan di Tempat"
+                                              score={38}
+                                            />
+                                            <ScoreRow
+                                              title="Langkah Tegap"
+                                              score={40}
+                                            />
+                                            <ScoreRow
+                                              title="Kerapian"
+                                              score={20}
+                                            />
+                                          </div>
+                                        </div>
+
+                                        {/* Juri 2 */}
+                                        <div className="flex flex-col gap-3 border-b border-sky-200/50 pb-4 last:border-0 last:pb-0">
+                                          <div className="flex items-center justify-between">
+                                            <span className="text-sm font-medium text-neutral-800">
+                                              Juri Danton
+                                            </span>
+                                            <span className="text-base font-bold text-neutral-800">
+                                              47 poin
+                                            </span>
+                                          </div>
+                                          <div className="flex flex-wrap gap-3">
+                                            <ScoreRow
+                                              title="Ketegasan Suara"
+                                              score={38}
+                                            />
+                                            <ScoreRow
+                                              title="Penampilan Danton"
+                                              score={40}
+                                            />
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  <Separator className="bg-neutral-200" />
+
+                                  {/* --- BAGIAN 3: PELANGGARAN TIM --- */}
+                                  <div className="flex flex-col gap-4">
+                                    <div className="flex flex-col gap-4 rounded-2xl border border-red-100 bg-rose-50/50 p-5">
+                                      <div className="flex items-center justify-between">
+                                        <span className="text-sm font-semibold text-neutral-800">
+                                          Pelanggaran Tim
+                                        </span>
+                                        <span className="text-xl font-bold text-neutral-800">
+                                          0
+                                        </span>
+                                      </div>
+
+                                      {/* Daftar Pelanggaran (Dinamis Wrap) */}
+                                      <div className="flex flex-wrap gap-3">
+                                        {/* Item 1 */}
+                                        <div className="flex w-full min-w-50 flex-1 items-center gap-3 rounded-lg border border-neutral-200 bg-white p-3 shadow-sm">
+                                          <div className="flex flex-col">
+                                            <span className="text-xs font-medium text-neutral-600">
+                                              Tidak Seragam
+                                            </span>
+                                            <span className="text-xs font-semibold text-red-500">
+                                              -5 poin
+                                            </span>
+                                          </div>
+                                        </div>
+                                        {/* Item 2 */}
+                                        <div className="flex w-full min-w-50 flex-1 items-center gap-3 rounded-lg border border-neutral-200 bg-white p-3 shadow-sm">
+                                          <div className="flex flex-col">
+                                            <span className="text-xs font-medium text-neutral-600">
+                                              Keluar Formasi
+                                            </span>
+                                            <span className="text-xs font-semibold text-red-500">
+                                              -3 poin
+                                            </span>
+                                          </div>
+                                        </div>
+                                        {/* Item 3 */}
+                                        <div className="flex w-full min-w-50 flex-1 items-center gap-3 rounded-lg border border-neutral-200 bg-white p-3 shadow-sm">
+                                          <div className="flex flex-col">
+                                            <span className="text-xs font-medium text-neutral-600">
+                                              Tidak Kompak
+                                            </span>
+                                            <span className="text-xs font-semibold text-red-500">
+                                              -2 poin
+                                            </span>
+                                          </div>
+                                        </div>
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
@@ -343,19 +423,6 @@ export default function Page() {
   )
 }
 
-function StatCard({ value, label }: { value: React.ReactNode; label: string }) {
-  return (
-    <div className="flex w-full flex-1 flex-col items-center justify-center gap-2 rounded-2xl border border-neutral-100 bg-white p-4 text-center shadow-sm transition-all hover:border-primary-200 hover:shadow-md sm:p-6">
-      <span className="text-2xl font-bold text-neutral-700 sm:text-3xl">
-        {value}
-      </span>
-      <span className="text-[10px] font-semibold tracking-wider text-neutral-500 uppercase sm:text-xs">
-        {label}
-      </span>
-    </div>
-  )
-}
-
 function InfoSection({
   title,
   children,
@@ -373,24 +440,42 @@ function InfoSection({
   )
 }
 
-function DetailRow({ label, value, valueNode, className }: DetailRowProps) {
+function StatCard({
+  title,
+  value,
+  isNegative = false,
+}: {
+  title: string
+  value: string | number
+  isNegative?: boolean
+}) {
   return (
-    <div
-      className={cn(
-        "flex w-full items-center justify-between gap-4",
-        className
-      )}
-    >
-      <span className="text-base leading-6 font-normal text-neutral-500">
-        {label}
+    <div className="flex min-w-30 flex-1 flex-col items-center justify-center gap-1 rounded-xl border border-neutral-200 bg-white p-4 shadow-sm">
+      <span className="text-center font-['Poppins'] text-xs font-normal text-neutral-500">
+        {title}
       </span>
-      {valueNode ? (
-        valueNode
-      ) : (
-        <span className="max-w-[60%] flex-wrap text-right text-base leading-6 font-medium text-neutral-700">
-          {value}
-        </span>
-      )}
+      <span
+        className={cn(
+          "font-['Poppins'] text-lg font-semibold",
+          isNegative ? "text-red-500" : "text-neutral-700"
+        )}
+      >
+        {value}
+      </span>
+    </div>
+  )
+}
+
+// 2. Baris Skor Subkategori
+function ScoreRow({ title, score }: { title: string; score: number }) {
+  return (
+    <div className="flex w-full flex-col gap-1 rounded-xl border border-neutral-100 bg-white p-3 shadow-sm sm:w-45">
+      <span className="truncate text-center font-['Poppins'] text-sm font-normal text-neutral-600">
+        {title}
+      </span>
+      <span className="text-center font-['Poppins'] text-base font-semibold text-neutral-800">
+        {score}
+      </span>
     </div>
   )
 }
