@@ -1,5 +1,5 @@
 import Image from "next/image"
-import { Search, Filter, ChevronDown, Image as ImageIcon } from "lucide-react"
+import { Search, Filter, ChevronDown, Image as ImageIcon, Award, Trophy, Medal } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -87,6 +87,103 @@ const products = [
     color: "Silver",
     category: "PC Desktop",
     price: "$3999",
+  },
+]
+
+const daftarJuara = [
+  {
+    id: "umum",
+    kategoriJudul: "Juara Umum",
+    kategoriDeskripsi: "Kategori: PBB + Danton + Variasi",
+    pemenang: [
+      {
+        urutan: 1,
+        gelar: "Juara 1",
+        tim: "Kilat Merah",
+        sekolah: "SDN 05 Jakarta Selatan",
+        skor: 285,
+        warna: "amber",
+        icon: Trophy,
+      },
+      {
+        urutan: 2,
+        gelar: "Juara 2",
+        tim: "Garuda Emas",
+        sekolah: "SDN 01 Jakarta Pusat",
+        skor: 278,
+        warna: "stone",
+        icon: Medal,
+      },
+      {
+        urutan: 3,
+        gelar: "Juara 3",
+        tim: "Bima Sakti",
+        sekolah: "SDN 12 Jakarta Barat",
+        skor: 272,
+        warna: "amber-600",
+        icon: Award,
+      },
+      {
+        urutan: 4,
+        gelar: "Harapan 1",
+        tim: "Satria Putih",
+        sekolah: "SDN 03 Jakarta Utara",
+        skor: 245,
+        warna: "blue",
+        icon: Award,
+      },
+      {
+        urutan: 5,
+        gelar: "Harapan 2",
+        tim: "Rajawali",
+        sekolah: "SDN 08 Jakarta Timur",
+        skor: 192,
+        warna: "emerald",
+        icon: Award,
+      },
+      {
+        urutan: 6,
+        gelar: "Harapan 3",
+        tim: "Merpati Putih",
+        sekolah: "SDN 02 Jakarta Selatan",
+        skor: 100,
+        warna: "rose",
+        icon: Award,
+      },
+    ],
+  },
+  {
+    id: "pbb_terbaik",
+    kategoriJudul: "Juara PBB Terbaik",
+    kategoriDeskripsi:
+      "Penilaian spesifik pada kategori Peraturan Baris Berbaris",
+    pemenang: [
+      {
+        urutan: 1,
+        gelar: "Juara 1",
+        tim: "Kilat Merah",
+        sekolah: "SDN 05 Jakarta Selatan",
+        skor: 98,
+        warna: "amber",
+        icon: Trophy,
+      },
+    ],
+  },
+  {
+    id: "danton_terbaik",
+    kategoriJudul: "Juara Danton Terbaik",
+    kategoriDeskripsi: "Penilaian spesifik pada performa Komandan Peleton",
+    pemenang: [
+      {
+        urutan: 1,
+        gelar: "Juara 1",
+        tim: "Kilat Merah",
+        sekolah: "SDN 05 Jakarta Selatan",
+        skor: 49,
+        warna: "amber",
+        icon: Trophy,
+      },
+    ],
   },
 ]
 
@@ -414,7 +511,104 @@ export default function Page() {
               </div>
             </InfoSection>
             <InfoSection title="Daftar Juara">
-              <div className=""></div>
+              {daftarJuara.map((kategoriUtama) => (
+                <div key={kategoriUtama.id} className="flex flex-col gap-2">
+                  {/* Header Kategori Juara */}
+                  <div className="flex flex-col items-start justify-start gap-1">
+                    <h3 className="text-base leading-6 font-semibold text-slate-900">
+                      {kategoriUtama.kategoriJudul}
+                    </h3>
+                    {kategoriUtama.kategoriDeskripsi && (
+                      <p className="text-sm leading-5 font-normal text-slate-600">
+                        {kategoriUtama.kategoriDeskripsi}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* List Pemenang dalam Kategori Ini */}
+                  <div className="flex w-full flex-col gap-3 sm:gap-4">
+                    {kategoriUtama.pemenang.map((pemenang) => {
+                      const IconComponent = pemenang.icon
+
+                      // Menentukan warna icon badge berdasarkan data
+                      let iconBgColor = "bg-neutral-200 text-neutral-600" // default
+                      if (pemenang.warna === "amber")
+                        iconBgColor = "bg-amber-100 text-amber-600"
+                      else if (pemenang.warna === "stone")
+                        iconBgColor = "bg-stone-200 text-stone-600"
+                      else if (pemenang.warna === "amber-600")
+                        iconBgColor = "bg-amber-100 text-amber-700"
+                      else if (pemenang.warna === "blue")
+                        iconBgColor = "bg-blue-100 text-blue-600"
+                      else if (pemenang.warna === "emerald")
+                        iconBgColor = "bg-emerald-100 text-emerald-600"
+                      else if (pemenang.warna === "rose")
+                        iconBgColor = "bg-rose-100 text-rose-600"
+
+                      return (
+                        <Card
+                          key={`${kategoriUtama.id}-${pemenang.urutan}`}
+                          className="w-full overflow-hidden rounded-xl border border-gray-100 bg-white shadow-none transition-all hover:border-sky-200 hover:shadow-md"
+                        >
+                          <CardContent>
+                            {/* Menggunakan flex-col di mobile, flex-row di layar besar (sm+) */}
+                            <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+                              {/* --- Bagian Kiri: Info Juara & Tim --- */}
+                              <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:gap-6">
+                                {/* Label Gelar (Juara 1, Harapan 2, dll) */}
+                                <div className="flex min-w-30 items-center gap-2">
+                                  <div
+                                    className={cn(
+                                      "flex h-8 w-8 items-center justify-center rounded-lg",
+                                      iconBgColor
+                                    )}
+                                  >
+                                    <IconComponent className="h-4 w-4" />
+                                  </div>
+                                  <span className="text-base font-semibold text-neutral-800">
+                                    {pemenang.gelar}
+                                  </span>
+                                </div>
+
+                                {/* Garis Pemisah (Hanya tampil di Desktop) */}
+                                <div className="hidden h-10 w-px bg-neutral-200 sm:block" />
+
+                                {/* Info Tim & Sekolah */}
+                                <div className="flex flex-col gap-0.5">
+                                  <span className="text-sm font-semibold text-neutral-800">
+                                    {pemenang.tim}
+                                  </span>
+                                  <span className="text-xs font-medium text-neutral-500">
+                                    {pemenang.sekolah}
+                                  </span>
+                                </div>
+                              </div>
+
+                              {/* --- Bagian Kanan: Total Skor --- */}
+                              <div className="mt-2 flex w-full items-center justify-between gap-3 border-t border-neutral-100 pt-3 sm:mt-0 sm:w-auto sm:justify-end sm:border-t-0 sm:pt-0">
+                                <span className="text-xs font-medium text-neutral-500 sm:hidden">
+                                  Total Poin
+                                </span>
+                                <Badge
+                                  variant="secondary"
+                                  className="border border-sky-100 bg-sky-50 px-3 py-1.5 hover:bg-sky-100"
+                                >
+                                  <span className="text-lg font-bold text-sky-700 sm:text-xl">
+                                    {pemenang.skor}
+                                  </span>
+                                  <span className="ml-1 text-xs font-medium text-sky-600">
+                                    poin
+                                  </span>
+                                </Badge>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      )
+                    })}
+                  </div>
+                </div>
+              ))}
             </InfoSection>
           </CardContent>
         </Card>
