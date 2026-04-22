@@ -5,96 +5,46 @@ import { LayoutDashboardIcon, ListIcon, Wallet, FolderIcon, UsersIcon, FileChart
 
 const data = {
   user: {
-    name: "shadcn",
-    email: "m@example.com",
+    name: "nopal",
+    email: "nopal@example.com",
     avatar: "/avatars/shadcn.jpg",
   },
   navMain: [
     {
       title: "Beranda",
-      url: "/organizer/dashboard/",
-      icon: (
-        <LayoutDashboardIcon
-        />
-      ),
+      url: "/peserta/dashboard/",
+      icon: <LayoutDashboardIcon />,
     },
     {
-      title: "My Event",
-      url: "/organizer/dashboard/event",
-      icon: (
-        <ListIcon
-        />
-      ),
+      title: "Profil",
+      url: "/peserta/dashboard/profile",
+      icon: <ListIcon />,
     },
     {
-      title: "Wallet",
-      url: "/organizer/dashboard/wallet",
-      icon: (
-        <Wallet />
-      ),
+      title: "My Team",
+      url: "/peserta/dashboard/team",
+      icon: <UsersIcon />,
     },
     {
-      title: "Tim",
-      url: "/organizer/dashboard/team",
-      icon: (
-        <UsersIcon
-        />
-      ),
-    },
-    {
-      title: "Data Juri",
-      url: "/organizer/dashboard/jury",
-      icon: (
-        <UsersRound />
-      ),
-    },
-    {
-      title: "Sistem Penilaian",
-      url: "/organizer/dashboard/assessment-system",
-      icon: (
-        <FolderIcon
-        />
-      ),
-    },
-    {
-      title: "Sistem Juara",
-      url: "/organizer/dashboard/ranking-system",
-      icon: (
-        <TrophyIcon
-        />
-      ),
-    },
-    {
-      title: "Form Penilaian",
-      url: "/organizer/dashboard/assessment-form",
-      icon: (
-        <FileText
-        />
-      ),
-    },
-    {
-      title: "Rekap Nilai",
-      url: "/organizer/dashboard/score-recap",
-      icon: (
-        <FileChartColumnIcon
-        />
-      ),
+      title: "Events",
+      url: "/peserta/dashboard/event",
+      icon: <TrophyIcon />,
     },
   ],
 }
 
 const navMain = [
     {
-      title: "My Event",
-      url: "/organizer/dashboard/event",
+      title: "Profile",
+      url: "/peserta/dashboard/profile",
     },
     {
-      title: "Wallet",
-      url: "/organizer/dashboard/wallet",
+      title: "My Teams",
+      url: "/peserta/dashboard/team",
     },
     {
-      title: "Tim",
-      url: "/organizer/dashboard/team",
+      title: "My Tickets",
+      url: "/peserta/dashboard/wallet",
     },
     {
       title: "Data Juri",
@@ -118,7 +68,7 @@ const navMain = [
     },
   ]
 
-export default function DashboardOrganizerLayout({
+export default function DashboardPesertaLayout({
   children,
 }: Readonly<{
   children: React.ReactNode

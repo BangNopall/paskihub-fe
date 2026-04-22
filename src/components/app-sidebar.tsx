@@ -13,90 +13,20 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { LayoutDashboardIcon, ListIcon, Wallet, FolderIcon, UsersIcon, FileChartColumnIcon, TrophyIcon, UsersRound, FileText } from "lucide-react"
 import { Montserrat } from "@/lib/fonts"
 
-const data = {
+export function AppSidebar({ items, user, ...props }: React.ComponentProps<typeof Sidebar> & {
+  items: {
+    title: string
+    url: string
+    icon?: React.ReactNode
+  }[]
   user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  navMain: [
-    {
-      title: "Beranda",
-      url: "/organizer/dashboard/",
-      icon: (
-        <LayoutDashboardIcon
-        />
-      ),
-    },
-    {
-      title: "My Event",
-      url: "/organizer/dashboard/event",
-      icon: (
-        <ListIcon
-        />
-      ),
-    },
-    {
-      title: "Wallet",
-      url: "/organizer/dashboard/wallet",
-      icon: (
-        <Wallet />
-      ),
-    },
-    {
-      title: "Tim",
-      url: "/organizer/dashboard/team",
-      icon: (
-        <UsersIcon
-        />
-      ),
-    },
-    {
-      title: "Data Juri",
-      url: "/organizer/dashboard/jury",
-      icon: (
-        <UsersRound />
-      ),
-    },
-    {
-      title: "Sistem Penilaian",
-      url: "/organizer/dashboard/assessment-system",
-      icon: (
-        <FolderIcon
-        />
-      ),
-    },
-    {
-      title: "Sistem Juara",
-      url: "/organizer/dashboard/ranking-system",
-      icon: (
-        <TrophyIcon
-        />
-      ),
-    },
-    {
-      title: "Form Penilaian",
-      url: "/organizer/dashboard/assessment-form",
-      icon: (
-        <FileText
-        />
-      ),
-    },
-    {
-      title: "Rekap Nilai",
-      url: "/organizer/dashboard/score-recap",
-      icon: (
-        <FileChartColumnIcon
-        />
-      ),
-    },
-  ],
-}
-
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+    name: string
+    email: string
+    avatar: string
+  }
+}) {
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -114,10 +44,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={items} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={user} />
       </SidebarFooter>
     </Sidebar>
   )

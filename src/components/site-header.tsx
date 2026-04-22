@@ -3,45 +3,11 @@ import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { usePathname } from "next/navigation"
 
-export function SiteHeader() {
+export function SiteHeader({navMain}: {navMain: {title: string, url: string}[]}) {
   const pathname = usePathname()
-  const navMain = [
-    {
-      title: "My Event",
-      url: "/organizer/dashboard/event",
-    },
-    {
-      title: "Wallet",
-      url: "/organizer/dashboard/wallet",
-    },
-    {
-      title: "Tim",
-      url: "/organizer/dashboard/team",
-    },
-    {
-      title: "Data Juri",
-      url: "/organizer/dashboard/jury",
-    },
-    {
-      title: "Sistem Penilaian",
-      url: "/organizer/dashboard/assessment-system",
-    },
-    {
-      title: "Form Penilaian",
-      url: "/organizer/dashboard/assessment-form",
-    },
-    {
-      title: "Sistem Juara",
-      url: "/organizer/dashboard/ranking-system",
-    },
-    {
-      title: "Rekap Nilai",
-      url: "/organizer/dashboard/score-recap",
-    },
-  ]
 
   let title
-  if (pathname === "/organizer/dashboard") {
+  if (pathname === "/organizer/dashboard" || pathname === "/peserta/dashboard") {
     title = "Beranda"
   }else{
     title = navMain.find((item) => pathname.startsWith(item.url))?.title
