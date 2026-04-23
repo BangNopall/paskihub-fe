@@ -4,8 +4,6 @@ import "@/styles/globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils"
 import { TooltipProvider } from "@/components/ui/tooltip"
-import Navbar from "@/components/ui/navbar"
-import Footer from "@/components/ui/footer"
 
 export const metadata: Metadata = {
   metadataBase: new URL(
