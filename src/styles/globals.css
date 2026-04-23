@@ -3,200 +3,208 @@
 @import "shadcn/tailwind.css";
 
 @theme inline {
-    /* --- CUSTOM FONTS --- */
-    --font-poppins: "Poppins", ui-sans-serif, system-ui, sans-serif;
-    --font-montserrat: "Montserrat", ui-sans-serif, system-ui, sans-serif;
+  /* --- CUSTOM FONTS --- */
+  --font-poppins: "Poppins", ui-sans-serif, system-ui, sans-serif;
+  --font-montserrat: "Montserrat", ui-sans-serif, system-ui, sans-serif;
 
-    /* --- CUSTOM COLOR PALETTES (Dari Project Lama) --- */
-    --color-dark-blue: #031629;
+  /* --- CUSTOM COLOR PALETTES (Dari Project Lama) --- */
+  --color-dark-blue: #031629;
 
-    /* Primary (Blue) */
-    --color-primary-50: #f4faff;
-    --color-primary-100: #ddf0fe;
-    --color-primary-200: #cce8fe;
-    --color-primary-300: #b5defd;
-    --color-primary-400: #a7d8fd;
-    --color-primary-500: #91cefc;
-    --color-primary-600: #84bbe5;
-    --color-primary-700: #6792b3;
-    --color-primary-800: #50718b;
-    --color-primary-900: #3d576a;
+  /* Primary (Blue) */
+  --color-primary-50: #f4faff;
+  --color-primary-100: #DDF0FE;
+  --color-primary-200: #cce8fe;
+  --color-primary-300: #b5defd;
+  --color-primary-400: #A7D8FD;
+  --color-primary-500: #91CEFC;
+  --color-primary-600: #84BBE5;
+  --color-primary-700: #6792B3;
+  --color-primary-800: #50718B;
+  --color-primary-900: #3D576A;
 
-    /* Secondary (Orange) */
-    --color-secondary-50: #fff1ee;
-    --color-secondary-100: #ffd4cb;
-    --color-secondary-200: #ffc0b2;
-    --color-secondary-300: #ffa38f;
-    --color-secondary-400: #ff9179;
-    --color-secondary-500: #ff7558;
-    --color-secondary-600: #e86a50;
-    --color-secondary-700: #b5533e;
-    --color-secondary-800: #8c4030;
-    --color-secondary-900: #6b3125;
+  /* Secondary (Orange) */
+  --color-secondary-50: #FFF1EE;
+  --color-secondary-100: #FFD4CB;
+  --color-secondary-200: #FFC0B2;
+  --color-secondary-300: #FFA38F;
+  --color-secondary-400: #FF9179;
+  --color-secondary-500: #ff7558;
+  --color-secondary-600: #e86a50;
+  --color-secondary-700: #B5533E;
+  --color-secondary-800: #8c4030;
+  --color-secondary-900: #6b3125;
 
-    /* Neutral */
-    --color-neutral-50: #fdfdfd;
-    --color-neutral-100: #efefef;
-    --color-neutral-200: #d6d6d6;
-    --color-neutral-300: #c1c1c1;
-    --color-neutral-400: #7a7a7a;
-    --color-neutral-500: #383838;
-    --color-neutral-600: #333333;
-    --color-neutral-700: #282828;
-    --color-neutral-800: #1f1f1f;
-    --color-neutral-900: #181818;
+  /* Neutral */
+  --color-neutral-50: #f9fafb;
+  --color-neutral-100: #ECECF0;
+  --color-neutral-200: #C1C1C1;
+  --color-neutral-300: #7A7A7A;
+  --color-neutral-400: #606060;
+  --color-neutral-500: #383838;
+  --color-neutral-600: #333333;
+  --color-neutral-700: #282828;
+  --color-neutral-800: #1f1f1f;
+  --color-neutral-900: #181818;
 
-    /* Info */
-    --color-info-50: #eff6ff;
-    --color-info-100: #dbeafe;
-    --color-info-200: #bfdbfe;
-    --color-info-300: #93c5fd;
-    --color-info-400: #60a5fa;
-    --color-info-500: #3b82f6;
-    --color-info-600: #2563eb;
-    --color-info-700: #1d4ed8;
-    --color-info-800: #1e40af;
-    --color-info-900: #1e3a8a;
+  /* Info */
+  --color-info-50: #EBF2FE;
+  --color-info-100: #C2D8FC;
+  --color-info-200: #A5C5FA;
+  --color-info-300: #7CABF8;
+  --color-info-400: #629AF6;
+  --color-info-500: #3B81F4;
+  --color-info-600: #3675DE;
+  --color-info-700: #2A5CAD;
+  --color-info-800: #204786;
+  --color-info-900: #193666;
 
-    /* Success */
-    --color-success-50: #f0fdf4;
-    --color-success-100: #dcfce7;
-    --color-success-200: #bbf7d0;
-    --color-success-300: #86efac;
-    --color-success-400: #4ade80;
-    --color-success-500: #22c55e;
-    --color-success-600: #16a34a;
-    --color-success-700: #15803d;
-    --color-success-800: #166534;
-    --color-success-900: #14532d;
+  /* Success */
+  --color-success-50: #E9F9EF;
+  --color-success-100: #BAEDCD;
+  --color-success-200: #99E4B5;
+  --color-success-300: #6BD893;
+  --color-success-400: #4ED17E;
+  --color-success-500: #22C55E;
+  --color-success-600: #1FB356;
+  --color-success-700: #188C43;
+  --color-success-800: #136C34;
+  --color-success-900: #0E5327;
 
-    /* Warning */
-    --color-warning-50: #fff6e6;
-    --color-warning-100: #fef9c3;
-    --color-warning-200: #fef08a;
-    --color-warning-300: #fde047;
-    --color-warning-400: #facc15;
-    --color-warning-500: #eab308;
-    --color-warning-600: #ca8a04;
-    --color-warning-700: #a16207;
-    --color-warning-800: #854d0e;
-    --color-warning-900: #713f12;
+  /* Warning */
+  --color-warning-50: #FDF7E6;
+  --color-warning-100: #F8E7B2;
+  --color-warning-200: #F5DC8D;
+  --color-warning-300: #F1CC5A;
+  --color-warning-400: #EEC239;
+  --color-warning-500: #EAB308;
+  --color-warning-600: #D5A307;
+  --color-warning-700: #A67F06;
+  --color-warning-800: #816204;
+  --color-warning-900: #624B03;
 
-    /* Danger */
-    --color-danger-50: #fef2f2;
-    --color-danger-100: #fee2e2;
-    --color-danger-200: #fecaca;
-    --color-danger-300: #fca5a5;
-    --color-danger-400: #f87171;
-    --color-danger-500: #ef4444;
-    --color-danger-600: #dc2626;
-    --color-danger-700: #b91c1c;
-    --color-danger-800: #991b1b;
-    --color-danger-900: #7f1d1d;
+  /* Danger */
+  --color-danger-50: #FDECEC;
+  --color-danger-100: #FAC5C5;
+  --color-danger-200: #F8A9A9;
+  --color-danger-300: #F48282;
+  --color-danger-400: #F26969;
+  --color-danger-500: #EF4444;
+  --color-danger-600: #D93E3E;
+  --color-danger-700: #AA3030;
+  --color-danger-800: #832525;
+  --color-danger-900: #641D1D;
 
-    /* Glassmorphism Gradients */
-    --background-image-glassmorphism-50: linear-gradient(180deg, rgba(255, 255, 255, 0.70) 0%, rgba(255, 255, 255, 0.60) 100%);
-    --background-image-glassmorphism-100: linear-gradient(180deg, rgba(255, 255, 255, 0.50) 0%, rgba(255, 255, 255, 0.05) 100%);
+  /* Glassmorphism Gradients */
+  --background-image-glassmorphism-50: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.7) 0%,
+    rgba(255, 255, 255, 0.6) 100%
+  );
+  --background-image-glassmorphism-100: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.5) 0%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
 
-    /* --- SHADCN VARIABLES MAP --- */
-    --color-sidebar-ring: var(--sidebar-ring);
-    --color-sidebar-border: var(--sidebar-border);
-    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-    --color-sidebar-accent: var(--sidebar-accent);
-    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-    --color-sidebar-primary: var(--sidebar-primary);
-    --color-sidebar-foreground: var(--sidebar-foreground);
-    --color-sidebar: var(--sidebar);
-    --color-chart-5: var(--chart-5);
-    --color-chart-4: var(--chart-4);
-    --color-chart-3: var(--chart-3);
-    --color-chart-2: var(--chart-2);
-    --color-chart-1: var(--chart-1);
-    --color-ring: var(--ring);
-    --color-input: var(--input);
-    --color-border: var(--border);
-    --color-destructive: var(--destructive);
-    --color-destructive-foreground: var(--destructive-foreground);
-    --color-accent-foreground: var(--accent-foreground);
-    --color-accent: var(--accent);
-    --color-muted-foreground: var(--muted-foreground);
-    --color-muted: var(--muted);
-    --color-secondary-foreground: var(--secondary-foreground);
-    --color-secondary: var(--secondary);
-    --color-primary-foreground: var(--primary-foreground);
-    --color-primary: var(--primary);
-    --color-popover-foreground: var(--popover-foreground);
-    --color-popover: var(--popover);
-    --color-card-foreground: var(--card-foreground);
-    --color-card: var(--card);
-    --color-foreground: var(--foreground);
-    --color-background: var(--background);
-    --radius-sm: calc(var(--radius) * 0.6);
-    --radius-md: calc(var(--radius) * 0.8);
-    --radius-lg: var(--radius);
-    --radius-xl: calc(var(--radius) * 1.4);
-    --radius-2xl: calc(var(--radius) * 1.8);
-    --radius-3xl: calc(var(--radius) * 2.2);
-    --radius-4xl: calc(var(--radius) * 2.6);
+  /* --- SHADCN VARIABLES MAP --- */
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
 :root {
-    /* Base */
-    --background: #ffffff;
-    --foreground: #020304;
+  /* Base */
+  --background: #ffffff;
+  --foreground: #020304;
 
-    /* Card & Popover (Neutral) */
-    --card: #ffffff;
-    --card-foreground: #020304;
-    --popover: #ffffff;
-    --popover-foreground: #020304;
+  /* Card & Popover (Neutral) */
+  --card: #ffffff;
+  --card-foreground: #020304;
+  --popover: #ffffff;
+  --popover-foreground: #020304;
 
-    /* Primary (Dari Blue / Primary-500) */
-    --primary: #91cefc;
-    --primary-foreground: #031629; 
+  /* Primary (Dari Blue / Primary-500) */
+  --primary: #91cefc;
+  --primary-foreground: #031629;
 
-    /* Secondary (Dari Orange / Secondary-500) - Untuk Buttons/Accents */
-    --secondary: #ff7558;
-    --secondary-foreground: #ffffff;
+  /* Secondary (Dari Orange / Secondary-500) - Untuk Buttons/Accents */
+  --secondary: #ff7558;
+  --secondary-foreground: #ffffff;
 
-    /* Muted (Dari Neutral-100 & Neutral-500) */
-    --muted: #efefef;
-    --muted-foreground: #7a7a7a;
+  /* Muted (Dari Neutral-100 & Neutral-500) */
+  --muted: #efefef;
+  --muted-foreground: #7a7a7a;
 
-    /* Accent (Hover states) */
-    --accent: #fdfdfd;
-    --accent-foreground: #181818;
+  /* Accent (Hover states) */
+  --accent: #fdfdfd;
+  --accent-foreground: #181818;
 
-    /* Destructive (Dari Danger-500) */
-    --destructive: #ef4444;
-    --destructive-foreground: #ffffff;
+  /* Destructive (Dari Danger-500) */
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
 
-    /* Borders & Inputs (Dari Neutral-200) */
-    --border: #d6d6d6;
-    --input: #d6d6d6;
+  /* Borders & Inputs (Dari Neutral-200) */
+  --border: #d6d6d6;
+  --input: #d6d6d6;
 
-    /* Focus Ring (Dari Primary-500 atau Info-500) */
-    --ring: #91cefc;
+  /* Focus Ring (Dari Primary-500 atau Info-500) */
+  --ring: #91cefc;
 
-    /* Border Radius - Sesuai rounded yang ada di figma */
-    --radius: 0.5rem; 
+  /* Border Radius - Sesuai rounded yang ada di figma */
+  --radius: 0.5rem;
 
-    /* Charts (Dipetakan ke warna palet yang ada) */
-    --chart-1: #91cefc; /* Primary */
-    --chart-2: #ff7558; /* Secondary */
-    --chart-3: #eab308; /* Warning */
-    --chart-4: #22c55e; /* Success */
-    --chart-5: #3b82f6; /* Info */
+  /* Charts (Dipetakan ke warna palet yang ada) */
+  --chart-1: #91cefc; /* Primary */
+  --chart-2: #ff7558; /* Secondary */
+  --chart-3: #eab308; /* Warning */
+  --chart-4: #22c55e; /* Success */
+  --chart-5: #3b82f6; /* Info */
 
-    /* Sidebar Defaults */
-    --sidebar: #fdfdfd;
-    --sidebar-foreground: #333333;
-    --sidebar-primary: #91cefc;
-    --sidebar-primary-foreground: #031629;
-    --sidebar-accent: #efefef;
-    --sidebar-accent-foreground: #181818;
-    --sidebar-border: #d6d6d6;
-    --sidebar-ring: #91cefc;
+  /* Sidebar Defaults */
+  --sidebar: #fdfdfd;
+  --sidebar-foreground: #333333;
+  --sidebar-primary: #91cefc;
+  --sidebar-primary-foreground: #031629;
+  --sidebar-accent: #efefef;
+  --sidebar-accent-foreground: #181818;
+  --sidebar-border: #d6d6d6;
+  --sidebar-ring: #91cefc;
 }
 
 @layer base {
@@ -204,10 +212,15 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground font-poppins;
+    @apply bg-background font-poppins text-foreground;
   }
   /* Menerapkan font Montserrat ke seluruh heading secara otomatis */
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-montserrat;
   }
 }

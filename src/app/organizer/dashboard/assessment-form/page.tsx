@@ -106,7 +106,7 @@ export default function Page() {
                   <Input
                     type="text"
                     placeholder="Cari nama tim atau nama sekolah"
-                    className="rounded-lg border-neutral-300 bg-neutral-50 py-2 ps-10 pe-3 text-sm text-neutral-900 shadow-sm placeholder:text-neutral-500"
+                    className="rounded-lg border-neutral-200 bg-neutral-50 py-2 ps-10 pe-3 text-sm text-neutral-900 shadow-sm placeholder:text-neutral-500"
                   />
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -181,7 +181,7 @@ export default function Page() {
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="default"
-                      className="w-full shrink-0 justify-between rounded-lg border-neutral-300 bg-white px-4 py-2 font-medium text-neutral-900 shadow-sm hover:bg-neutral-100 hover:text-neutral-900 sm:w-auto sm:justify-center"
+                      className="w-full shrink-0 justify-between rounded-lg border-neutral-200 bg-white px-4 py-2 font-medium text-neutral-900 shadow-sm hover:bg-neutral-100 hover:text-neutral-900 sm:w-auto sm:justify-center"
                     >
                       <div className="flex items-center">
                         <Filter className="mr-2 h-4 w-4 text-neutral-500" />
@@ -208,7 +208,7 @@ export default function Page() {
               </div>
 
               {/* Data Table */}
-              <div className="overflow-x-auto rounded-lg border border-neutral-300">
+              <div className="overflow-x-auto rounded-lg border border-neutral-200">
                 <Table className="min-w-200 text-left text-sm text-neutral-500">
                   <TableHeader className="bg-neutral-50 text-xs text-neutral-700 uppercase">
                     <TableRow className="border-b border-neutral-200 hover:bg-neutral-50">
