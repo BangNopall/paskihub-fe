@@ -14,6 +14,7 @@ export default function ProfilePage() {
 
             <CardContent className="space-y-6">
               <InfoSection title="Info Dasar">test</InfoSection>
+              <InfoSection title="Info Keamanan">test</InfoSection>
             </CardContent>
           </Card>
         </div>
