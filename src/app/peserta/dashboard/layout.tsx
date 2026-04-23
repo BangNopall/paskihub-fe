@@ -39,7 +39,7 @@ const navMain = [
       url: "/peserta/dashboard/profile",
     },
     {
-      title: "My Teams",
+      title: "My Team",
       url: "/peserta/dashboard/team",
     },
     {
