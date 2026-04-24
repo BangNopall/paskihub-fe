@@ -43,8 +43,8 @@ const navMain = [
       url: "/peserta/dashboard/team",
     },
     {
-      title: "My Tickets",
-      url: "/peserta/dashboard/wallet",
+      title: "Events",
+      url: "/peserta/dashboard/event",
     },
     {
       title: "Data Juri",
