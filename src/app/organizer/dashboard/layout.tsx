@@ -136,7 +136,9 @@ export default function DashboardOrganizerLayout({
       <SidebarInset className="overflow-hidden">
         <SiteHeader navMain={navMain} />
         <div className="h-full w-full bg-[url('/frame.png')] bg-cover bg-no-repeat">
+        <div className="container mx-auto">
           {children}
+        </div>
         </div>
       </SidebarInset>
     </SidebarProvider>

@@ -86,7 +86,9 @@ export default function DashboardPesertaLayout({
       <SidebarInset className="overflow-hidden">
         <SiteHeader navMain={navMain} />
         <div className="h-full w-full bg-[url('/frame.png')] bg-cover bg-no-repeat">
-          {children}
+          <div className="container mx-auto">
+            {children}
+          </div>
         </div>
       </SidebarInset>
     </SidebarProvider>
