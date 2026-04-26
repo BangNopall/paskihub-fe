@@ -1,7 +1,7 @@
 import { AppSidebar } from "@/components/app-sidebar"
 import { SiteHeader } from "@/components/site-header"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
-import { LayoutDashboardIcon, ListIcon, Wallet, FolderIcon, UsersIcon, FileChartColumnIcon, TrophyIcon, UsersRound, FileText } from "lucide-react"
+import { LayoutDashboardIcon, ListIcon, Wallet, FolderIcon, UsersIcon, FileChartColumnIcon, TrophyIcon, UsersRound, FileText, User } from "lucide-react"
 
 const data = {
   user: {
@@ -25,6 +25,11 @@ const data = {
         <ListIcon
         />
       ),
+    },
+    {
+      title: "Profil",
+      url: "/organizer/dashboard/profile",
+      icon: <User />,
     },
     {
       title: "Wallet",

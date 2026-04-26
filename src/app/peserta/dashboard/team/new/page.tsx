@@ -383,21 +383,6 @@ export default function NewTeamPage() {
                       placeholder="Pak Budi Santoso"
                     />
                   </FormGroup>
-                  <FormGroup label="Surat Rekomendasi">
-                    <FileUploadInput
-                      accept=".pdf"
-                      placeholder="Upload file .pdf"
-                      value={pelatih.berkasName}
-                      onChange={(file) =>
-                        handleChangeList(
-                          setPelatihList,
-                          pelatih.id,
-                          "fileBerkas",
-                          file
-                        )
-                      }
-                    />
-                  </FormGroup>
                   <FormGroup label="Foto">
                     <FileUploadInput
                       accept="image/*"

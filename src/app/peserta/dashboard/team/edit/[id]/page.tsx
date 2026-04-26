@@ -559,21 +559,6 @@ export default function EditTeamPage() {
                       className="h-10 bg-white font-poppins text-neutral-500 md:h-12"
                     />
                   </FormGroup>
-                  <FormGroup label="Surat Rekomendasi">
-                    <FileUploadInput
-                      accept=".pdf"
-                      placeholder="Upload file .pdf"
-                      value={pelatih.berkasFile?.name || pelatih.berkasUrl}
-                      onChange={(file) =>
-                        handleMemberChange(
-                          setPelatihList,
-                          pelatih.id,
-                          "berkasFile",
-                          file
-                        )
-                      }
-                    />
-                  </FormGroup>
                   <FormGroup label="Foto (URL)">
                     <FileUploadInput
                       accept="image/*"
