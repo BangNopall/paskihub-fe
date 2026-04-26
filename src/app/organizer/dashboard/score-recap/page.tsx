@@ -1,28 +1,23 @@
-import Image from "next/image"
-import { Search, Filter, ChevronDown, Image as ImageIcon, Award, Trophy, Medal } from "lucide-react"
+"use client"
 
+import React, { useState, useEffect } from "react"
+import {
+  Search,
+  AlertCircle,
+  Loader2,
+  Trophy,
+  Medal,
+  Award,
+  Image as ImageIcon,
+  X,
+} from "lucide-react"
+
+// --- SHADCN UI COMPONENTS ---
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
-import { Textarea } from "@/components/ui/textarea"
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
+import { Skeleton } from "@/components/ui/skeleton"
 import {
   Table,
   TableBody,
@@ -32,644 +27,861 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogClose,
+} from "@/components/ui/dialog"
 
-interface DetailRowProps {
-  label: string
-  value?: string
-  valueNode?: React.ReactNode
-  className?: string
+// ==========================================
+// 1. TYPESCRIPT INTERFACES (API-Ready)
+// ==========================================
+
+export type CategoryLevel = "SD" | "SMP" | "SMA" | "PURNA" | "UMUM"
+export type AssessmentStatus =
+  | "Sedang Dinilai"
+  | "Selesai Dinilai"
+  | "Belum Dinilai"
+
+export interface TeamScore {
+  id: string
+  logoUrl: string
+  teamName: string
+  schoolName: string
+  category: CategoryLevel
+  totalScore: number
+  status: AssessmentStatus
 }
 
-const products = [
+export interface SubCategoryScore {
+  name: string
+  score: number
+}
+
+export interface JudgeBreakdown {
+  judgeId: string
+  judgeName: string
+  totalPoints: number
+  subScores: SubCategoryScore[]
+}
+
+export interface ViolationDetail {
+  name: string
+  penalty: number
+}
+
+export interface TeamScoreDetail {
+  teamId: string
+  teamName: string
+  category: CategoryLevel
+  logoUrl: string
+  rawTotalScore: number
+  penalty: number
+  finalScore: number
+  judgeBreakdowns: JudgeBreakdown[]
+  violations: ViolationDetail[] // Penambahan detail pelanggaran
+}
+
+export interface WinnerEntry {
+  id: string
+  rankLabel: string // e.g., "Juara 1", "Harapan 1"
+  teamName: string
+  schoolName: string
+  score: number
+  iconType: "trophy" | "medal" | "award"
+  iconColor: "amber" | "stone" | "amber-600" | "blue" | "emerald" | "rose"
+}
+
+export interface ChampionCategory {
+  id: string
+  title: string
+  description?: string
+  winners: WinnerEntry[]
+}
+
+export interface ScoreRecapData {
+  teams: TeamScore[]
+  champions: ChampionCategory[]
+}
+
+// ==========================================
+// 2. CONSTANTS & MOCK DATA
+// ==========================================
+
+const FILTER_TABS = ["Semua", "SD", "SMP", "SMA", "PURNA", "UMUM"]
+
+const MOCK_TEAMS: TeamScore[] = [
   {
-    id: "21",
-    name: "Tim1",
-    color: "Silver",
-    category: "Laptop",
-    price: "$2999",
+    id: "tm-1",
+    logoUrl: "",
+    teamName: "Garuda Nusantara",
+    schoolName: "SDN 05 Jakarta Selatan",
+    category: "SD",
+    totalScore: 285,
+    status: "Selesai Dinilai",
   },
   {
-    id: "22",
-    name: "Microsoft Surface Pro",
-    color: "White",
-    category: "Laptop PC",
-    price: "$1999",
+    id: "tm-2",
+    logoUrl: "",
+    teamName: "Garuda Nusantara",
+    schoolName: "SDN 09 Bandung",
+    category: "SD",
+    totalScore: 278,
+    status: "Selesai Dinilai",
   },
   {
-    id: "23",
-    name: "Magic Mouse 2",
-    color: "Black",
-    category: "Accessories",
-    price: "$99",
+    id: "tm-3",
+    logoUrl: "",
+    teamName: "Garuda Nusantara",
+    schoolName: "SD Negeri 7 Semarang",
+    category: "SD",
+    totalScore: 272,
+    status: "Selesai Dinilai",
   },
   {
-    id: "24",
-    name: "Apple Watch",
-    color: "Silver",
-    category: "Accessories",
-    price: "$179",
+    id: "tm-4",
+    logoUrl: "",
+    teamName: "Garuda Nusantara",
+    schoolName: "SD Negeri 15 Bekasi",
+    category: "SD",
+    totalScore: 245,
+    status: "Sedang Dinilai",
   },
   {
-    id: "25",
-    name: "iPad",
-    color: "Gold",
-    category: "Tablet",
-    price: "$699",
+    id: "tm-5",
+    logoUrl: "",
+    teamName: "Garuda Nusantara",
+    schoolName: "SDN 01 Jakarta Pusat",
+    category: "SD",
+    totalScore: 192,
+    status: "Sedang Dinilai",
   },
   {
-    id: "26",
-    name: 'Apple iMac 27"',
-    color: "Silver",
-    category: "PC Desktop",
-    price: "$3999",
+    id: "tm-6",
+    logoUrl: "",
+    teamName: "Garuda Nusantara",
+    schoolName: "SD Negeri 12 Depok",
+    category: "SD",
+    totalScore: 0,
+    status: "Sedang Dinilai",
   },
 ]
 
-const daftarJuara = [
+const MOCK_CHAMPIONS: ChampionCategory[] = [
   {
-    id: "umum",
-    kategoriJudul: "Juara Umum",
-    kategoriDeskripsi: "Kategori: PBB + Danton + Variasi",
-    pemenang: [
+    id: "champ-1",
+    title: "Juara Umum",
+    description: "Kategori: PBB + Danton + Variasi",
+    winners: [
       {
-        urutan: 1,
-        gelar: "Juara 1",
-        tim: "Kilat Merah",
-        sekolah: "SDN 05 Jakarta Selatan",
-        skor: 285,
-        warna: "amber",
-        icon: Trophy,
+        id: "w-1",
+        rankLabel: "Juara 1",
+        teamName: "Kilat Merah",
+        schoolName: "SDN 05 Jakarta Selatan",
+        score: 285,
+        iconType: "trophy",
+        iconColor: "amber",
       },
       {
-        urutan: 2,
-        gelar: "Juara 2",
-        tim: "Garuda Emas",
-        sekolah: "SDN 01 Jakarta Pusat",
-        skor: 278,
-        warna: "stone",
-        icon: Medal,
+        id: "w-2",
+        rankLabel: "Juara 2",
+        teamName: "Kilat Merah",
+        schoolName: "SDN 05 Jakarta Selatan",
+        score: 278,
+        iconType: "medal",
+        iconColor: "stone",
       },
       {
-        urutan: 3,
-        gelar: "Juara 3",
-        tim: "Bima Sakti",
-        sekolah: "SDN 12 Jakarta Barat",
-        skor: 272,
-        warna: "amber-600",
-        icon: Award,
+        id: "w-3",
+        rankLabel: "Juara 3",
+        teamName: "Kilat Merah",
+        schoolName: "SDN 05 Jakarta Selatan",
+        score: 272,
+        iconType: "medal",
+        iconColor: "amber-600",
       },
       {
-        urutan: 4,
-        gelar: "Harapan 1",
-        tim: "Satria Putih",
-        sekolah: "SDN 03 Jakarta Utara",
-        skor: 245,
-        warna: "blue",
-        icon: Award,
+        id: "w-4",
+        rankLabel: "Harapan 1",
+        teamName: "Kilat Merah",
+        schoolName: "SDN 05 Jakarta Selatan",
+        score: 245,
+        iconType: "award",
+        iconColor: "blue",
       },
       {
-        urutan: 5,
-        gelar: "Harapan 2",
-        tim: "Rajawali",
-        sekolah: "SDN 08 Jakarta Timur",
-        skor: 192,
-        warna: "emerald",
-        icon: Award,
+        id: "w-5",
+        rankLabel: "Harapan 2",
+        teamName: "Kilat Merah",
+        schoolName: "SDN 05 Jakarta Selatan",
+        score: 192,
+        iconType: "award",
+        iconColor: "emerald",
       },
       {
-        urutan: 6,
-        gelar: "Harapan 3",
-        tim: "Merpati Putih",
-        sekolah: "SDN 02 Jakarta Selatan",
-        skor: 100,
-        warna: "rose",
-        icon: Award,
+        id: "w-6",
+        rankLabel: "Harapan 3",
+        teamName: "Kilat Merah",
+        schoolName: "SDN 05 Jakarta Selatan",
+        score: 100,
+        iconType: "award",
+        iconColor: "rose",
       },
     ],
   },
   {
-    id: "pbb_terbaik",
-    kategoriJudul: "Juara PBB Terbaik",
-    kategoriDeskripsi:
-      "Penilaian spesifik pada kategori Peraturan Baris Berbaris",
-    pemenang: [
+    id: "champ-2",
+    title: "Juara PBB Terbaik",
+    description: "",
+    winners: [
       {
-        urutan: 1,
-        gelar: "Juara 1",
-        tim: "Kilat Merah",
-        sekolah: "SDN 05 Jakarta Selatan",
-        skor: 98,
-        warna: "amber",
-        icon: Trophy,
+        id: "w-7",
+        rankLabel: "Juara 1",
+        teamName: "Kilat Merah",
+        schoolName: "SDN 05 Jakarta Selatan",
+        score: 98,
+        iconType: "trophy",
+        iconColor: "amber",
       },
     ],
   },
   {
-    id: "danton_terbaik",
-    kategoriJudul: "Juara Danton Terbaik",
-    kategoriDeskripsi: "Penilaian spesifik pada performa Komandan Peleton",
-    pemenang: [
+    id: "champ-3",
+    title: "Juara Danton Terbaik",
+    description: "",
+    winners: [
       {
-        urutan: 1,
-        gelar: "Juara 1",
-        tim: "Kilat Merah",
-        sekolah: "SDN 05 Jakarta Selatan",
-        skor: 49,
-        warna: "amber",
-        icon: Trophy,
+        id: "w-8",
+        rankLabel: "Juara 1",
+        teamName: "Kilat Merah",
+        schoolName: "SDN 05 Jakarta Selatan",
+        score: 49,
+        iconType: "trophy",
+        iconColor: "amber",
       },
     ],
   },
 ]
 
-export default function Page() {
+const MOCK_TEAM_DETAIL: TeamScoreDetail = {
+  teamId: "tm-1",
+  teamName: "Garuda Nusantara",
+  category: "SD",
+  logoUrl: "",
+  rawTotalScore: 290,
+  penalty: 5,
+  finalScore: 285,
+  violations: [
+    { name: "Tidak Seragam", penalty: 2 },
+    { name: "Keluar dari Formasi", penalty: 3 },
+  ],
+  judgeBreakdowns: [
+    {
+      judgeId: "j-1",
+      judgeName: "Juri Budi Santoso, S.Pd",
+      totalPoints: 98,
+      subScores: [
+        { name: "Gerakan di Tempat", score: 38 },
+        { name: "Langkah Tegap", score: 40 },
+        { name: "Kerapian", score: 20 },
+      ],
+    },
+    {
+      judgeId: "j-2",
+      judgeName: "Juri Danton",
+      totalPoints: 47,
+      subScores: [
+        { name: "Ketegasan Suara", score: 38 },
+        { name: "Penampilan Danton", score: 40 },
+      ],
+    },
+  ],
+}
+
+// ==========================================
+// 3. UI HELPER COMPONENTS
+// ==========================================
+
+function StatusBadge({ status }: { status: AssessmentStatus }) {
+  switch (status) {
+    case "Selesai Dinilai":
+      return (
+        <Badge
+          variant="outline"
+          className="border-green-400 bg-emerald-50 font-poppins font-normal text-green-600"
+        >
+          Selesai Dinilai
+        </Badge>
+      )
+    case "Sedang Dinilai":
+      return (
+        <Badge
+          variant="outline"
+          className="border-yellow-400 bg-yellow-50 font-poppins font-normal text-yellow-600"
+        >
+          Sedang Dinilai
+        </Badge>
+      )
+    case "Belum Dinilai":
+      return (
+        <Badge
+          variant="outline"
+          className="border-stone-300 bg-gray-50 font-poppins font-normal text-neutral-500"
+        >
+          Belum Dinilai
+        </Badge>
+      )
+    default:
+      return null
+  }
+}
+
+function getIconStyles(colorType: WinnerEntry["iconColor"]) {
+  switch (colorType) {
+    case "amber":
+      return "text-amber-500"
+    case "stone":
+      return "text-stone-400"
+    case "amber-600":
+      return "text-amber-600"
+    case "blue":
+      return "text-blue-400"
+    case "emerald":
+      return "text-emerald-400"
+    case "rose":
+      return "text-rose-400"
+    default:
+      return "text-neutral-400"
+  }
+}
+
+function getIconComponent(type: WinnerEntry["iconType"]) {
+  switch (type) {
+    case "trophy":
+      return Trophy
+    case "medal":
+      return Medal
+    case "award":
+      return Award
+    default:
+      return Award
+  }
+}
+
+// ==========================================
+// 4. MAIN PAGE COMPONENT
+// ==========================================
+
+export default function ScoreRecapPage() {
+  // --- STATE MANAGEMENT ---
+  const [data, setData] = useState<ScoreRecapData | null>(null)
+  const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [isError, setIsError] = useState<boolean>(false)
+  const [isPublishing, setIsPublishing] = useState<boolean>(false)
+
+  // Filters
+  const [searchQuery, setSearchQuery] = useState("")
+  const [activeFilter, setActiveFilter] = useState<string>("Semua")
+
+  // Modal Details
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState<boolean>(false)
+  const [selectedDetail, setSelectedDetail] = useState<TeamScoreDetail | null>(
+    null
+  )
+  const [isDetailLoading, setIsDetailLoading] = useState<boolean>(false)
+
+  // --- API SIMULATION (FETCH MAIN DATA) ---
+  useEffect(() => {
+    const fetchRecapData = async () => {
+      setIsLoading(true)
+      setIsError(false)
+      try {
+        // TODO: Integrasi API GET /api/organizer/score-recap
+        await new Promise((resolve) => setTimeout(resolve, 1500))
+        setData({ teams: MOCK_TEAMS, champions: MOCK_CHAMPIONS })
+      } catch (error) {
+        console.error("Gagal memuat rekap nilai:", error)
+        setIsError(true)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    fetchRecapData()
+  }, [])
+
+  // --- DERIVED DATA (FILTERING) ---
+  const filteredTeams =
+    data?.teams.filter((team) => {
+      const matchSearch =
+        team.teamName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        team.schoolName.toLowerCase().includes(searchQuery.toLowerCase())
+      const matchCategory =
+        activeFilter === "Semua" || team.category === activeFilter
+      return matchSearch && matchCategory
+    }) || []
+
+  // Dynamic filter counts
+  const getFilterCounts = () => {
+    if (!data) return {}
+    const counts: Record<string, number> = {
+      Semua: data.teams.length,
+      SD: 0,
+      SMP: 0,
+      SMA: 0,
+      PURNA: 0,
+      UMUM: 0,
+    }
+    data.teams.forEach((t) => {
+      if (counts[t.category] !== undefined) counts[t.category]++
+    })
+    return counts
+  }
+  const filterCounts = getFilterCounts()
+
+  // --- HANDLERS ---
+  const handlePublish = async () => {
+    if (
+      !confirm(
+        "Apakah Anda yakin ingin mempublikasikan hasil nilai dan daftar juara ke peserta?"
+      )
+    )
+      return
+    setIsPublishing(true)
+    try {
+      // TODO: API POST /api/organizer/score-recap/publish
+      await new Promise((resolve) => setTimeout(resolve, 2000))
+      alert("Hasil rekap nilai berhasil dipublikasikan!")
+    } catch (error) {
+      alert("Gagal mempublikasikan hasil.")
+    } finally {
+      setIsPublishing(false)
+    }
+  }
+
+  const handleOpenDetail = async (teamId: string) => {
+    setIsDetailModalOpen(true)
+    setIsDetailLoading(true)
+    setSelectedDetail(null)
+    try {
+      // TODO: API GET /api/organizer/score-recap/teams/{teamId}
+      await new Promise((resolve) => setTimeout(resolve, 800))
+      setSelectedDetail(MOCK_TEAM_DETAIL)
+    } catch (error) {
+      alert("Gagal memuat detail tim.")
+      setIsDetailModalOpen(false)
+    } finally {
+      setIsDetailLoading(false)
+    }
+  }
+
+  // --- ERROR STATE UI ---
+  if (isError) {
+    return (
+      <div className="flex flex-1 flex-col items-center justify-center p-8 text-center">
+        <AlertCircle className="mb-4 h-12 w-12 text-red-500" />
+        <h2 className="font-montserrat text-xl font-bold text-slate-900">
+          Gagal Memuat Data
+        </h2>
+        <Button
+          onClick={() => window.location.reload()}
+          className="mt-4 rounded-full bg-blue-500 hover:bg-blue-600"
+        >
+          Coba Lagi
+        </Button>
+      </div>
+    )
+  }
+
   return (
     <div className="flex flex-1 flex-col">
-      <div className="flex flex-col gap-4 p-4 md:gap-6 md:p-6 lg:p-8">
-        {/* Daftar Tim */}
-        <Card className="border-none bg-glassmorphism-50 shadow-sm">
-          <CardHeader className="border-b">
-            <CardTitle className="text-xl font-bold text-dark-blue">
-              Rekap Nilai
-            </CardTitle>
-            <CardAction>
-              <Button variant="default" size="sm">
-                Publish Hasil
-              </Button>
-            </CardAction>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {/* Team Table */}
-            <InfoSection>
-              <div className="relative w-full overflow-hidden rounded-lg">
-                {/* Table Toolbar (Search & Filter) */}
-                <div className="flex flex-col gap-4 pb-4 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="relative w-full sm:max-w-96">
-                    <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-neutral-500" />
-                    <Input
-                      type="text"
-                      placeholder="Cari nama tim atau nama sekolah"
-                      className="rounded-lg border-neutral-200 bg-neutral-50 py-2 ps-10 pe-3 text-sm text-neutral-900 shadow-sm placeholder:text-neutral-500"
-                    />
-                  </div>
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 p-4 md:gap-8 md:p-6 lg:p-8">
+        {/* HEADER */}
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <h1 className="font-montserrat text-2xl font-bold text-slate-900 md:text-3xl">
+            Rekap Nilai
+          </h1>
+          <Button
+            onClick={handlePublish}
+            disabled={isLoading || isPublishing}
+            className="rounded-full bg-red-400 px-8 font-montserrat font-bold text-white shadow-sm hover:bg-red-500"
+          >
+            {isPublishing ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : null}
+            {isPublishing ? "Memproses..." : "Publish Hasil"}
+          </Button>
+        </div>
 
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
+        {/* LOADING SKELETON OR CONTENT */}
+        {isLoading || !data ? (
+          <div className="flex flex-col gap-8">
+            <Skeleton className="h-20 w-full rounded-2xl" />
+            <Skeleton className="h-96 w-full rounded-3xl" />
+            <Skeleton className="h-[600px] w-full rounded-3xl" />
+          </div>
+        ) : (
+          <div className="flex flex-col gap-8">
+            {/* --- SECTION 1: FILTER & TABLE REKAP NILAI --- */}
+            <div className="flex flex-col gap-6 rounded-[24px] border border-sky-100 bg-gradient-to-b from-white/60 to-white/50 p-4 shadow-sm backdrop-blur-md md:p-6">
+              {/* FILTERS */}
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-3 md:flex-row md:items-center">
+                  <span className="font-poppins text-sm font-medium text-slate-900">
+                    Filter:
+                  </span>
+                  <div className="flex flex-wrap items-center gap-2">
+                    {FILTER_TABS.map((tab) => (
                       <Button
-                        variant="outline"
-                        className="w-full shrink-0 justify-between rounded-lg border-neutral-200 bg-white px-4 py-2 font-medium text-neutral-900 shadow-sm hover:bg-neutral-100 hover:text-neutral-900 sm:w-auto sm:justify-center"
+                        key={tab}
+                        variant={activeFilter === tab ? "default" : "outline"}
+                        onClick={() => setActiveFilter(tab)}
+                        className={cn(
+                          "h-9 rounded-lg px-4 py-2 font-poppins text-sm",
+                          activeFilter === tab
+                            ? "border-red-400 bg-rose-50 text-red-500 hover:bg-rose-100 hover:text-red-600"
+                            : "border-gray-200 bg-white text-zinc-600 hover:bg-gray-50"
+                        )}
                       >
-                        <div className="flex items-center">
-                          <Filter className="mr-2 h-4 w-4 text-neutral-500" />
-                          Filter by
-                        </div>
-                        <ChevronDown className="ml-2 h-4 w-4 text-neutral-500" />
+                        {tab} ({filterCounts[tab] || 0})
                       </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                      align="end"
-                      className="w-45 rounded-lg border-neutral-200 bg-white shadow-lg sm:w-32"
-                    >
-                      <DropdownMenuItem className="cursor-pointer text-neutral-700 hover:bg-neutral-100">
-                        SD/MI
-                      </DropdownMenuItem>
-                      <DropdownMenuItem className="cursor-pointer text-neutral-700 hover:bg-neutral-100">
-                        SMP/MTS
-                      </DropdownMenuItem>
-                      <DropdownMenuItem className="cursor-pointer text-neutral-700 hover:bg-neutral-100">
-                        SMA/SMK/MA
-                      </DropdownMenuItem>
-                      <DropdownMenuItem className="cursor-pointer text-neutral-700 hover:bg-neutral-100">
-                        PURNA
-                      </DropdownMenuItem>
-                      <DropdownMenuItem className="cursor-pointer text-neutral-700 hover:bg-neutral-100">
-                        UMUM
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                    ))}
+                  </div>
                 </div>
 
-                {/* Data Table */}
-                <div className="overflow-x-auto rounded-lg border border-neutral-200">
-                  <Table className="min-w-200 text-left text-sm text-neutral-500">
-                    <TableHeader className="bg-neutral-50 text-xs text-neutral-700 uppercase">
-                      <TableRow className="border-b border-neutral-200 hover:bg-neutral-50">
-                        <TableHead className="w-12 p-4 text-center">
+                <div className="relative w-full md:max-w-md">
+                  <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-stone-400" />
+                  <Input
+                    placeholder="Cari nama tim atau sekolah..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full rounded-xl border-gray-200 bg-white pl-10 font-poppins text-sm focus-visible:ring-sky-200"
+                  />
+                </div>
+              </div>
+
+              {/* TABLE DATA */}
+              <div className="overflow-hidden rounded-2xl border border-sky-100 bg-white/70 shadow-sm">
+                <div className="overflow-x-auto">
+                  <Table className="min-w-[900px]">
+                    <TableHeader className="bg-blue-100/80">
+                      <TableRow className="border-sky-100 hover:bg-transparent">
+                        <TableHead className="w-16 py-4 text-center font-poppins text-sm font-semibold text-neutral-700">
                           No
                         </TableHead>
-                        <TableHead className="px-6 py-3 font-semibold">
-                          Tim
+                        <TableHead className="py-4 font-poppins text-sm font-semibold text-neutral-700">
+                          Nama Tim
                         </TableHead>
-                        <TableHead className="px-6 py-3 font-semibold">
-                          Kategori
+                        <TableHead className="py-4 text-center font-poppins text-sm font-semibold text-neutral-700">
+                          Nama Sekolah
                         </TableHead>
-                        <TableHead className="px-6 py-3 font-semibold">
+                        <TableHead className="py-4 text-center font-poppins text-sm font-semibold text-neutral-700">
                           Total Nilai
                         </TableHead>
-                        <TableHead className="px-6 py-3 font-semibold">
+                        <TableHead className="py-4 text-center font-poppins text-sm font-semibold text-neutral-700">
                           Status
                         </TableHead>
-                        <TableHead className="px-6 py-3 text-right font-semibold">
+                        <TableHead className="py-4 text-center font-poppins text-sm font-semibold text-neutral-700">
                           Aksi
                         </TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {products.map((product, index) => (
-                        <TableRow
-                          key={product.id}
-                          className="border-b border-neutral-200 bg-white transition-colors hover:bg-neutral-50"
-                        >
-                          <TableCell className="p-4 text-center font-medium">
-                            {index + 1}
-                          </TableCell>
-                          <TableCell className="max-w-50 px-6 py-4">
-                            <div className="flex items-center gap-3">
-                              <Image
-                                width={40}
-                                height={40}
-                                className="h-10 w-10 shrink-0 rounded-full object-cover"
-                                src={"https://placehold.co/400"}
-                                alt="Tim Avatar"
-                                unoptimized
-                              />
-                              <div className="flex flex-col overflow-hidden">
-                                <span className="truncate text-base font-semibold text-neutral-900">
-                                  Garuda Nusantara
-                                </span>
-                                <span className="truncate text-sm font-normal text-neutral-500">
-                                  SMPN 1 Jakarta
-                                </span>
-                              </div>
-                            </div>
-                          </TableCell>
-                          <TableCell className="px-6 py-4 text-neutral-700">
-                            SD
-                          </TableCell>
-                          <TableCell className="px-6 py-4 text-neutral-700">
-                            200
-                          </TableCell>
-                          <TableCell className="px-6 py-4">
-                            <Badge className="border-neutral-200 bg-neutral-50 text-neutral-600 hover:bg-neutral-50">
-                              Belum Dinilai
-                            </Badge>
-                            {/* <Badge className="border-warning-200 bg-warning-50 text-warning-600 hover:bg-warning-50">
-                              Sedang Dinilai
-                            </Badge>
-                            <Badge className="border-success-200 bg-success-50 text-success-600 hover:bg-success-50">
-                              Selesai Dinilai
-                            </Badge> */}
-                          </TableCell>
-                          <TableCell className="flex items-center justify-end px-6 py-4">
-                            <Dialog>
-                              <DialogTrigger asChild>
-                                <Button variant="default" size="sm">
-                                  Detail
-                                </Button>
-                              </DialogTrigger>
-                              <DialogContent className="flex max-h-[90vh] w-[95vw] flex-col overflow-hidden rounded-2xl border-none p-0 font-['Poppins'] sm:max-w-4xl">
-                                {/* Header Fixed (Gradient Background) */}
-                                <div className="border-b border-neutral-100 bg-gradient-to-b from-white/90 to-white/70 p-6 backdrop-blur-sm">
-                                  <DialogHeader>
-                                    <DialogTitle className="text-center font-['Montserrat'] text-2xl font-bold text-neutral-800">
-                                      Detail Nilai Tim
-                                    </DialogTitle>
-                                  </DialogHeader>
-                                </div>
-
-                                {/* Body Scrollable */}
-                                <div className="flex-1 space-y-8 overflow-y-auto bg-neutral-50/50 p-4 sm:p-8">
-                                  {/* --- BAGIAN 1: INFO TIM & REKAP SKOR --- */}
-                                  <div className="flex flex-col gap-6">
-                                    {/* Info Tim (Nama, Kategori) */}
-                                    <div className="flex items-center gap-4 rounded-xl border border-sky-100 bg-sky-100/50 p-4">
-                                      <div className="h-12 w-12 shrink-0 overflow-hidden rounded-full bg-neutral-200">
-                                        <Image
-                                          src="https://placehold.co/100"
-                                          width={48}
-                                          height={48}
-                                          alt="Logo Tim"
-                                          unoptimized
-                                        />
-                                      </div>
-                                      <div className="flex flex-col">
-                                        <span className="text-base font-semibold text-neutral-800">
-                                          Garuda Nusantara
-                                        </span>
-                                        <span className="text-xs font-medium text-neutral-500">
-                                          Kategori: SD
-                                        </span>
-                                      </div>
-                                    </div>
-
-                                    {/* Cards: Total, Pelanggaran, Nilai Akhir */}
-                                    <div className="flex flex-wrap items-stretch gap-3">
-                                      <StatCard
-                                        title="Total Nilai"
-                                        value={290}
-                                      />
-                                      <StatCard
-                                        title="Pelanggaran"
-                                        value="-5"
-                                        isNegative
-                                      />
-                                      <StatCard
-                                        title="Nilai Akhir"
-                                        value={285}
-                                      />
-                                    </div>
-                                  </div>
-
-                                  <Separator className="bg-neutral-200" />
-
-                                  {/* --- BAGIAN 2: BREAKDOWN NILAI PER JURI --- */}
-                                  <div className="flex flex-col gap-5">
-                                    <h3 className="text-center font-['Montserrat'] text-lg font-bold text-neutral-800">
-                                      Breakdown Nilai per Juri
-                                    </h3>
-
-                                    {/* Container Juri (Warna Biru) */}
-                                    <div className="flex flex-col gap-4 rounded-2xl border border-sky-200 bg-sky-50 p-5">
-                                      <div className="flex flex-col gap-4">
-                                        {/* Juri 1 */}
-                                        <div className="flex flex-col gap-3 border-b border-sky-200/50 pb-4 last:border-0 last:pb-0">
-                                          <div className="flex items-center justify-between">
-                                            <span className="text-sm font-medium text-neutral-800">
-                                              Juri Budi Santoso, S.Pd
-                                            </span>
-                                            <span className="text-base font-bold text-neutral-800">
-                                              98 poin
-                                            </span>
-                                          </div>
-                                          <div className="flex flex-wrap gap-3">
-                                            <ScoreRow
-                                              title="Gerakan di Tempat"
-                                              score={38}
-                                            />
-                                            <ScoreRow
-                                              title="Langkah Tegap"
-                                              score={40}
-                                            />
-                                            <ScoreRow
-                                              title="Kerapian"
-                                              score={20}
-                                            />
-                                          </div>
-                                        </div>
-
-                                        {/* Juri 2 */}
-                                        <div className="flex flex-col gap-3 border-b border-sky-200/50 pb-4 last:border-0 last:pb-0">
-                                          <div className="flex items-center justify-between">
-                                            <span className="text-sm font-medium text-neutral-800">
-                                              Juri Danton
-                                            </span>
-                                            <span className="text-base font-bold text-neutral-800">
-                                              47 poin
-                                            </span>
-                                          </div>
-                                          <div className="flex flex-wrap gap-3">
-                                            <ScoreRow
-                                              title="Ketegasan Suara"
-                                              score={38}
-                                            />
-                                            <ScoreRow
-                                              title="Penampilan Danton"
-                                              score={40}
-                                            />
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-
-                                  <Separator className="bg-neutral-200" />
-
-                                  {/* --- BAGIAN 3: PELANGGARAN TIM --- */}
-                                  <div className="flex flex-col gap-4">
-                                    <div className="flex flex-col gap-4 rounded-2xl border border-red-100 bg-rose-50/50 p-5">
-                                      <div className="flex items-center justify-between">
-                                        <span className="text-sm font-semibold text-neutral-800">
-                                          Pelanggaran Tim
-                                        </span>
-                                        <span className="text-xl font-bold text-neutral-800">
-                                          0
-                                        </span>
-                                      </div>
-
-                                      {/* Daftar Pelanggaran (Dinamis Wrap) */}
-                                      <div className="flex flex-wrap gap-3">
-                                        {/* Item 1 */}
-                                        <div className="flex w-full min-w-50 flex-1 items-center gap-3 rounded-lg border border-neutral-200 bg-white p-3 shadow-sm">
-                                          <div className="flex flex-col">
-                                            <span className="text-xs font-medium text-neutral-600">
-                                              Tidak Seragam
-                                            </span>
-                                            <span className="text-xs font-semibold text-red-500">
-                                              -5 poin
-                                            </span>
-                                          </div>
-                                        </div>
-                                        {/* Item 2 */}
-                                        <div className="flex w-full min-w-50 flex-1 items-center gap-3 rounded-lg border border-neutral-200 bg-white p-3 shadow-sm">
-                                          <div className="flex flex-col">
-                                            <span className="text-xs font-medium text-neutral-600">
-                                              Keluar Formasi
-                                            </span>
-                                            <span className="text-xs font-semibold text-red-500">
-                                              -3 poin
-                                            </span>
-                                          </div>
-                                        </div>
-                                        {/* Item 3 */}
-                                        <div className="flex w-full min-w-50 flex-1 items-center gap-3 rounded-lg border border-neutral-200 bg-white p-3 shadow-sm">
-                                          <div className="flex flex-col">
-                                            <span className="text-xs font-medium text-neutral-600">
-                                              Tidak Kompak
-                                            </span>
-                                            <span className="text-xs font-semibold text-red-500">
-                                              -2 poin
-                                            </span>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </DialogContent>
-                            </Dialog>
+                      {filteredTeams.length === 0 ? (
+                        <TableRow>
+                          <TableCell
+                            colSpan={6}
+                            className="py-10 text-center font-poppins text-sm text-neutral-500"
+                          >
+                            Tidak ada tim yang ditemukan.
                           </TableCell>
                         </TableRow>
-                      ))}
+                      ) : (
+                        filteredTeams.map((team, index) => (
+                          <TableRow
+                            key={team.id}
+                            className="border-sky-100 bg-transparent hover:bg-white/50"
+                          >
+                            <TableCell className="py-4 text-center font-poppins text-sm font-medium text-neutral-700">
+                              {index + 1}
+                            </TableCell>
+                            <TableCell className="py-4">
+                              <div className="flex items-center gap-3">
+                                <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-zinc-200">
+                                  {team.logoUrl ? (
+                                    <img
+                                      src={team.logoUrl}
+                                      alt="Logo"
+                                      className="h-full w-full object-cover"
+                                    />
+                                  ) : (
+                                    <ImageIcon className="h-5 w-5 text-neutral-400" />
+                                  )}
+                                </div>
+                                <div className="flex flex-col">
+                                  <span className="font-poppins text-sm font-semibold text-neutral-800">
+                                    {team.teamName}
+                                  </span>
+                                  <Badge className="mt-1 w-fit border-gray-300 bg-sky-50 px-2 py-0 font-poppins text-[10px] font-medium text-slate-500 hover:bg-sky-50">
+                                    {team.category}
+                                  </Badge>
+                                </div>
+                              </div>
+                            </TableCell>
+                            <TableCell className="py-4 text-center font-poppins text-sm text-neutral-600">
+                              {team.schoolName}
+                            </TableCell>
+                            <TableCell className="py-4 text-center font-poppins text-sm font-bold text-neutral-800">
+                              {team.totalScore}
+                            </TableCell>
+                            <TableCell className="py-4">
+                              <div className="flex justify-center">
+                                <StatusBadge status={team.status} />
+                              </div>
+                            </TableCell>
+                            <TableCell className="py-4">
+                              <div className="flex justify-center">
+                                <Button
+                                  size="sm"
+                                  onClick={() => handleOpenDetail(team.id)}
+                                  className="h-8 rounded-lg bg-blue-400 px-4 font-poppins text-xs font-semibold text-white hover:bg-blue-500"
+                                >
+                                  Detail
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
                     </TableBody>
                   </Table>
                 </div>
               </div>
-            </InfoSection>
-            <InfoSection title="Daftar Juara">
-              {daftarJuara.map((kategoriUtama) => (
-                <div key={kategoriUtama.id} className="flex flex-col gap-2">
-                  {/* Header Kategori Juara */}
-                  <div className="flex flex-col items-start justify-start gap-1">
-                    <h3 className="text-base leading-6 font-semibold text-slate-900">
-                      {kategoriUtama.kategoriJudul}
-                    </h3>
-                    {kategoriUtama.kategoriDeskripsi && (
-                      <p className="text-sm leading-5 font-normal text-slate-600">
-                        {kategoriUtama.kategoriDeskripsi}
-                      </p>
-                    )}
-                  </div>
+            </div>
 
-                  {/* List Pemenang dalam Kategori Ini */}
-                  <div className="flex w-full flex-col gap-3 sm:gap-4">
-                    {kategoriUtama.pemenang.map((pemenang) => {
-                      const IconComponent = pemenang.icon
+            {/* --- SECTION 2: DAFTAR JUARA --- */}
+            <div className="flex flex-col gap-6 rounded-[24px] border border-sky-100 bg-gradient-to-b from-white/60 to-white/50 p-4 shadow-sm backdrop-blur-md md:p-6 lg:p-8">
+              <h2 className="font-poppins text-xl font-semibold text-slate-900">
+                Daftar Juara
+              </h2>
 
-                      // Menentukan warna icon badge berdasarkan data
-                      let iconBgColor = "bg-neutral-200 text-neutral-600" // default
-                      if (pemenang.warna === "amber")
-                        iconBgColor = "bg-amber-100 text-amber-600"
-                      else if (pemenang.warna === "stone")
-                        iconBgColor = "bg-stone-200 text-stone-600"
-                      else if (pemenang.warna === "amber-600")
-                        iconBgColor = "bg-amber-100 text-amber-700"
-                      else if (pemenang.warna === "blue")
-                        iconBgColor = "bg-blue-100 text-blue-600"
-                      else if (pemenang.warna === "emerald")
-                        iconBgColor = "bg-emerald-100 text-emerald-600"
-                      else if (pemenang.warna === "rose")
-                        iconBgColor = "bg-rose-100 text-rose-600"
+              <div className="flex flex-col gap-6">
+                {data.champions.map((champion) => (
+                  <div key={champion.id} className="flex flex-col gap-4">
+                    <div className="flex flex-col gap-1">
+                      <h3 className="font-poppins text-lg font-semibold text-slate-900">
+                        {champion.title}
+                      </h3>
+                      {champion.description && (
+                        <span className="font-poppins text-sm text-neutral-500">
+                          {champion.description}
+                        </span>
+                      )}
+                    </div>
 
-                      return (
-                        <Card
-                          key={`${kategoriUtama.id}-${pemenang.urutan}`}
-                          className="w-full overflow-hidden rounded-xl border border-gray-100 bg-white shadow-none transition-all hover:border-sky-200 hover:shadow-md"
-                        >
-                          <CardContent>
-                            {/* Menggunakan flex-col di mobile, flex-row di layar besar (sm+) */}
-                            <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-                              {/* --- Bagian Kiri: Info Juara & Tim --- */}
-                              <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:gap-6">
-                                {/* Label Gelar (Juara 1, Harapan 2, dll) */}
-                                <div className="flex min-w-30 items-center gap-2">
-                                  <div
-                                    className={cn(
-                                      "flex h-8 w-8 items-center justify-center rounded-lg",
-                                      iconBgColor
-                                    )}
-                                  >
-                                    <IconComponent className="h-4 w-4" />
-                                  </div>
-                                  <span className="text-base font-semibold text-neutral-800">
-                                    {pemenang.gelar}
-                                  </span>
-                                </div>
+                    <div className="flex flex-col gap-4 rounded-2xl border border-sky-100 bg-white/70 p-4 shadow-sm sm:p-6">
+                      {champion.winners.map((winner) => {
+                        const Icon = getIconComponent(winner.iconType)
+                        const iconColor = getIconStyles(winner.iconColor)
 
-                                {/* Garis Pemisah (Hanya tampil di Desktop) */}
-                                <div className="hidden h-10 w-px bg-neutral-200 sm:block" />
-
-                                {/* Info Tim & Sekolah */}
-                                <div className="flex flex-col gap-0.5">
-                                  <span className="text-sm font-semibold text-neutral-800">
-                                    {pemenang.tim}
-                                  </span>
-                                  <span className="text-xs font-medium text-neutral-500">
-                                    {pemenang.sekolah}
-                                  </span>
-                                </div>
-                              </div>
-
-                              {/* --- Bagian Kanan: Total Skor --- */}
-                              <div className="mt-2 flex w-full items-center justify-between gap-3 border-t border-neutral-100 pt-3 sm:mt-0 sm:w-auto sm:justify-end sm:border-t-0 sm:pt-0">
-                                <span className="text-xs font-medium text-neutral-500 sm:hidden">
-                                  Total Poin
+                        return (
+                          <div
+                            key={winner.id}
+                            className="flex flex-col justify-between gap-4 border-b border-gray-100 pb-4 last:border-0 last:pb-0 sm:flex-row sm:items-center"
+                          >
+                            <div className="flex items-center gap-4">
+                              <Icon
+                                className={cn("h-6 w-6 shrink-0", iconColor)}
+                              />
+                              <div className="flex flex-col gap-1">
+                                <span className="font-poppins text-base font-semibold text-neutral-800">
+                                  {winner.rankLabel}
                                 </span>
-                                <Badge
-                                  variant="secondary"
-                                  className="border border-sky-100 bg-sky-50 px-3 py-1.5 hover:bg-sky-100"
-                                >
-                                  <span className="text-lg font-bold text-sky-700 sm:text-xl">
-                                    {pemenang.skor}
+                                <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
+                                  <span className="font-poppins text-sm text-neutral-600">
+                                    {winner.teamName}
                                   </span>
-                                  <span className="ml-1 text-xs font-medium text-sky-600">
-                                    poin
+                                  <span className="hidden text-neutral-300 sm:inline">
+                                    •
                                   </span>
-                                </Badge>
+                                  <span className="font-poppins text-xs text-neutral-400">
+                                    {winner.schoolName}
+                                  </span>
+                                </div>
                               </div>
                             </div>
-                          </CardContent>
-                        </Card>
-                      )
-                    })}
+                            <span className="font-poppins text-xl font-bold text-neutral-800 sm:text-right">
+                              {winner.score}
+                            </span>
+                          </div>
+                        )
+                      })}
+                    </div>
                   </div>
-                </div>
-              ))}
-            </InfoSection>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  )
-}
-
-function InfoSection({
-  title,
-  children,
-}: {
-  title?: string
-  children: React.ReactNode
-}) {
-  return (
-    <div className="flex flex-col gap-4 rounded-2xl border border-primary-100 bg-glassmorphism-50 p-4 shadow-sm sm:p-6">
-      {title && (
-        <h3 className="text-lg font-semibold text-dark-blue">{title}</h3>
-      )}
-      {children}
-    </div>
-  )
-}
-
-function StatCard({
-  title,
-  value,
-  isNegative = false,
-}: {
-  title: string
-  value: string | number
-  isNegative?: boolean
-}) {
-  return (
-    <div className="flex min-w-30 flex-1 flex-col items-center justify-center gap-1 rounded-xl border border-neutral-200 bg-white p-4 shadow-sm">
-      <span className="text-center font-['Poppins'] text-xs font-normal text-neutral-500">
-        {title}
-      </span>
-      <span
-        className={cn(
-          "font-['Poppins'] text-lg font-semibold",
-          isNegative ? "text-red-500" : "text-neutral-700"
+                ))}
+              </div>
+            </div>
+          </div>
         )}
-      >
-        {value}
-      </span>
-    </div>
-  )
-}
 
-// 2. Baris Skor Subkategori
-function ScoreRow({ title, score }: { title: string; score: number }) {
-  return (
-    <div className="flex w-full flex-col gap-1 rounded-xl border border-neutral-100 bg-white p-3 shadow-sm sm:w-45">
-      <span className="truncate text-center font-['Poppins'] text-sm font-normal text-neutral-600">
-        {title}
-      </span>
-      <span className="text-center font-['Poppins'] text-base font-semibold text-neutral-800">
-        {score}
-      </span>
+        {/* =========================================
+            MODAL DETAIL NILAI TIM (API READY)
+            ========================================= */}
+        <Dialog open={isDetailModalOpen} onOpenChange={setIsDetailModalOpen}>
+          <DialogContent className="max-h-[90vh] w-full max-w-2xl gap-0 overflow-y-auto rounded-3xl p-0 sm:rounded-[40px]">
+            <DialogHeader className="p-6 pb-0 sm:px-10 sm:pt-8">
+              <div className="flex items-center justify-between">
+                <DialogTitle className="flex-1 text-center font-montserrat text-xl font-bold text-neutral-800 sm:text-2xl">
+                  Detail Nilai Tim
+                </DialogTitle>
+              </div>
+            </DialogHeader>
+
+            <div className="flex flex-col gap-6 p-6 sm:px-10 sm:pt-6 sm:pb-10">
+              {isDetailLoading ? (
+                <div className="flex flex-col gap-4">
+                  <Skeleton className="h-24 w-full rounded-2xl" />
+                  <Skeleton className="h-24 w-full rounded-2xl" />
+                  <Skeleton className="h-48 w-full rounded-2xl" />
+                </div>
+              ) : selectedDetail ? (
+                <div className="flex flex-col gap-6">
+                  {/* Identitas Tim */}
+                  <div className="flex items-center gap-4 rounded-2xl border border-sky-100 bg-sky-100/50 p-4">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-stone-200">
+                      {selectedDetail.logoUrl ? (
+                        <img
+                          src={selectedDetail.logoUrl}
+                          alt="Logo"
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <ImageIcon className="h-6 w-6 text-neutral-400" />
+                      )}
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="font-poppins text-base font-semibold text-neutral-800">
+                        {selectedDetail.teamName}
+                      </span>
+                      <span className="font-poppins text-xs font-medium text-neutral-500">
+                        {selectedDetail.category}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Summary Scores */}
+                  <div className="grid grid-cols-3 gap-2 sm:gap-4">
+                    <div className="flex flex-col items-center justify-center rounded-xl border border-gray-100 bg-white py-4 shadow-sm">
+                      <span className="font-poppins text-xs text-neutral-500">
+                        Total Nilai
+                      </span>
+                      <span className="font-poppins text-xl font-bold text-neutral-800">
+                        {selectedDetail.rawTotalScore}
+                      </span>
+                    </div>
+                    <div className="flex flex-col items-center justify-center rounded-xl border border-gray-100 bg-white py-4 shadow-sm">
+                      <span className="font-poppins text-xs text-neutral-500">
+                        Pelanggaran
+                      </span>
+                      <span className="font-poppins text-xl font-bold text-neutral-800">
+                        -{selectedDetail.penalty}
+                      </span>
+                    </div>
+                    <div className="flex flex-col items-center justify-center rounded-xl border border-gray-100 bg-white py-4 shadow-sm">
+                      <span className="font-poppins text-xs text-neutral-500">
+                        Nilai Akhir
+                      </span>
+                      <span className="font-poppins text-xl font-bold text-neutral-800">
+                        {selectedDetail.finalScore}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Breakdown Juri */}
+                  <div className="flex flex-col gap-4">
+                    <h3 className="font-poppins text-sm font-semibold text-neutral-800">
+                      Breakdown Nilai per Juri
+                    </h3>
+
+                    {selectedDetail.judgeBreakdowns.map((juri) => (
+                      <div
+                        key={juri.judgeId}
+                        className="flex flex-col gap-4 rounded-2xl border border-sky-100 bg-sky-100/50 p-4 sm:p-5"
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-poppins text-sm font-medium text-neutral-700">
+                            {juri.judgeName}
+                          </span>
+                          <span className="font-poppins text-base font-bold text-neutral-800">
+                            {juri.totalPoints} poin
+                          </span>
+                        </div>
+
+                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
+                          {juri.subScores.map((sub, idx) => (
+                            <div
+                              key={idx}
+                              className="flex flex-col gap-1 rounded-xl border border-white bg-white p-3 shadow-sm"
+                            >
+                              <span className="truncate font-poppins text-xs font-medium text-neutral-600">
+                                {sub.name}
+                              </span>
+                              <span className="font-poppins text-lg font-bold text-neutral-800">
+                                {sub.score}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Breakdown Pelanggaran */}
+                  {selectedDetail.violations &&
+                    selectedDetail.violations.length > 0 && (
+                      <div className="mt-2 flex flex-col gap-4">
+                        <h3 className="font-poppins text-sm font-semibold text-neutral-800">
+                          Pelanggaran Tim
+                        </h3>
+
+                        <div className="flex flex-col gap-4 rounded-2xl border border-red-100 bg-rose-50/50 p-4 sm:p-5">
+                          <div className="flex items-center justify-between">
+                            <span className="font-poppins text-sm font-medium text-neutral-700">
+                              Total Pengurangan
+                            </span>
+                            <span className="font-poppins text-base font-bold text-red-500">
+                              -{selectedDetail.penalty} poin
+                            </span>
+                          </div>
+
+                          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
+                            {selectedDetail.violations.map((violation, idx) => (
+                              <div
+                                key={idx}
+                                className="flex flex-col gap-1 rounded-xl border border-white bg-white p-3 shadow-sm"
+                              >
+                                <span className="truncate font-poppins text-xs font-medium text-neutral-600">
+                                  {violation.name}
+                                </span>
+                                <span className="font-poppins text-lg font-bold text-red-500">
+                                  -{violation.penalty}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                </div>
+              ) : (
+                <div className="py-10 text-center text-neutral-500">
+                  Data tidak ditemukan.
+                </div>
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
     </div>
   )
 }
