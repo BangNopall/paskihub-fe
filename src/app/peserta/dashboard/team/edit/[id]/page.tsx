@@ -151,8 +151,8 @@ function SubSectionHeader({
       <Button
         type="button"
         onClick={onAdd}
-        variant="outline"
-        className="h-9 rounded-full border-red-400 bg-rose-50 px-3 text-red-500 transition-colors hover:bg-rose-100 hover:text-red-600 md:h-10 md:px-4"
+        variant="secondary"
+        className="h-9 rounded-full px-3 md:h-10 md:px-4"
       >
         <Plus className="h-4 w-4 md:mr-1.5" />
         <span className="hidden font-poppins text-sm font-semibold sm:inline">
@@ -439,8 +439,9 @@ export default function EditTeamPage() {
             </h1>
             <Button
               type="submit"
+              variant={'secondary'}
               disabled={isSubmitting}
-              className="h-12 w-full rounded-full bg-red-400 px-8 text-base font-bold text-white shadow-sm transition-colors hover:bg-red-500 sm:w-auto"
+              className="h-12 w-full rounded-full px-8 text-base font-bold sm:w-auto"
             >
               {isSubmitting ? (
                 <>
