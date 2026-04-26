@@ -48,6 +48,15 @@ export default function VerifyEmail() {
           >
             Kirim Ulang Email
           </Button>
+          <p className="mt-4 text-center text-sm sm:text-base text-muted-foreground sm:mt-6">
+            Alamat email salah?{" "}
+            <Link
+              href="/auth/register"
+              className="font-medium text-secondary hover:underline"
+            >
+              Daftar Ulang
+            </Link>
+          </p>
         </CardContent>
       </Card>
     </div>
