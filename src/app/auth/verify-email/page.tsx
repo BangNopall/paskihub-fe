@@ -46,17 +46,8 @@ export default function VerifyEmail() {
             className="mt-6 sm:mt-8 h-10 w-full text-sm sm:h-11 sm:text-base"
             type="submit"
           >
-            Masuk
+            Kirim Ulang Email
           </Button>
-          <p className="mt-4 text-center text-sm sm:text-base text-muted-foreground sm:mt-6">
-            Alamat email salah?{" "}
-            <Link
-              href="/auth/register"
-              className="font-medium text-secondary hover:underline"
-            >
-              Ubah alamat email
-            </Link>
-          </p>
         </CardContent>
       </Card>
     </div>
