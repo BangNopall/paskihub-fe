@@ -1,63 +1,74 @@
 import { AppSidebar } from "@/components/app-sidebar"
 import { SiteHeader } from "@/components/site-header"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
-import { LayoutDashboardIcon, ListIcon, Wallet, FolderIcon, UsersIcon, FileChartColumnIcon, TrophyIcon, UsersRound, FileText } from "lucide-react"
+import { 
+  LayoutDashboardIcon, 
+  Users, 
+  CreditCard, 
+  Settings, 
+  Megaphone, 
+  History, 
+  ShieldCheck,
+  User
+} from "lucide-react"
 
 const data = {
   user: {
-    name: "nopal",
-    email: "nopal@example.com",
-    avatar: "/avatars/shadcn.jpg",
+    name: "Super Admin",
+    email: "admin@paskihub.com",
+    avatar: "/avatars/admin.jpg",
   },
   navMain: [
     {
-      title: "Beranda",
-      url: "/admin/dashboard/",
+      title: "Overview",
+      url: "/admin/dashboard",
       icon: <LayoutDashboardIcon />,
+    },
+    {
+      title: "Manajemen User",
+      url: "/admin/dashboard/users",
+      icon: <Users />,
+    },
+    {
+      title: "Transaksi Koin",
+      url: "/admin/dashboard/transactions",
+      icon: <CreditCard />,
+    },
+    {
+      title: "Broadcast Info",
+      url: "/admin/dashboard/broadcast",
+      icon: <Megaphone />,
+    },
+    {
+      title: "Audit Logs",
+      url: "/admin/dashboard/logs",
+      icon: <History />,
+    },
+    {
+      title: "Konfigurasi",
+      url: "/admin/dashboard/settings",
+      icon: <Settings />,
     },
   ],
 }
 
-const navMain = [
+// Breadcrumb/Quick Nav for SiteHeader
+const navHeader = [
     {
-      title: "Profile",
-      url: "/peserta/dashboard/profile",
+      title: "Users",
+      url: "/admin/dashboard/users",
     },
     {
-      title: "My Team",
-      url: "/peserta/dashboard/team",
+      title: "Transactions",
+      url: "/admin/dashboard/transactions",
     },
     {
-      title: "Events",
-      url: "/peserta/dashboard/event",
+      title: "Audit Logs",
+      url: "/admin/dashboard/logs",
     },
-    {
-      title: "Data Juri",
-      url: "/organizer/dashboard/jury",
-    },
-    {
-      title: "Sistem Penilaian",
-      url: "/organizer/dashboard/assessment-system",
-    },
-    {
-      title: "Form Penilaian",
-      url: "/organizer/dashboard/assessment-form",
-    },
-    {
-      title: "Sistem Juara",
-      url: "/organizer/dashboard/ranking-system",
-    },
-    {
-      title: "Rekap Nilai",
-      url: "/organizer/dashboard/score-recap",
-    },
-    {
-      title: "Beranda",
-      url: "/admin/dashboard",
-    }
   ]
 
-export default function DashboardAdminLayout({
+export default function SuperAdminLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
@@ -73,7 +84,7 @@ export default function DashboardAdminLayout({
     >
       <AppSidebar variant="inset" items={data.navMain} user={data.user} />
       <SidebarInset className="overflow-hidden">
-        <SiteHeader navMain={navMain} />
+        <SiteHeader navMain={navHeader} />
         <div className="h-full w-full bg-[url('/frame.png')] bg-cover bg-no-repeat">
           <div className="container mx-auto">
             {children}

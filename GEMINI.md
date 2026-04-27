@@ -61,6 +61,7 @@ npm run typecheck
 
 ## Key Directories
 
+- `src/app/admin`: Dashboard and management features for Super Admin (Developer).
 - `src/app/(home)`: Landing page implementation.
 - `src/app/auth`: Authentication flows (login, register, forgot password).
 - `src/app/organizer`: Dashboard and management features for event organizers.
