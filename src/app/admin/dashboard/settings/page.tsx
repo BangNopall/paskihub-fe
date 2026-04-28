@@ -2,10 +2,8 @@
 
 import React, { useState, useEffect } from "react"
 import { 
-  Settings, 
   Coins, 
   Save,
-  CheckCircle2,
   CreditCard
 } from "lucide-react"
 
@@ -15,6 +13,9 @@ import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
 import { Separator } from "@/components/ui/separator"
 import { Skeleton } from "@/components/ui/skeleton"
+import { Spinner } from "@/components/ui/spinner"
+import { Label } from "@/components/ui/label"
+import { toast } from "sonner"
 import { Montserrat, Poppins } from "@/lib/fonts"
 
 // ==========================================
@@ -36,7 +37,7 @@ export default function AdminSettingsPage() {
     // TODO: Integrasi endpoint API PATCH /api/admin/settings di sini
     setTimeout(() => {
       setIsSaving(false)
-      // trigger toast success here
+      toast.success("Konfigurasi sistem berhasil diperbarui")
     }, 2000)
   }
 
@@ -55,7 +56,7 @@ export default function AdminSettingsPage() {
             onClick={handleSave}
             disabled={isSaving || isLoading}
           >
-            {isSaving ? <span className="animate-spin mr-2">◌</span> : <Save className="mr-2 h-4 w-4" />}
+            {isSaving ? <Spinner className="mr-2 h-4 w-4" /> : <Save className="mr-2 h-4 w-4" />}
             {isSaving ? "Menyimpan..." : "Simpan Perubahan"}
           </Button>
         </div>
@@ -84,17 +85,17 @@ export default function AdminSettingsPage() {
                   <Card className="rounded-[24px] border-gray-200 bg-white shadow-none p-6 md:p-8">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                       <div className="space-y-3">
-                        <label className="text-sm font-semibold text-neutral-700">Harga Per 1 Koin (IDR)</label>
+                        <Label htmlFor="coin-price" className="text-sm font-semibold text-neutral-700">Harga Per 1 Koin (IDR)</Label>
                         <div className="relative">
                           <span className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400 font-bold">Rp</span>
-                          <Input defaultValue="1.000" className="h-12 pl-12 rounded-xl border-neutral-200 bg-neutral-50 focus-visible:ring-info-500" />
+                          <Input id="coin-price" defaultValue="1.000" className="h-12 pl-12 rounded-xl border-neutral-200 bg-neutral-50 focus-visible:ring-info-500" />
                         </div>
                       </div>
                       <div className="space-y-3">
-                        <label className="text-sm font-semibold text-neutral-700">Biaya Admin Top-up (IDR)</label>
+                        <Label htmlFor="admin-fee" className="text-sm font-semibold text-neutral-700">Biaya Admin Top-up (IDR)</Label>
                         <div className="relative">
                           <span className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400 font-bold">Rp</span>
-                          <Input defaultValue="2.500" className="h-12 pl-12 rounded-xl border-neutral-200 bg-neutral-50 focus-visible:ring-info-500" />
+                          <Input id="admin-fee" defaultValue="2.500" className="h-12 pl-12 rounded-xl border-neutral-200 bg-neutral-50 focus-visible:ring-info-500" />
                         </div>
                       </div>
                     </div>
@@ -119,17 +120,17 @@ export default function AdminSettingsPage() {
                   <Card className="rounded-[24px] border-gray-200 bg-white shadow-none p-6 md:p-8">
                     <div className="grid grid-cols-1 gap-8">
                       <div className="space-y-3">
-                        <label className="text-sm font-semibold text-neutral-700">Nama Bank</label>
-                        <Input placeholder="Contoh: Bank Central Asia (BCA)" className="h-12 px-4 rounded-xl border-neutral-200 bg-neutral-50 focus-visible:ring-info-500" />
+                        <Label htmlFor="bank-name" className="text-sm font-semibold text-neutral-700">Nama Bank</Label>
+                        <Input id="bank-name" placeholder="Contoh: Bank Central Asia (BCA)" className="h-12 px-4 rounded-xl border-neutral-200 bg-neutral-50 focus-visible:ring-info-500" />
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div className="space-y-3">
-                          <label className="text-sm font-semibold text-neutral-700">Nomor Rekening</label>
-                          <Input placeholder="Contoh: 1234567890" className="h-12 px-4 rounded-xl border-neutral-200 bg-neutral-50 focus-visible:ring-info-500" />
+                          <Label htmlFor="account-number" className="text-sm font-semibold text-neutral-700">Nomor Rekening</Label>
+                          <Input id="account-number" placeholder="Contoh: 1234567890" className="h-12 px-4 rounded-xl border-neutral-200 bg-neutral-50 focus-visible:ring-info-500" />
                         </div>
                         <div className="space-y-3">
-                          <label className="text-sm font-semibold text-neutral-700">Atas Nama</label>
-                          <Input placeholder="Contoh: PT PaskiHub Indonesia" className="h-12 px-4 rounded-xl border-neutral-200 bg-neutral-50 focus-visible:ring-info-500" />
+                          <Label htmlFor="account-name" className="text-sm font-semibold text-neutral-700">Atas Nama</Label>
+                          <Input id="account-name" placeholder="Contoh: PT PaskiHub Indonesia" className="h-12 px-4 rounded-xl border-neutral-200 bg-neutral-50 focus-visible:ring-info-500" />
                         </div>
                       </div>
                     </div>
