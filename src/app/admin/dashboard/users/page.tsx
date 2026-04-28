@@ -256,9 +256,9 @@ export default function UserManagementPage() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-6 rounded-[24px] border border-sky-100 bg-gradient-to-b from-white/60 to-white/40 p-4 shadow-sm backdrop-blur-md md:gap-8 md:p-6">
+        <div className="flex flex-col gap-6 rounded-[24px] border border-sky-100 bg-linear-to-b from-white/60 to-white/40 p-4 shadow-sm backdrop-blur-md md:gap-8 md:p-6">
           <Card className="overflow-hidden py-0 rounded-[24px] border-gray-200 bg-white shadow-none">
-            <CardHeader className="border-b border-neutral-100 bg-white px-5 py-6 md:px-6">
+            <CardHeader className="bg-white px-5 pt-6 md:px-6">
               <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <Tabs defaultValue="all" onValueChange={setActiveTab} className="w-full md:w-auto">
                   <TabsList className="bg-neutral-100 p-1 rounded-full">
