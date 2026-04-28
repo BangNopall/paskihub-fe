@@ -58,6 +58,15 @@ import {
   DialogClose,
 } from "@/components/ui/dialog"
 import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination"
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -272,6 +281,8 @@ export default function UserManagementPage() {
   const [isError, setIsError] = useState<boolean>(false)
   const [searchTerm, setSearchTerm] = useState("")
   const [activeTab, setActiveTab] = useState("all")
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 20
   
   // Modal States
   const [selectedUser, setSelectedUser] = useState<UserData | null>(null)
