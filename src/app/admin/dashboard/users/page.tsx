@@ -17,7 +17,15 @@ import {
   MapPin,
   Calendar,
   ShieldCheck,
-  X
+  X,
+  Trophy,
+  Users,
+  Settings,
+  CreditCard,
+  FileText,
+  Eye,
+  Download,
+  Image as ImageIcon
 } from "lucide-react"
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -41,14 +49,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet"
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogClose,
+} from "@/components/ui/dialog"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -62,6 +70,8 @@ import {
 import { Montserrat, Poppins } from "@/lib/fonts"
 import { toast } from "sonner"
 import { Separator } from "@/components/ui/separator"
+import Link from "next/link"
+import { cn } from "@/lib/utils"
 
 // ==========================================
 // 1. TYPESCRIPT INTERFACES
@@ -82,6 +92,29 @@ export interface UserData {
   school?: string
   address?: string
   lastActivity?: string
+  // Role specific data (Mock)
+  eoData?: {
+    eventInfo: {
+      name: string
+      date: string
+      location: string
+      rules: string
+      paymentInfo: string
+      categories: string[]
+    }
+    panitia: { name: string, role: string }[]
+    judges: string[]
+    scoreRecap: { team: string, score: number }[]
+  }
+  pesertaData?: {
+    team: {
+      name: string
+      coach: string
+      members: string[]
+      documents: string[]
+    }
+    eventHistory: { eventName: string, status: string }[]
+  }
 }
 
 // ==========================================
@@ -100,7 +133,26 @@ const MOCK_USERS: UserData[] = [
     phone: "0812-3456-7890",
     school: "SMAN 1 Jakarta",
     address: "Jl. Budi Utomo No.7, Jakarta Pusat",
-    lastActivity: "28 Apr 2026, 10:15"
+    lastActivity: "28 Apr 2026, 10:15",
+    eoData: {
+      eventInfo: {
+        name: "Lomba Ketangkasan Paskibra (LKP) 2026",
+        date: "20 Mei 2026",
+        location: "Gedung Serbaguna SMAN 1 Jakarta",
+        rules: "Terbuka untuk SMA/SMK sederajat se-Jabodetabek.",
+        paymentInfo: "Transfer Mandiri 123-00-0987654-3 a.n Paskibra SMAN 1",
+        categories: ["SMA/SMK", "MULA", "MADYA"]
+      },
+      panitia: [
+        { name: "Andi Wijaya", role: "Ketua Pelaksana" },
+        { name: "Sari Putri", role: "Sekretaris" }
+      ],
+      judges: ["Letda Inf. Bambang", "Pelda TNI AL Rusdi", "Iptu Pol. Hasan"],
+      scoreRecap: [
+        { team: "Paski Cale", score: 850 },
+        { team: "Garuda Nusantara", score: 820 }
+      ]
+    }
   },
   { 
     id: "U2", 
@@ -113,7 +165,19 @@ const MOCK_USERS: UserData[] = [
     phone: "0856-9988-7766",
     school: "SMA Taruna Nusantara",
     address: "Magelang, Jawa Tengah",
-    lastActivity: "27 Apr 2026, 16:30"
+    lastActivity: "27 Apr 2026, 16:30",
+    pesertaData: {
+      team: {
+        name: "Paski Cale",
+        coach: "Budi Santoso",
+        members: ["Rizky", "Anisa", "Fajar", "Dina", "Guntur", "Siti"],
+        documents: ["surat-tugas.pdf", "kartu-pelajar.zip"]
+      },
+      eventHistory: [
+        { eventName: "LKP SMAN 1 Jakarta 2026", status: "Approved" },
+        { eventName: "Gala Paski Nasional 2025", status: "Completed" }
+      ]
+    }
   },
   { 
     id: "U3", 
@@ -126,7 +190,22 @@ const MOCK_USERS: UserData[] = [
     phone: "0821-5544-3322",
     school: "-",
     address: "Bandung, Jawa Barat",
-    lastActivity: "20 Apr 2026, 09:00"
+    lastActivity: "20 Apr 2026, 09:00",
+    eoData: {
+      eventInfo: {
+        name: "Bandung Paski Competition",
+        date: "15 Juni 2026",
+        location: "Gedung Sate Bandung",
+        rules: "Ketentuan umum mengikuti standar PPI.",
+        paymentInfo: "BCA 887-223-112 a.n Event Nusantara",
+        categories: ["SMP", "SMA"]
+      },
+      panitia: [
+        { name: "Doni", role: "Admin Utama" }
+      ],
+      judges: ["Mayor Inf. Agus"],
+      scoreRecap: []
+    }
   },
   { 
     id: "U4", 
@@ -152,7 +231,16 @@ const MOCK_USERS: UserData[] = [
     phone: "0877-1122-3344",
     school: "SMK Negeri 2 Yogyakarta",
     address: "Yogyakarta",
-    lastActivity: "28 Apr 2026, 08:45"
+    lastActivity: "28 Apr 2026, 08:45",
+    pesertaData: {
+      team: {
+        name: "Wira Muda",
+        coach: "Siti Aminah",
+        members: ["Member A", "Member B"],
+        documents: []
+      },
+      eventHistory: []
+    }
   },
 ]
 
@@ -187,7 +275,7 @@ export default function UserManagementPage() {
   
   // Modal States
   const [selectedUser, setSelectedUser] = useState<UserData | null>(null)
-  const [isSheetOpen, setIsSheetOpen] = useState(false)
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
   const [isVerifyOpen, setIsVerifyOpen] = useState(false)
   const [isBanOpen, setIsVerifyBanOpen] = useState(false)
   const [actionUser, setActionUser] = useState<UserData | null>(null)
@@ -309,7 +397,7 @@ export default function UserManagementPage() {
                             className="border-b border-neutral-100 transition-colors hover:bg-neutral-50/50 cursor-pointer group"
                             onClick={() => {
                               setSelectedUser(user)
-                              setIsSheetOpen(true)
+                              setIsDetailModalOpen(true)
                             }}
                           >
                             <TableCell className="px-6 py-4">
@@ -345,7 +433,7 @@ export default function UserManagementPage() {
                                     className="cursor-pointer font-poppins text-sm rounded-xl"
                                     onClick={() => {
                                       setSelectedUser(user)
-                                      setIsSheetOpen(true)
+                                      setIsDetailModalOpen(true)
                                     }}
                                   >
                                     <ExternalLink className="mr-2 h-4 w-4" /> Detail Profil
@@ -381,65 +469,327 @@ export default function UserManagementPage() {
         </div>
       </div>
 
-      {/* --- DETAIL SHEET --- */}
-      <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-        <SheetContent className="sm:max-w-md md:max-w-lg rounded-l-[32px] border-none p-0 overflow-hidden shadow-2xl">
-          <SheetHeader className="bg-linear-to-br from-dark-blue to-slate-800 p-8 text-white relative"> 
-            <div className="flex flex-col gap-4 mt-4">
-              <div className="h-20 w-20 rounded-2xl bg-white/10 flex items-center justify-center backdrop-blur-md border border-white/20 shadow-xl">
-                <School className="h-10 w-10 text-primary-300" />
+      {/* --- DETAIL DIALOG (MODAL) --- */}
+      <Dialog open={isDetailModalOpen} onOpenChange={setIsDetailModalOpen}>
+        <DialogContent className="sm:max-w-2xl md:max-w-3xl rounded-[32px] border-none p-0 overflow-hidden shadow-2xl bg-white max-h-[90vh] flex flex-col">
+          {selectedUser && (
+            <>
+              <DialogHeader className="bg-linear-to-br from-dark-blue to-slate-800 p-8 text-white relative shrink-0">
+                <div className="flex flex-col gap-4 mt-2">
+                  <div className="flex items-center gap-4">
+                    <div className="h-16 w-16 rounded-2xl bg-white/10 flex items-center justify-center backdrop-blur-md border border-white/20 shadow-xl">
+                      {selectedUser.role === "EO" ? (
+                        <School className="h-8 w-8 text-primary-300" />
+                      ) : (
+                        <UserCheck className="h-8 w-8 text-primary-300" />
+                      )}
+                    </div>
+                    <div className="space-y-1">
+                      <DialogTitle className="text-2xl font-bold font-montserrat text-white">
+                        {selectedUser.name}
+                      </DialogTitle>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="secondary" className="bg-white/10 text-white border-white/20 hover:bg-white/20">
+                          {selectedUser.role}
+                        </Badge>
+                        <StatusBadge status={selectedUser.status} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </DialogHeader>
+
+              <div className="flex-1 overflow-y-auto p-6 md:p-8 no-scrollbar">
+                <Tabs defaultValue="profil" className="w-full">
+                  <TabsList className="bg-neutral-100 p-1 rounded-full mb-8 w-full md:w-auto flex flex-wrap h-auto">
+                    <TabsTrigger value="profil" className="rounded-full px-6 py-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                      Profil & Akun
+                    </TabsTrigger>
+                    
+                    {selectedUser.role === "EO" ? (
+                      <>
+                        <TabsTrigger value="event" className="rounded-full px-6 py-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                          Data Event
+                        </TabsTrigger>
+                        <TabsTrigger value="juri" className="rounded-full px-6 py-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                          Data Juri
+                        </TabsTrigger>
+                        <TabsTrigger value="rekap" className="rounded-full px-6 py-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                          Rekap Penilaian
+                        </TabsTrigger>
+                      </>
+                    ) : (
+                      <>
+                        <TabsTrigger value="tim" className="rounded-full px-6 py-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                          Data Tim
+                        </TabsTrigger>
+                        <TabsTrigger value="riwayat" className="rounded-full px-6 py-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                          Riwayat Event
+                        </TabsTrigger>
+                      </>
+                    )}
+                  </TabsList>
+
+                  {/* --- TAB: PROFIL & AKUN (SHARED) --- */}
+                  <TabsContent value="profil" className="space-y-8 outline-hidden">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <div className="space-y-4">
+                        <h3 className="font-montserrat font-bold text-slate-900 flex items-center gap-2">
+                          <ShieldCheck className="h-4 w-4 text-info-600" /> Informasi Akun
+                        </h3>
+                        <div className="space-y-4 bg-neutral-50 p-5 rounded-2xl border border-neutral-100">
+                          <DetailItem label="User ID" value={selectedUser.id} />
+                          <DetailItem label="Email Utama" value={selectedUser.email} />
+                          <DetailItem label="Terdaftar Sejak" value={selectedUser.joined} />
+                          <DetailItem label="Aktivitas Terakhir" value={selectedUser.lastActivity} />
+                        </div>
+                      </div>
+
+                      <div className="space-y-4">
+                        <h3 className="font-montserrat font-bold text-slate-900 flex items-center gap-2">
+                          <UserCheck className="h-4 w-4 text-info-600" /> Profil Detail
+                        </h3>
+                        <div className="space-y-4 bg-neutral-50 p-5 rounded-2xl border border-neutral-100">
+                          <DetailItem icon={<School className="h-4 w-4" />} label="Instansi/Sekolah" value={selectedUser.school} />
+                          <DetailItem icon={<Phone className="h-4 w-4" />} label="Nomor Telepon" value={selectedUser.phone} />
+                          <DetailItem icon={<MapPin className="h-4 w-4" />} label="Alamat Lengkap" value={selectedUser.address} />
+                        </div>
+                      </div>
+                    </div>
+
+                    {selectedUser.role === "EO" && selectedUser.eoData?.panitia && (
+                      <div className="space-y-4">
+                        <h3 className="font-montserrat font-bold text-slate-900 flex items-center gap-2">
+                          <Users className="h-4 w-4 text-info-600" /> Akses Akun Panitia
+                        </h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          {selectedUser.eoData.panitia.map((p, idx) => (
+                            <div key={idx} className="flex items-center gap-3 p-3 rounded-xl border border-neutral-100 bg-white shadow-xs">
+                              <div className="h-10 w-10 rounded-full bg-info-50 flex items-center justify-center text-info-600">
+                                <UserCheck className="h-5 w-5" />
+                              </div>
+                              <div>
+                                <p className="text-sm font-semibold text-neutral-800">{p.name}</p>
+                                <p className="text-xs text-neutral-500">{p.role}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </TabsContent>
+
+                  {/* --- EO SPECIFIC TABS --- */}
+                  {selectedUser.role === "EO" && (
+                    <>
+                      <TabsContent value="event" className="space-y-6 outline-hidden">
+                        <div className="grid grid-cols-1 gap-6">
+                          <Card className="rounded-2xl border-sky-100 shadow-none bg-sky-50/30">
+                            <CardHeader>
+                              <CardTitle className="text-lg font-montserrat flex items-center gap-2">
+                                <Trophy className="h-5 w-5 text-warning-500" /> Informasi Event
+                              </CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                              <DetailItem label="Nama Event" value={selectedUser.eoData?.eventInfo.name} />
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <DetailItem icon={<Calendar className="h-4 w-4" />} label="Jadwal Pelaksanaan" value={selectedUser.eoData?.eventInfo.date} />
+                                <DetailItem icon={<MapPin className="h-4 w-4" />} label="Lokasi" value={selectedUser.eoData?.eventInfo.location} />
+                              </div>
+                              <DetailItem icon={<FileText className="h-4 w-4" />} label="Ketentuan Peserta" value={selectedUser.eoData?.eventInfo.rules} />
+                            </CardContent>
+                          </Card>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <Card className="rounded-2xl border-neutral-100 shadow-none">
+                              <CardHeader className="pb-2">
+                                <CardTitle className="text-sm font-montserrat text-neutral-500 uppercase tracking-wider">Kategori Jenjang</CardTitle>
+                              </CardHeader>
+                              <CardContent>
+                                <div className="flex flex-wrap gap-2">
+                                  {selectedUser.eoData?.eventInfo.categories.map((c, i) => (
+                                    <Badge key={i} variant="outline" className="bg-white border-neutral-200">{c}</Badge>
+                                  ))}
+                                </div>
+                              </CardContent>
+                            </Card>
+                            <Card className="rounded-2xl border-neutral-100 shadow-none">
+                              <CardHeader className="pb-2">
+                                <CardTitle className="text-sm font-montserrat text-neutral-500 uppercase tracking-wider">Pembayaran & Rekening</CardTitle>
+                              </CardHeader>
+                              <CardContent>
+                                <div className="flex items-center gap-3">
+                                  <CreditCard className="h-5 w-5 text-info-600" />
+                                  <p className="text-sm font-medium text-neutral-700">{selectedUser.eoData?.eventInfo.paymentInfo}</p>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          </div>
+                        </div>
+                      </TabsContent>
+
+                      <TabsContent value="juri" className="space-y-4 outline-hidden">
+                        <h3 className="font-montserrat font-bold text-slate-900">Daftar Juri Terdaftar</h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          {selectedUser.eoData?.judges.map((j, i) => (
+                            <div key={i} className="flex items-center justify-between p-4 rounded-2xl border border-neutral-100 bg-neutral-50">
+                              <div className="flex items-center gap-3">
+                                <div className="h-10 w-10 rounded-full bg-white border border-neutral-200 flex items-center justify-center">
+                                  <UserCheck className="h-5 w-5 text-neutral-400" />
+                                </div>
+                                <span className="font-semibold text-neutral-800">{j}</span>
+                              </div>
+                              <Badge variant="secondary" className="bg-info-50 text-info-600 border-none">Juri</Badge>
+                            </div>
+                          ))}
+                        </div>
+                      </TabsContent>
+
+                      <TabsContent value="rekap" className="space-y-4 outline-hidden">
+                        <div className="flex items-center justify-between">
+                          <h3 className="font-montserrat font-bold text-slate-900">Rekap Penilaian Sementara</h3>
+                          <Button variant="outline" size="sm" className="rounded-full h-8">
+                            <Download className="mr-2 h-3 w-3" /> Export PDF
+                          </Button>
+                        </div>
+                        <div className="rounded-2xl border border-neutral-100 overflow-hidden">
+                          <Table>
+                            <TableHeader className="bg-neutral-50">
+                              <TableRow>
+                                <TableHead className="font-semibold">Nama Tim</TableHead>
+                                <TableHead className="text-right font-semibold">Total Skor</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {selectedUser.eoData?.scoreRecap.length === 0 ? (
+                                <TableRow>
+                                  <TableCell colSpan={2} className="text-center py-8 text-neutral-400">Belum ada penilaian.</TableCell>
+                                </TableRow>
+                              ) : (
+                                selectedUser.eoData?.scoreRecap.map((s, i) => (
+                                  <TableRow key={i}>
+                                    <TableCell className="font-medium">{s.team}</TableCell>
+                                    <TableCell className="text-right font-bold text-info-600">{s.score}</TableCell>
+                                  </TableRow>
+                                ))
+                              )}
+                            </TableBody>
+                          </Table>
+                        </div>
+                      </TabsContent>
+                    </>
+                  )}
+
+                  {/* --- PESERTA SPECIFIC TABS --- */}
+                  {selectedUser.role === "Peserta" && (
+                    <>
+                      <TabsContent value="tim" className="space-y-6 outline-hidden">
+                        <Card className="rounded-3xl border-sky-100 bg-sky-50/30 shadow-none overflow-hidden">
+                          <CardHeader className="bg-white/50 border-b border-sky-100">
+                            <div className="flex items-center justify-between">
+                              <CardTitle className="text-lg font-montserrat flex items-center gap-2 text-sky-900">
+                                <Users className="h-5 w-5" /> Informasi Tim: {selectedUser.pesertaData?.team.name}
+                              </CardTitle>
+                              <Badge className="bg-sky-600 text-white border-none">{selectedUser.pesertaData?.team.coach}</Badge>
+                            </div>
+                          </CardHeader>
+                          <CardContent className="p-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                              <div className="space-y-3">
+                                <h4 className="text-sm font-bold text-sky-800 uppercase tracking-wider">Anggota Pasukan</h4>
+                                <div className="flex flex-wrap gap-2">
+                                  {selectedUser.pesertaData?.team.members.map((m, i) => (
+                                    <Badge key={i} variant="secondary" className="bg-white text-slate-700 border-sky-100 px-3 py-1">{m}</Badge>
+                                  ))}
+                                </div>
+                              </div>
+                              <div className="space-y-3">
+                                <h4 className="text-sm font-bold text-sky-800 uppercase tracking-wider">Berkas Terunggah</h4>
+                                <div className="space-y-2">
+                                  {selectedUser.pesertaData?.team.documents.map((d, i) => (
+                                    <div key={i} className="flex items-center justify-between p-2 rounded-lg bg-white border border-sky-100">
+                                      <span className="text-xs font-medium text-slate-600 truncate mr-2">{d}</span>
+                                      <Button variant="ghost" size="icon" className="h-6 w-6 text-sky-600">
+                                        <Download className="h-3 w-3" />
+                                      </Button>
+                                    </div>
+                                  ))}
+                                  {selectedUser.pesertaData?.team.documents.length === 0 && <p className="text-xs text-neutral-400">Tidak ada berkas.</p>}
+                                </div>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </TabsContent>
+
+                      <TabsContent value="riwayat" className="space-y-4 outline-hidden">
+                        <h3 className="font-montserrat font-bold text-slate-900">Riwayat Keikutsertaan Event</h3>
+                        <div className="space-y-3">
+                          {selectedUser.pesertaData?.eventHistory.length === 0 ? (
+                            <div className="p-8 text-center border-2 border-dashed border-neutral-100 rounded-3xl">
+                               <p className="text-neutral-400">Belum mengikuti event apapun.</p>
+                            </div>
+                          ) : (
+                            selectedUser.pesertaData?.eventHistory.map((h, i) => (
+                              <div key={i} className="flex items-center justify-between p-5 rounded-2xl border border-neutral-100 bg-white hover:border-info-200 transition-colors">
+                                <div className="flex items-center gap-4">
+                                  <div className="h-12 w-12 rounded-xl bg-info-50 flex items-center justify-center text-info-600">
+                                    <Trophy className="h-6 w-6" />
+                                  </div>
+                                  <div>
+                                    <p className="font-bold text-slate-800">{h.eventName}</p>
+                                    <p className="text-xs text-neutral-500">Status Registrasi: <span className="text-info-600 font-semibold">{h.status}</span></p>
+                                  </div>
+                                </div>
+                                <Button variant="ghost" size="icon" className="rounded-full">
+                                  <ExternalLink className="h-4 w-4 text-neutral-400" />
+                                </Button>
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      </TabsContent>
+                    </>
+                  )}
+                </Tabs>
               </div>
-              <div className="space-y-1">
-                <SheetTitle className="text-2xl font-bold font-montserrat text-white">{selectedUser?.name}</SheetTitle>
-                <div className="flex items-center gap-2">
-                  <Badge variant="secondary" className="bg-white/10 text-white border-white/20 hover:bg-white/20">{selectedUser?.role}</Badge>
-                  <StatusBadge status={selectedUser?.status || "Active"} />
+
+              <div className="p-6 md:p-8 bg-neutral-50 border-t border-neutral-100 shrink-0">
+                <div className="flex flex-col sm:flex-row gap-3">
+                  {selectedUser.status !== 'Banned' ? (
+                    <Button 
+                      variant="ghost" 
+                      className="flex-1 h-12 rounded-full text-danger-600 hover:bg-danger-50 hover:text-danger-700 transition-colors" 
+                      onClick={() => {
+                        setActionUser(selectedUser)
+                        setIsVerifyBanOpen(true)
+                      }}
+                    >
+                      <UserMinus className="mr-2 h-4 w-4" /> Nonaktifkan Akses Akun
+                    </Button>
+                  ) : (
+                    <Button 
+                      variant="ghost" 
+                      className="flex-1 h-12 rounded-full text-success-600 hover:bg-success-50 hover:text-success-700 transition-colors"
+                      onClick={() => {
+                        toast.success(`Akun ${selectedUser.name} telah diaktifkan kembali`)
+                        setIsDetailModalOpen(false)
+                      }}
+                    >
+                      <CheckCircle className="mr-2 h-4 w-4" /> Aktifkan Kembali Akun
+                    </Button>
+                  )}
+                  <DialogClose asChild>
+                    <Button variant="outline" className="flex-1 h-12 rounded-full border-neutral-300">
+                      Tutup Detail
+                    </Button>
+                  </DialogClose>
                 </div>
               </div>
-            </div>
-          </SheetHeader>
-
-          <div className="p-8 space-y-8 overflow-y-auto max-h-[calc(100vh-250px)] no-scrollbar">
-             {/* Account Info */}
-             <div className="space-y-4">
-               <h3 className="font-montserrat font-bold text-slate-900 flex items-center gap-2">
-                 <ShieldCheck className="h-4 w-4 text-info-600" /> Informasi Akun
-               </h3>
-               <div className="grid grid-cols-1 gap-4">
-                 <DetailItem label="User ID" value={selectedUser?.id} />
-                 <DetailItem label="Email" value={selectedUser?.email} />
-                 <DetailItem label="Terdaftar Sejak" value={selectedUser?.joined} />
-                 <DetailItem label="Aktivitas Terakhir" value={selectedUser?.lastActivity} />
-               </div>
-             </div>
-
-             <Separator className="bg-neutral-100" />
-
-             {/* Profile Info */}
-             <div className="space-y-4">
-               <h3 className="font-montserrat font-bold text-slate-900 flex items-center gap-2">
-                 <UserCheck className="h-4 w-4 text-info-600" /> Profil Pengguna
-               </h3>
-               <div className="grid grid-cols-1 gap-4">
-                 <DetailItem icon={<School className="h-4 w-4" />} label="Instansi/Sekolah" value={selectedUser?.school} />
-                 <DetailItem icon={<Phone className="h-4 w-4" />} label="Nomor Telepon" value={selectedUser?.phone} />
-                 <DetailItem icon={<MapPin className="h-4 w-4" />} label="Alamat" value={selectedUser?.address} />
-               </div>
-             </div>
-
-             <div className="pt-4 flex flex-col gap-3">
-                {selectedUser?.status !== 'Banned' && (
-                  <Button variant="ghost" className="w-full h-12 rounded-full text-danger-600 hover:bg-danger-50 hover:text-danger-700" onClick={() => {
-                    setActionUser(selectedUser)
-                    setIsVerifyBanOpen(true)
-                  }}>
-                    Nonaktifkan Akses Akun
-                  </Button>
-                )}
-             </div>
-          </div>
-        </SheetContent>
-      </Sheet>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* --- CONFIRMATION DIALOGS --- */}
       <AlertDialog open={isVerifyOpen} onOpenChange={setIsVerifyOpen}>
