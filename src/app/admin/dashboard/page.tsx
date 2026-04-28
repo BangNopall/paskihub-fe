@@ -42,7 +42,6 @@ export interface EORegistration {
   name: string
   email: string
   date: string
-  status: "Verified" | "Unverified"
 }
 
 export interface SuperAdminDashboardData {
@@ -68,8 +67,8 @@ const MOCK_ADMIN_DATA: SuperAdminDashboardData = {
     { id: "TX-003", eo: "Event Pro Nusantara", amount: 2500000, coins: 2500, time: "3 jam yang lalu", status: "Pending" },
   ],
   eoRegistrations: [
-    { id: "EO-101", name: "Lomba Jaya Abadi", email: "contact@lomajaya.com", date: "24 Apr 2026", status: "Verified" },
-    { id: "EO-102", name: "Paski Creative", email: "admin@paskicreative.id", date: "26 Apr 2026", status: "Unverified" },
+    { id: "EO-101", name: "Lomba Jaya Abadi", email: "contact@lomajaya.com", date: "24 Apr 2026" },
+    { id: "EO-102", name: "Paski Creative", email: "admin@paskicreative.id", date: "26 Apr 2026" },
   ]
 }
 
@@ -216,9 +215,8 @@ export default function SuperAdminDashboardPage() {
                         <span className="font-poppins text-base font-semibold text-neutral-800">{eo.name}</span>
                         <span className="text-xs text-neutral-500">{eo.email}</span>
                       </div>
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center">
                         <span className="text-xs text-neutral-400">{eo.date}</span>
-                        <StatusBadge status={eo.status} />
                       </div>
                     </div>
                   ))}

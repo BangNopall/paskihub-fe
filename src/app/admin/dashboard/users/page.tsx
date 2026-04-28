@@ -120,7 +120,7 @@ const MOCK_USERS: UserData[] = [
     name: "Event Nusantara Corp", 
     email: "admin@eventnusantara.id", 
     role: "EO", 
-    status: "Pending", 
+    status: "Active", 
     verified: false, 
     joined: "20 Apr 2026",
     phone: "0821-5544-3322",
@@ -254,15 +254,10 @@ export default function UserManagementPage() {
             </h1>
             <p className="text-sm text-neutral-500">Kelola akses dan verifikasi akun Event Organizer serta Peserta.</p>
           </div>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" className="rounded-full border-neutral-300 bg-white hover:bg-neutral-50">
-              <Mail className="mr-2 h-4 w-4" /> Blast Email
-            </Button>
-          </div>
         </div>
 
         <div className="flex flex-col gap-6 rounded-[24px] border border-sky-100 bg-gradient-to-b from-white/60 to-white/40 p-4 shadow-sm backdrop-blur-md md:gap-8 md:p-6">
-          <Card className="overflow-hidden rounded-[24px] border-gray-200 bg-white shadow-none">
+          <Card className="overflow-hidden py-0 rounded-[24px] border-gray-200 bg-white shadow-none">
             <CardHeader className="border-b border-neutral-100 bg-white px-5 py-6 md:px-6">
               <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <Tabs defaultValue="all" onValueChange={setActiveTab} className="w-full md:w-auto">
@@ -355,17 +350,6 @@ export default function UserManagementPage() {
                                   >
                                     <ExternalLink className="mr-2 h-4 w-4" /> Detail Profil
                                   </DropdownMenuItem>
-                                  {user.status === 'Pending' && (
-                                    <DropdownMenuItem 
-                                      className="cursor-pointer font-poppins text-sm text-info-600 rounded-xl focus:text-info-600"
-                                      onClick={() => {
-                                        setActionUser(user)
-                                        setIsVerifyOpen(true)
-                                      }}
-                                    >
-                                      <UserCheck className="mr-2 h-4 w-4" /> Verifikasi EO
-                                    </DropdownMenuItem>
-                                  )}
                                   <DropdownMenuSeparator className="bg-neutral-100" />
                                   {user.status === 'Banned' ? (
                                     <DropdownMenuItem className="cursor-pointer font-poppins text-sm text-success-600 rounded-xl focus:text-success-600">
@@ -400,15 +384,7 @@ export default function UserManagementPage() {
       {/* --- DETAIL SHEET --- */}
       <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
         <SheetContent className="sm:max-w-md md:max-w-lg rounded-l-[32px] border-none p-0 overflow-hidden shadow-2xl">
-          <SheetHeader className="bg-gradient-to-br from-dark-blue to-slate-800 p-8 text-white relative">
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="absolute right-4 top-4 text-white/50 hover:text-white hover:bg-white/10 rounded-full"
-              onClick={() => setIsSheetOpen(false)}
-            >
-              <X className="h-5 w-5" />
-            </Button>
+          <SheetHeader className="bg-linear-to-br from-dark-blue to-slate-800 p-8 text-white relative"> 
             <div className="flex flex-col gap-4 mt-4">
               <div className="h-20 w-20 rounded-2xl bg-white/10 flex items-center justify-center backdrop-blur-md border border-white/20 shadow-xl">
                 <School className="h-10 w-10 text-primary-300" />
@@ -452,17 +428,6 @@ export default function UserManagementPage() {
              </div>
 
              <div className="pt-4 flex flex-col gap-3">
-                {selectedUser?.status === 'Pending' && (
-                  <Button className="w-full h-12 rounded-full bg-info-600 hover:bg-info-700" onClick={() => {
-                    setActionUser(selectedUser)
-                    setIsVerifyOpen(true)
-                  }}>
-                    Verifikasi Akun Sekarang
-                  </Button>
-                )}
-                <Button variant="outline" className="w-full h-12 rounded-full border-neutral-300">
-                  Kirim Email Langsung
-                </Button>
                 {selectedUser?.status !== 'Banned' && (
                   <Button variant="ghost" className="w-full h-12 rounded-full text-danger-600 hover:bg-danger-50 hover:text-danger-700" onClick={() => {
                     setActionUser(selectedUser)
