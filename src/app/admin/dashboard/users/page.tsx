@@ -310,12 +310,22 @@ export default function UserManagementPage() {
     fetchUsers()
   }, [])
 
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [searchTerm, activeTab])
+
   const filteredUsers = users.filter(user => {
     const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           user.email.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesTab = activeTab === "all" || user.role.toLowerCase() === activeTab
     return matchesSearch && matchesTab
   })
+
+  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage)
+  const paginatedUsers = filteredUsers.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  )
 
   const handleVerify = () => {
     if (!actionUser) return
