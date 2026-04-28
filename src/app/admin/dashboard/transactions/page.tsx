@@ -15,7 +15,6 @@ import {
   Loader2,
   TrendingUp,
   Ban,
-  ArrowUpRight,
   Maximize2
 } from "lucide-react"
 
@@ -41,9 +40,20 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination"
 import { Textarea } from "@/components/ui/textarea"
 import { Montserrat, Poppins } from "@/lib/fonts"
 import { toast } from "sonner"
+import { cn } from "@/lib/utils"
 
 // ==========================================
 // 1. TYPESCRIPT INTERFACES
@@ -67,12 +77,23 @@ export interface TransactionData {
 // 2. MOCK DATA
 // ==========================================
 
-const MOCK_TRANSACTIONS: TransactionData[] = [
-  { id: "TX-9901", eo: "SMA 1 Jakarta", amount: 500000, coins: 500, status: "Pending", date: "27 Apr 2026", time: "14:20", proof: "/proof1.jpg" },
-  { id: "TX-9902", eo: "Paskibra Kota Bandung", amount: 1000000, coins: 1000, status: "Approved", date: "26 Apr 2026", time: "10:15", proof: "/proof2.jpg" },
-  { id: "TX-9903", eo: "Event Pro Nusantara", amount: 250000, coins: 250, status: "Rejected", date: "25 Apr 2026", time: "16:45", proof: "/proof3.jpg", rejectionReason: "Bukti transfer tidak terbaca (blur)." },
-  { id: "TX-9904", eo: "SMK Pelita Bangsa", amount: 750000, coins: 750, status: "Pending", date: "27 Apr 2026", time: "09:00", proof: "/proof4.jpg" },
-]
+const MOCK_TRANSACTIONS: TransactionData[] = Array.from({ length: 45 }).map((_, i) => {
+  const statuses: TransactionStatus[] = ["Pending", "Approved", "Rejected"]
+  const status = i < 5 ? "Pending" : statuses[Math.floor(Math.random() * statuses.length)]
+  const amount = (Math.floor(Math.random() * 10) + 1) * 100000
+  
+  return {
+    id: `TX-99${String(i + 1).padStart(2, '0')}`,
+    eo: i % 2 === 0 ? "SMA Negeri 1 Jakarta" : "Paskibra Kota Bandung",
+    amount: amount,
+    coins: amount / 1000,
+    status: status,
+    date: `${20 + (i % 8)} Apr 2026`,
+    time: `${10 + (i % 10)}:${10 + (i % 40)}`,
+    proof: "/proof.jpg",
+    rejectionReason: status === "Rejected" ? "Bukti transfer tidak valid atau tidak terbaca." : undefined
+  }
+})
 
 // ==========================================
 // 3. UI HELPER COMPONENTS
@@ -110,6 +131,10 @@ export default function CoinTransactionsPage() {
   const [isError, setIsError] = useState<boolean>(false)
   const [selectedTx, setSelectedTx] = useState<TransactionData | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
+  const [activeTab, setActiveTab] = useState("all")
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 20
+  
   const [rejectionReason, setRejectionReason] = useState("")
   const [isRejecting, setIsRejecting] = useState(false)
   const [isProcessingAction, setIsProcessingAction] = useState(false)
@@ -139,6 +164,7 @@ export default function CoinTransactionsPage() {
     try {
       // TODO: Integrasi API Approve
       await new Promise(r => setTimeout(r, 1000))
+      setTransactions(prev => prev.map(t => t.id === selectedTx.id ? { ...t, status: "Approved" as const } : t))
       toast.success(`Transaksi ${selectedTx.id} berhasil disetujui. ${selectedTx.coins} koin telah ditambahkan ke saldo ${selectedTx.eo}.`)
       setSelectedTx(null)
     } finally {
@@ -152,6 +178,7 @@ export default function CoinTransactionsPage() {
     try {
       // TODO: Integrasi API Reject
       await new Promise(r => setTimeout(r, 1000))
+      setTransactions(prev => prev.map(t => t.id === selectedTx.id ? { ...t, status: "Rejected" as const, rejectionReason } : t))
       toast.error(`Transaksi ${selectedTx.id} ditolak. Alasan: ${rejectionReason}`)
       setIsRejecting(false)
       setSelectedTx(null)
@@ -161,10 +188,21 @@ export default function CoinTransactionsPage() {
     }
   }
 
-  const filteredTransactions = transactions.filter(tx => 
-    tx.eo.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    tx.id.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const filteredTransactions = transactions.filter(tx => {
+    const matchesSearch = tx.eo.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          tx.id.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesTab = activeTab === "all" || tx.status === activeTab
+    return matchesSearch && matchesTab
+  })
+
+  // Pagination Logic
+  const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage)
+  const paginatedTransactions = filteredTransactions.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+
+  // Stats Logic
+  const pendingCount = transactions.filter(t => t.status === "Pending").length
+  const approvedCount = transactions.filter(t => t.status === "Approved").length
+  const totalCoins = transactions.filter(t => t.status === "Approved").reduce((acc, curr) => acc + curr.coins, 0)
 
   if (isError) {
     return (
@@ -192,41 +230,52 @@ export default function CoinTransactionsPage() {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <StatMiniCard 
             label="Menunggu Approval" 
-            value="2 Transaksi" 
+            value={`${pendingCount} Transaksi`} 
             icon={<Clock className="h-6 w-6" />} 
             color="amber" 
           />
           <StatMiniCard 
-            label="Berhasil (Bulan Ini)" 
-            value="128 Transaksi" 
+            label="Berhasil" 
+            value={`${approvedCount} Transaksi`} 
             icon={<CheckCircle2 className="h-6 w-6" />} 
             color="emerald" 
             trend="+15% dari bulan lalu"
           />
           <StatMiniCard 
             label="Total Koin Terdistribusi" 
-            value="45.500 Koin" 
+            value={`${totalCoins.toLocaleString('id-ID')} Koin`} 
             icon={<FileText className="h-6 w-6" />} 
             color="info" 
           />
         </div>
 
-        <div className="flex flex-col gap-6 rounded-[24px] border border-sky-100 bg-gradient-to-b from-white/60 to-white/40 p-4 shadow-sm backdrop-blur-md md:gap-8 md:p-6">
+        <div className="flex flex-col gap-6 rounded-[24px] border border-sky-100 bg-linear-to-b from-white/60 to-white/40 p-4 shadow-sm backdrop-blur-md md:gap-8 md:p-6">
           <Card className="overflow-hidden rounded-[24px] border-gray-200 bg-white shadow-none">
-            <CardHeader className="border-b border-neutral-100 bg-white px-5 py-6 md:px-6">
+            <CardHeader className="bg-white px-5 md:px-6">
               <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <Tabs defaultValue="all" onValueChange={(val) => {
+                  setActiveTab(val)
+                  setCurrentPage(1)
+                }} className="w-full md:w-auto">
+                  <TabsList className="bg-neutral-100 p-1 rounded-full">
+                    <TabsTrigger value="all" className="rounded-full px-6 data-[state=active]:bg-white data-[state=active]:shadow-sm">Semua</TabsTrigger>
+                    <TabsTrigger value="Pending" className="rounded-full px-6 data-[state=active]:bg-white data-[state=active]:shadow-sm">Pending</TabsTrigger>
+                    <TabsTrigger value="Approved" className="rounded-full px-6 data-[state=active]:bg-white data-[state=active]:shadow-sm">Berhasil</TabsTrigger>
+                    <TabsTrigger value="Rejected" className="rounded-full px-6 data-[state=active]:bg-white data-[state=active]:shadow-sm">Ditolak</TabsTrigger>
+                  </TabsList>
+                </Tabs>
                 <div className="relative w-full max-w-sm">
                   <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
                   <Input 
                     placeholder="Cari ID atau nama EO..." 
                     className="rounded-full border-neutral-200 bg-neutral-50 pl-10 focus-visible:ring-info-500"
                     value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onChange={(e) => {
+                      setSearchTerm(e.target.value)
+                      setCurrentPage(1)
+                    }}
                   />
                 </div>
-                <Button variant="outline" className="rounded-full border-neutral-300">
-                  <Filter className="mr-2 h-4 w-4" /> Filter Status
-                </Button>
               </div>
             </CardHeader>
             <CardContent className="p-0">
@@ -249,14 +298,14 @@ export default function CoinTransactionsPage() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {filteredTransactions.length === 0 ? (
+                      {paginatedTransactions.length === 0 ? (
                         <TableRow>
                           <TableCell colSpan={7} className="h-40 text-center font-poppins text-neutral-500">
                             Tidak ada transaksi ditemukan.
                           </TableCell>
                         </TableRow>
                       ) : (
-                        filteredTransactions.map((tx) => (
+                        paginatedTransactions.map((tx) => (
                           <TableRow key={tx.id} className="border-b border-neutral-100 transition-colors hover:bg-neutral-50/50">
                             <TableCell className="px-6 py-4 font-mono text-xs font-medium text-neutral-500">
                               {tx.id}
@@ -418,6 +467,41 @@ export default function CoinTransactionsPage() {
                 </div>
               )}
             </CardContent>
+
+            {/* Pagination */}
+            {!isLoading && filteredTransactions.length > itemsPerPage && (
+              <div className="border-t border-neutral-100 p-6">
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious 
+                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                        className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                      />
+                    </PaginationItem>
+                    
+                    {Array.from({ length: totalPages }).map((_, i) => (
+                      <PaginationItem key={i}>
+                        <PaginationLink 
+                          isActive={currentPage === i + 1}
+                          onClick={() => setCurrentPage(i + 1)}
+                          className="cursor-pointer"
+                        >
+                          {i + 1}
+                        </PaginationLink>
+                      </PaginationItem>
+                    ))}
+
+                    <PaginationItem>
+                      <PaginationNext 
+                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                        className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            )}
           </Card>
         </div>
       </div>
@@ -434,7 +518,7 @@ function StatMiniCard({ label, value, icon, color, trend }: { label: string, val
   
   return (
     <Card className="rounded-2xl border-gray-200 bg-white shadow-none transition-all hover:shadow-md">
-      <CardContent className="flex items-center gap-4 pt-6">
+      <CardContent className="flex items-center gap-4 w-full h-full">
         <div className={`rounded-xl p-3 ${styles[color]}`}>
           {icon}
         </div>

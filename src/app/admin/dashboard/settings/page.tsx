@@ -1,22 +1,16 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
-import { 
-  Coins, 
-  Save,
-  CreditCard
-} from "lucide-react"
+import { Coins, Save, CreditCard } from "lucide-react"
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Switch } from "@/components/ui/switch"
-import { Separator } from "@/components/ui/separator"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Spinner } from "@/components/ui/spinner"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
-import { Montserrat, Poppins } from "@/lib/fonts"
+import { Poppins } from "@/lib/fonts"
 
 // ==========================================
 // 1. MAIN PAGE COMPONENT
@@ -49,14 +43,21 @@ export default function AdminSettingsPage() {
             <h1 className="font-montserrat text-2xl font-bold text-slate-900 md:text-3xl">
               Konfigurasi Sistem
             </h1>
-            <p className="text-sm text-neutral-500">Atur parameter global dan kebijakan platform PaskiHub.</p>
+            <p className="text-sm text-neutral-500">
+              Atur parameter global dan kebijakan platform PaskiHub.
+            </p>
           </div>
-          <Button 
-            className="h-12 px-8 rounded-full bg-info-600 hover:bg-info-700 shadow-lg transition-all active:scale-95"
+          <Button
+            variant={"default"}
+            className="h-12 rounded-full px-8 shadow-lg transition-all active:scale-95"
             onClick={handleSave}
             disabled={isSaving || isLoading}
           >
-            {isSaving ? <Spinner className="mr-2 h-4 w-4" /> : <Save className="mr-2 h-4 w-4" />}
+            {isSaving ? (
+              <Spinner className="mr-2 h-4 w-4" />
+            ) : (
+              <Save className="mr-2 h-4 w-4" />
+            )}
             {isSaving ? "Menyimpan..." : "Simpan Perubahan"}
           </Button>
         </div>
@@ -64,38 +65,46 @@ export default function AdminSettingsPage() {
         <div className="flex flex-col gap-8 rounded-[24px] border border-sky-100 bg-gradient-to-b from-white/60 to-white/40 p-4 shadow-sm backdrop-blur-md md:gap-10 md:p-8">
           {isLoading ? (
             <div className="space-y-8">
-              {[1, 2, 3].map((i) => <Skeleton key={i} className="h-40 w-full rounded-[24px]" />)}
+              {[1, 2, 3].map((i) => (
+                <Skeleton key={i} className="h-40 w-full rounded-[24px]" />
+              ))}
             </div>
           ) : (
             <>
               {/* SECTION: MONETIZATION */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
                 <div className="flex flex-col gap-2">
-                  <div className="flex items-center gap-3 text-info-600 mb-2">
-                    <div className="p-2 bg-info-50 rounded-xl">
+                  <div className="mb-2 flex items-center gap-3 text-info-600">
+                    <div className="rounded-xl bg-info-50 p-2">
                       <Coins className="h-5 w-5" />
                     </div>
-                    <h3 className="font-montserrat font-bold text-lg">Monetisasi</h3>
+                    <h3 className="font-montserrat text-lg font-bold">
+                      Monetisasi
+                    </h3>
                   </div>
-                  <p className="text-sm text-neutral-500 leading-relaxed">
-                    Atur rasio konversi koin, biaya admin, dan kebijakan perpajakan sistem.
+                  <p className="text-sm leading-relaxed text-neutral-500">
+                    Atur rasio konversi koin.
                   </p>
                 </div>
-                <div className="lg:col-span-2 space-y-6">
-                  <Card className="rounded-[24px] border-gray-200 bg-white shadow-none p-6 md:p-8">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-6 lg:col-span-2">
+                  <Card className="rounded-[24px] border-gray-200 bg-white p-6 shadow-none md:p-8">
+                    <div className="w-full">
                       <div className="space-y-3">
-                        <Label htmlFor="coin-price" className="text-sm font-semibold text-neutral-700">Harga Per 1 Koin (IDR)</Label>
+                        <Label
+                          htmlFor="coin-price"
+                          className="text-sm font-semibold text-neutral-700"
+                        >
+                          Harga Per 1 Koin (IDR)
+                        </Label>
                         <div className="relative">
-                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400 font-bold">Rp</span>
-                          <Input id="coin-price" defaultValue="1.000" className="h-12 pl-12 rounded-xl border-neutral-200 bg-neutral-50 focus-visible:ring-info-500" />
-                        </div>
-                      </div>
-                      <div className="space-y-3">
-                        <Label htmlFor="admin-fee" className="text-sm font-semibold text-neutral-700">Biaya Admin Top-up (IDR)</Label>
-                        <div className="relative">
-                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400 font-bold">Rp</span>
-                          <Input id="admin-fee" defaultValue="2.500" className="h-12 pl-12 rounded-xl border-neutral-200 bg-neutral-50 focus-visible:ring-info-500" />
+                          <span className="absolute top-1/2 left-4 -translate-y-1/2 font-bold text-neutral-400">
+                            Rp
+                          </span>
+                          <Input
+                            id="coin-price"
+                            defaultValue="1.000"
+                            className="h-12 rounded-xl border-neutral-200 bg-neutral-50 pl-12 focus-visible:ring-info-500"
+                          />
                         </div>
                       </div>
                     </div>
@@ -104,33 +113,63 @@ export default function AdminSettingsPage() {
               </div>
 
               {/* SECTION: TRANSFER INSTRUCTIONS */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
                 <div className="flex flex-col gap-2">
-                  <div className="flex items-center gap-3 text-info-600 mb-2">
-                    <div className="p-2 bg-info-50 rounded-xl">
+                  <div className="mb-2 flex items-center gap-3 text-info-600">
+                    <div className="rounded-xl bg-info-50 p-2">
                       <CreditCard className="h-5 w-5" />
                     </div>
-                    <h3 className="font-montserrat font-bold text-lg">Instruksi Transfer Koin</h3>
+                    <h3 className="font-montserrat text-lg font-bold">
+                      Instruksi Transfer Koin
+                    </h3>
                   </div>
-                  <p className="text-sm text-neutral-500 leading-relaxed">
-                    Atur informasi rekening bank tujuan transfer untuk pembelian koin oleh pengguna.
+                  <p className="text-sm leading-relaxed text-neutral-500">
+                    Atur informasi rekening bank tujuan transfer untuk pembelian
+                    koin oleh pengguna.
                   </p>
                 </div>
-                <div className="lg:col-span-2 space-y-6">
-                  <Card className="rounded-[24px] border-gray-200 bg-white shadow-none p-6 md:p-8">
+                <div className="space-y-6 lg:col-span-2">
+                  <Card className="rounded-[24px] border-gray-200 bg-white p-6 shadow-none md:p-8">
                     <div className="grid grid-cols-1 gap-8">
                       <div className="space-y-3">
-                        <Label htmlFor="bank-name" className="text-sm font-semibold text-neutral-700">Nama Bank</Label>
-                        <Input id="bank-name" placeholder="Contoh: Bank Central Asia (BCA)" className="h-12 px-4 rounded-xl border-neutral-200 bg-neutral-50 focus-visible:ring-info-500" />
+                        <Label
+                          htmlFor="bank-name"
+                          className="text-sm font-semibold text-neutral-700"
+                        >
+                          Nama Bank
+                        </Label>
+                        <Input
+                          id="bank-name"
+                          placeholder="Contoh: Bank Central Asia (BCA)"
+                          className="h-12 rounded-xl border-neutral-200 bg-neutral-50 px-4 focus-visible:ring-info-500"
+                        />
                       </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
                         <div className="space-y-3">
-                          <Label htmlFor="account-number" className="text-sm font-semibold text-neutral-700">Nomor Rekening</Label>
-                          <Input id="account-number" placeholder="Contoh: 1234567890" className="h-12 px-4 rounded-xl border-neutral-200 bg-neutral-50 focus-visible:ring-info-500" />
+                          <Label
+                            htmlFor="account-number"
+                            className="text-sm font-semibold text-neutral-700"
+                          >
+                            Nomor Rekening
+                          </Label>
+                          <Input
+                            id="account-number"
+                            placeholder="Contoh: 1234567890"
+                            className="h-12 rounded-xl border-neutral-200 bg-neutral-50 px-4 focus-visible:ring-info-500"
+                          />
                         </div>
                         <div className="space-y-3">
-                          <Label htmlFor="account-name" className="text-sm font-semibold text-neutral-700">Atas Nama</Label>
-                          <Input id="account-name" placeholder="Contoh: PT PaskiHub Indonesia" className="h-12 px-4 rounded-xl border-neutral-200 bg-neutral-50 focus-visible:ring-info-500" />
+                          <Label
+                            htmlFor="account-name"
+                            className="text-sm font-semibold text-neutral-700"
+                          >
+                            Atas Nama
+                          </Label>
+                          <Input
+                            id="account-name"
+                            placeholder="Contoh: PT PaskiHub Indonesia"
+                            className="h-12 rounded-xl border-neutral-200 bg-neutral-50 px-4 focus-visible:ring-info-500"
+                          />
                         </div>
                       </div>
                     </div>

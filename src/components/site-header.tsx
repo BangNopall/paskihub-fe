@@ -7,7 +7,7 @@ export function SiteHeader({navMain}: {navMain: {title: string, url: string}[]})
   const pathname = usePathname()
 
   let title
-  if (pathname === "/organizer/dashboard" || pathname === "/peserta/dashboard") {
+  if (pathname === "/organizer/dashboard" || pathname === "/peserta/dashboard" || pathname === "/admin/dashboard") {
     title = "Beranda"
   }else{
     title = navMain.find((item) => pathname.startsWith(item.url))?.title

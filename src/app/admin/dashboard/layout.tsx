@@ -40,11 +40,6 @@ const data = {
       icon: <CreditCard />,
     },
     {
-      title: "Audit Logs",
-      url: "/admin/dashboard/logs",
-      icon: <History />,
-    },
-    {
       title: "Konfigurasi",
       url: "/admin/dashboard/settings",
       icon: <Settings />,
@@ -55,17 +50,21 @@ const data = {
 // Breadcrumb/Quick Nav for SiteHeader
 const navHeader = [
     {
-      title: "Users",
+      title: "Manajemen User",
       url: "/admin/dashboard/users",
     },
     {
-      title: "Transactions",
+      title: "Kelola Admin",
+      url: "/admin/dashboard/admins",
+    },
+    {
+      title: "Transaksi Koin",
       url: "/admin/dashboard/transactions",
     },
     {
-      title: "Audit Logs",
-      url: "/admin/dashboard/logs",
-    },
+      title: "Pengaturan Admin",
+      url: "/admin/dashboard/settings"
+    }
   ]
 
 export default function SuperAdminLayout({

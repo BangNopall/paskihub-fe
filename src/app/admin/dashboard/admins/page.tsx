@@ -11,7 +11,10 @@ import {
   Mail,
   AlertCircle,
   CheckCircle2,
-  X
+  X,
+  ChevronLeft,
+  ChevronRight,
+  MoreHorizontal
 } from "lucide-react"
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -51,6 +54,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination"
 import { Montserrat, Poppins } from "@/lib/fonts"
 import { toast } from "sonner"
 
@@ -58,7 +80,7 @@ import { toast } from "sonner"
 // 1. TYPESCRIPT INTERFACES
 // ==========================================
 
-export type AdminRole = "Super Admin" | "Finance Admin" | "Moderator"
+export type AdminRole = "Admin" | "Super Admin"
 
 export interface AdminUser {
   id: string
@@ -73,11 +95,14 @@ export interface AdminUser {
 // 2. MOCK DATA
 // ==========================================
 
-const MOCK_ADMINS: AdminUser[] = [
-  { id: "ADM-1", name: "Muhammad Naufal", email: "naufal@paskihub.com", role: "Super Admin", lastLogin: "28 Apr 2026, 09:00", status: "Active" },
-  { id: "ADM-2", name: "Finance Team", email: "finance@paskihub.com", role: "Finance Admin", lastLogin: "27 Apr 2026, 14:20", status: "Active" },
-  { id: "ADM-3", name: "Staff Moderator", email: "moderator@paskihub.com", role: "Moderator", lastLogin: "25 Apr 2026, 10:15", status: "Inactive" },
-]
+const MOCK_ADMINS: AdminUser[] = Array.from({ length: 45 }).map((_, i) => ({
+  id: `ADM-${i + 1}`,
+  name: i === 0 ? "Muhammad Naufal" : `Staff Admin ${i + 1}`,
+  email: i === 0 ? "naufal@paskihub.com" : `staff${i + 1}@paskihub.com`,
+  role: i % 5 === 0 ? "Super Admin" : "Admin",
+  lastLogin: "28 Apr 2026, 09:00",
+  status: "Active"
+}))
 
 // ==========================================
 // 3. MAIN PAGE COMPONENT
@@ -88,7 +113,18 @@ export default function AdminManagementPage() {
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [isError, setIsError] = useState<boolean>(false)
   const [searchTerm, setSearchTerm] = useState("")
+  
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 20
+
+  // Modal States
   const [isCreateOpen, setIsCreateOpen] = useState(false)
+  const [isResetOpen, setIsResetOpen] = useState(false)
+  const [isRoleOpen, setIsRoleOpen] = useState(false)
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false)
+  const [actionAdmin, setActionAdmin] = useState<AdminUser | null>(null)
+  const [newRole, setNewRole] = useState<AdminRole>("Admin")
 
   useEffect(() => {
     const fetchAdmins = async () => {
@@ -109,16 +145,45 @@ export default function AdminManagementPage() {
     fetchAdmins()
   }, [])
 
+  // Action Handlers
+  const handleResetPassword = async () => {
+    if (!actionAdmin) return
+    toast.promise(new Promise(res => setTimeout(res, 1000)), {
+      loading: 'Sedang mengirim email reset...',
+      success: `Link reset password telah dikirim ke ${actionAdmin.email}`,
+      error: 'Gagal mereset password'
+    })
+    setIsResetOpen(false)
+  }
+
+  const handleChangeRole = async () => {
+    if (!actionAdmin) return
+    setAdmins(prev => prev.map(a => a.id === actionAdmin.id ? { ...a, role: newRole } : a))
+    toast.success(`Role ${actionAdmin.name} berhasil diubah menjadi ${newRole}`)
+    setIsRoleOpen(false)
+  }
+
+  const handleDeleteAdmin = async () => {
+    if (!actionAdmin) return
+    setAdmins(prev => prev.filter(a => a.id !== actionAdmin.id))
+    toast.error(`Akses admin ${actionAdmin.name} telah dihapus permanen`)
+    setIsDeleteOpen(false)
+  }
+
   const filteredAdmins = admins.filter(admin => 
     admin.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
     admin.email.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
+  // Pagination Logic
+  const totalPages = Math.ceil(filteredAdmins.length / itemsPerPage)
+  const paginatedAdmins = filteredAdmins.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+
   const getRoleBadge = (role: AdminRole) => {
     switch (role) {
       case "Super Admin": return "bg-dark-blue text-white"
-      case "Finance Admin": return "bg-emerald-50 text-emerald-600 border-emerald-100"
-      default: return "bg-info-50 text-info-600 border-info-100"
+      case "Admin": return "bg-info-50 text-info-600 border-info-100"
+      default: return "bg-neutral-100 text-neutral-600"
     }
   }
 
@@ -135,7 +200,7 @@ export default function AdminManagementPage() {
 
           <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
             <DialogTrigger asChild>
-              <Button className="h-12 rounded-full bg-info-600 px-6 font-semibold shadow-lg hover:bg-info-700 transition-all active:scale-95">
+              <Button className="h-12 rounded-full px-6 font-semibold shadow-lg transition-all active:scale-95" variant={'default'}>
                 <UserPlus className="mr-2 h-5 w-5" />
                 Tambah Admin Baru
               </Button>
@@ -168,9 +233,7 @@ export default function AdminManagementPage() {
                           <SelectValue placeholder="Pilih Role" />
                         </SelectTrigger>
                         <SelectContent className="rounded-2xl">
-                          <SelectItem value="super">Super Admin</SelectItem>
-                          <SelectItem value="finance">Finance Admin</SelectItem>
-                          <SelectItem value="moderator">Moderator</SelectItem>
+                          <SelectItem value="admin">Admin</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -233,18 +296,18 @@ export default function AdminManagementPage() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {filteredAdmins.length === 0 ? (
+                      {paginatedAdmins.length === 0 ? (
                         <TableRow>
                           <TableCell colSpan={5} className="h-40 text-center font-poppins text-neutral-500">
                             Tidak ada akun admin ditemukan.
                           </TableCell>
                         </TableRow>
                       ) : (
-                        filteredAdmins.map((admin) => (
+                        paginatedAdmins.map((admin) => (
                           <TableRow key={admin.id} className="border-b border-neutral-100 transition-colors hover:bg-neutral-50/50">
                             <TableCell className="px-6 py-4">
                               <div className="flex items-center gap-3">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-600 font-bold font-montserrat">
+                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-600 font-bold font-montserrat uppercase">
                                   {admin.name.charAt(0)}
                                 </div>
                                 <div className="flex flex-col">
@@ -275,14 +338,33 @@ export default function AdminManagementPage() {
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end" className="w-48 rounded-2xl border-neutral-200 shadow-lg">
                                   <DropdownMenuLabel className="font-poppins text-xs font-semibold text-neutral-500">Opsi Akun</DropdownMenuLabel>
-                                  <DropdownMenuItem className="cursor-pointer font-poppins text-sm rounded-xl">
+                                  <DropdownMenuItem 
+                                    className="cursor-pointer font-poppins text-sm rounded-xl"
+                                    onClick={() => {
+                                      setActionAdmin(admin)
+                                      setIsResetOpen(true)
+                                    }}
+                                  >
                                     <Lock className="mr-2 h-4 w-4" /> Reset Password
                                   </DropdownMenuItem>
-                                  <DropdownMenuItem className="cursor-pointer font-poppins text-sm rounded-xl">
+                                  <DropdownMenuItem 
+                                    className="cursor-pointer font-poppins text-sm rounded-xl"
+                                    onClick={() => {
+                                      setActionAdmin(admin)
+                                      setNewRole(admin.role)
+                                      setIsRoleOpen(true)
+                                    }}
+                                  >
                                     <ShieldCheck className="mr-2 h-4 w-4" /> Ubah Role
                                   </DropdownMenuItem>
                                   <DropdownMenuSeparator className="bg-neutral-100" />
-                                  <DropdownMenuItem className="cursor-pointer font-poppins text-sm text-danger-600 rounded-xl focus:text-danger-600">
+                                  <DropdownMenuItem 
+                                    className="cursor-pointer font-poppins text-sm text-danger-600 rounded-xl focus:text-danger-600"
+                                    onClick={() => {
+                                      setActionAdmin(admin)
+                                      setIsDeleteOpen(true)
+                                    }}
+                                  >
                                     <Trash2 className="mr-2 h-4 w-4" /> Hapus Akses
                                   </DropdownMenuItem>
                                 </DropdownMenuContent>
@@ -296,9 +378,123 @@ export default function AdminManagementPage() {
                 </div>
               )}
             </CardContent>
+
+            {/* Pagination */}
+            {!isLoading && filteredAdmins.length > itemsPerPage && (
+              <div className="border-t border-neutral-100 p-6">
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious 
+                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                        className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                      />
+                    </PaginationItem>
+                    
+                    {Array.from({ length: totalPages }).map((_, i) => (
+                      <PaginationItem key={i}>
+                        <PaginationLink 
+                          isActive={currentPage === i + 1}
+                          onClick={() => setCurrentPage(i + 1)}
+                          className="cursor-pointer"
+                        >
+                          {i + 1}
+                        </PaginationLink>
+                      </PaginationItem>
+                    ))}
+
+                    <PaginationItem>
+                      <PaginationNext 
+                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                        className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            )}
           </Card>
         </div>
       </div>
+
+      {/* --- RESET PASSWORD DIALOG --- */}
+      <Dialog open={isResetOpen} onOpenChange={setIsResetOpen}>
+        <DialogContent className="sm:max-w-md rounded-[32px] border-none p-0 overflow-hidden shadow-2xl">
+          <DialogHeader className="bg-info-600 p-8 text-white">
+            <DialogTitle className="font-montserrat text-2xl font-bold">Reset Password?</DialogTitle>
+            <DialogDescription className="text-info-100">
+              Konfirmasi pengaturan ulang kata sandi admin.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="p-8 text-center space-y-4">
+             <div className="mx-auto h-16 w-16 rounded-2xl bg-info-50 flex items-center justify-center text-info-600">
+                <Lock className="h-8 w-8" />
+             </div>
+             <p className="font-poppins text-neutral-600">
+               Paskihub akan mengirimkan link pengaturan ulang kata sandi ke email: <br/>
+               <strong className="text-slate-900">{actionAdmin?.email}</strong>
+             </p>
+          </div>
+          <DialogFooter className="flex flex-row gap-3 p-8 pt-0">
+            <Button variant="outline" className="flex-1 h-12 rounded-full border-neutral-300" onClick={() => setIsResetOpen(false)}>Batalkan</Button>
+            <Button variant={'default'} className="flex-1 h-12 rounded-full font-bold" onClick={handleResetPassword}>Kirim Link</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* --- CHANGE ROLE DIALOG --- */}
+      <Dialog open={isRoleOpen} onOpenChange={setIsRoleOpen}>
+        <DialogContent className="sm:max-w-md rounded-[32px] border-none p-0 overflow-hidden shadow-2xl">
+          <DialogHeader className="bg-slate-800 p-8 text-white">
+            <DialogTitle className="font-montserrat text-2xl font-bold">Ubah Role Akses</DialogTitle>
+            <DialogDescription className="text-slate-400">
+              Update tingkat akses untuk {actionAdmin?.name}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="p-8 space-y-4">
+             <div className="space-y-2">
+                <label className="text-sm font-semibold text-neutral-700">Pilih Role Baru</label>
+                <Select value={newRole} onValueChange={(val) => setNewRole(val as AdminRole)}>
+                  <SelectTrigger className="h-14 rounded-xl border-neutral-200 bg-neutral-50 focus:ring-info-500">
+                    <SelectValue placeholder="Pilih Role" />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-2xl border-neutral-200 shadow-xl">
+                    <SelectItem value="Admin" className="rounded-xl py-3">Admin (Staff Biasa)</SelectItem>
+                    <SelectItem value="Super Admin" className="rounded-xl py-3">Super Admin (Akses Penuh)</SelectItem>
+                  </SelectContent>
+                </Select>
+             </div>
+             <p className="text-xs text-neutral-500 bg-neutral-50 p-3 rounded-xl border border-neutral-100 italic">
+               * Super Admin dapat mengelola akun admin lain dan mengakses pengaturan sistem utama.
+             </p>
+          </div>
+          <DialogFooter className="flex flex-row gap-3 p-8 pt-0">
+            <Button variant="outline" className="flex-1 h-12 rounded-full border-neutral-300" onClick={() => setIsRoleOpen(false)}>Batal</Button>
+            <Button className="flex-1 h-12 rounded-full bg-slate-900 hover:bg-black font-bold text-white" onClick={handleChangeRole}>Simpan Perubahan</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* --- DELETE ACCESS ALERT --- */}
+      <AlertDialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
+        <AlertDialogContent className="rounded-[32px] p-8 border-none shadow-2xl">
+          <AlertDialogHeader>
+            <div className="h-16 w-16 rounded-2xl bg-danger-50 flex items-center justify-center text-danger-600 mb-4">
+               <Trash2 className="h-8 w-8" />
+            </div>
+            <AlertDialogTitle className="font-montserrat text-2xl font-bold text-danger-600">Hapus Akses Admin?</AlertDialogTitle>
+            <AlertDialogDescription className="font-poppins text-neutral-500">
+              Apakah Anda yakin ingin menghapus akses <strong>{actionAdmin?.name}</strong> secara permanen? Akun ini tidak akan bisa lagi login ke dashboard admin.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="mt-6 flex flex-row gap-3">
+            <AlertDialogCancel className="flex-1 h-12 rounded-full border-neutral-300 mt-0">Batalkan</AlertDialogCancel>
+            <AlertDialogAction className="flex-1 h-12 rounded-full bg-danger-600 hover:bg-danger-700 text-white font-bold" onClick={handleDeleteAdmin}>
+              Ya, Hapus Permanen
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
