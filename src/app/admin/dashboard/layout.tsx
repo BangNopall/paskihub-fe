@@ -30,14 +30,14 @@ const data = {
       icon: <Users />,
     },
     {
+      title: "Kelola Admin",
+      url: "/admin/dashboard/admins",
+      icon: <ShieldCheck />,
+    },
+    {
       title: "Transaksi Koin",
       url: "/admin/dashboard/transactions",
       icon: <CreditCard />,
-    },
-    {
-      title: "Broadcast Info",
-      url: "/admin/dashboard/broadcast",
-      icon: <Megaphone />,
     },
     {
       title: "Audit Logs",

@@ -4,6 +4,7 @@ import "@/styles/globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils"
 import { TooltipProvider } from "@/components/ui/tooltip"
+import { Toaster } from "@/components/ui/sonner"
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -58,6 +59,7 @@ export default function RootLayout({
             forcedTheme="light"
           >
             {children}
+            <Toaster richColors closeButton position="top-right" />
           </ThemeProvider>
         </TooltipProvider>
       </body>
