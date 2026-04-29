@@ -7,10 +7,12 @@ export const loginFormSchema = z.object({
 });
 
 export const registerFormSchema = z.object({
-  name: z.string().min(3, "Nama lengkap wajib diisi"),
   email: z.string().email("Email tidak valid"),
   password: z.string().min(8, "Password minimal 8 karakter"),
-  phone: z.string().min(10, "Nomor telepon tidak valid").optional(),
+  confirmPassword: z.string().min(8, "Password minimal 8 karakter"),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Password tidak cocok",
+  path: ["confirmPassword"],
 });
 
 export const forgotPasswordSchema = z.object({

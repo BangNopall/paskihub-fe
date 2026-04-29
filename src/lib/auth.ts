@@ -1,10 +1,9 @@
-import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { loginResponseSchema } from "@/schemas/auth.schema";
 
 const API_URL = process.env.API_BASE_URL || "http://localhost:3010";
 
-export const authOptions: NextAuthOptions = {
+export const authOptions: any = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -44,7 +43,7 @@ export const authOptions: NextAuthOptions = {
     })
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user }: any) {
       if (user) {
         token.id = user.id;
         token.role = user.role;
@@ -52,11 +51,11 @@ export const authOptions: NextAuthOptions = {
       }
       return token;
     },
-    async session({ session, token }) {
+    async session({ session, token }: any) {
       if (token && session.user) {
-        session.user.id = token.id as string;
-        session.user.role = token.role as string;
-        session.accessToken = token.accessToken as string;
+        session.user.id = token.id;
+        session.user.role = token.role;
+        session.accessToken = token.accessToken;
       }
       return session;
     }
