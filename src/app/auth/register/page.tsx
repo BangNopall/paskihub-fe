@@ -1,9 +1,7 @@
 "use client"
 
 import { useState } from "react"
-
 import { EyeIcon, EyeOffIcon } from "lucide-react"
-
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -17,199 +15,145 @@ import {
 } from "@/components/ui/motion-tabs"
 import Link from "next/link"
 import { Montserrat } from "@/lib/fonts"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { registerFormSchema, RegisterFormData } from "@/schemas/auth.schema"
+import { registerAction } from "@/actions/auth.actions"
+import { toast } from "sonner"
+import { useRouter } from "next/navigation"
+
+const RegisterForm = ({ role }: { role: "peserta" | "eo" }) => {
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false)
+  const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
+
+  const { register, handleSubmit, formState: { errors } } = useForm<RegisterFormData>({
+    resolver: zodResolver(registerFormSchema),
+  })
+
+  const onSubmit = async (data: RegisterFormData) => {
+    setIsLoading(true)
+    try {
+      const res = await registerAction(role, data)
+      if (res.success) {
+        toast.success("Registrasi Berhasil", { description: res.message })
+        router.push("/auth/verify-email")
+      } else {
+        toast.error("Registrasi Gagal", { description: res.message })
+      }
+    } catch {
+      toast.error("Terjadi Kesalahan", { description: "Gagal terhubung ke server." })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  return (
+    <div className="space-y-4 sm:space-y-6 mt-4">
+      <form className="space-y-4 sm:space-y-6" onSubmit={handleSubmit(onSubmit)}>
+        {/* Email */}
+        <div className="space-y-2 sm:space-y-1">
+          <Label className="leading-5 text-sm sm:text-base" htmlFor={`${role}Email`}>
+            Alamat Email*
+          </Label>
+          <Input
+            type="email"
+            id={`${role}Email`}
+            placeholder="Masukkan alamat email"
+            className={`h-10 sm:h-11 ${errors.email ? "border-red-500" : ""}`}
+            {...register("email")}
+          />
+          {errors.email && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.email.message}</p>}
+        </div>
+
+        {/* Password */}
+        <div className="w-full space-y-2 sm:space-y-1">
+          <Label className="leading-5 text-sm sm:text-base" htmlFor={`${role}Password`}>
+            Password*
+          </Label>
+          <div className="relative">
+            <Input
+              id={`${role}Password`}
+              type={isPasswordVisible ? "text" : "password"}
+              placeholder="••••••••••••••••"
+              className={`pr-9 h-10 sm:h-11 ${errors.password ? "border-red-500" : ""}`}
+              {...register("password")}
+            />
+            <Button
+              variant="ghost"
+              type="button"
+              size="icon"
+              onClick={() => setIsPasswordVisible((prevState) => !prevState)}
+              className="absolute inset-y-0 right-0 h-10 sm:h-11 w-10 sm:w-11 rounded-l-none text-muted-foreground hover:bg-transparent focus-visible:ring-ring/50"
+            >
+              {isPasswordVisible ? <EyeOffIcon className="size-4 sm:size-5" /> : <EyeIcon className="size-4 sm:size-5" />}
+              <span className="sr-only">
+                {isPasswordVisible ? "Hide password" : "Show password"}
+              </span>
+            </Button>
+          </div>
+          {errors.password && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.password.message}</p>}
+        </div>
+
+        {/* Confirm Password */}
+        <div className="w-full space-y-2 sm:space-y-1">
+          <Label className="leading-5 text-sm sm:text-base" htmlFor={`${role}ConfirmPassword`}>
+            Konfirmasi Password*
+          </Label>
+          <div className="relative">
+            <Input
+              id={`${role}ConfirmPassword`}
+              type={isConfirmPasswordVisible ? "text" : "password"}
+              placeholder="••••••••••••••••"
+              className={`pr-9 h-10 sm:h-11 ${errors.confirmPassword ? "border-red-500" : ""}`}
+              {...register("confirmPassword")}
+            />
+            <Button
+              variant="ghost"
+              type="button"
+              size="icon"
+              onClick={() =>
+                setIsConfirmPasswordVisible((prevState) => !prevState)
+              }
+              className="absolute inset-y-0 right-0 h-10 sm:h-11 w-10 sm:w-11 rounded-l-none text-muted-foreground hover:bg-transparent focus-visible:ring-ring/50"
+            >
+              {isConfirmPasswordVisible ? <EyeOffIcon className="size-4 sm:size-5" /> : <EyeIcon className="size-4 sm:size-5" />}
+              <span className="sr-only">
+                {isConfirmPasswordVisible
+                  ? "Hide password"
+                  : "Show password"}
+              </span>
+            </Button>
+          </div>
+          {errors.confirmPassword && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.confirmPassword.message}</p>}
+        </div>
+
+        <Button disabled={isLoading} className="w-full h-10 sm:h-11 mt-4 sm:mt-6 text-sm sm:text-base" variant={"secondary"} type="submit">
+          {isLoading ? "Memproses..." : "Daftar"}
+        </Button>
+      </form>
+
+      <p className="text-center text-sm sm:text-base text-muted-foreground mt-4 sm:mt-6">
+        Sudah punya akun?{" "}
+        <Link href="/auth/login" className="text-secondary hover:underline font-medium">
+          Masuk
+        </Link>
+      </p>
+    </div>
+  )
+}
 
 const tabs = [
   {
     name: "Peserta",
     value: "peserta",
-    content: () => {
-      const [isPasswordVisible, setIsPasswordVisible] = useState(false)
-      const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
-        useState(false)
-      return (
-        <div className="space-y-4 sm:space-y-6 mt-4">
-          <form className="space-y-4 sm:space-y-6" onSubmit={(e) => e.preventDefault()}>
-            {/* Email */}
-            <div className="space-y-2 sm:space-y-1">
-              <Label className="leading-5 text-sm sm:text-base" htmlFor="pesertaEmail">
-                Alamat Email*
-              </Label>
-              <Input
-                type="email"
-                id="pesertaEmail"
-                placeholder="Masukkan alamat email"
-                className="h-10 sm:h-11"
-              />
-            </div>
-
-            {/* Password */}
-            <div className="w-full space-y-2 sm:space-y-1">
-              <Label className="leading-5 text-sm sm:text-base" htmlFor="pesertaPassword">
-                Password*
-              </Label>
-              <div className="relative">
-                <Input
-                  id="pesertaPassword"
-                  type={isPasswordVisible ? "text" : "password"}
-                  placeholder="••••••••••••••••"
-                  className="pr-9 h-10 sm:h-11"
-                />
-                <Button
-                  variant="ghost"
-                  type="button"
-                  size="icon"
-                  onClick={() => setIsPasswordVisible((prevState) => !prevState)}
-                  className="absolute inset-y-0 right-0 h-10 sm:h-11 w-10 sm:w-11 rounded-l-none text-muted-foreground hover:bg-transparent focus-visible:ring-ring/50"
-                >
-                  {isPasswordVisible ? <EyeOffIcon className="size-4 sm:size-5" /> : <EyeIcon className="size-4 sm:size-5" />}
-                  <span className="sr-only">
-                    {isPasswordVisible ? "Hide password" : "Show password"}
-                  </span>
-                </Button>
-              </div>
-            </div>
-
-            {/* Confirm Password */}
-            <div className="w-full space-y-2 sm:space-y-1">
-              <Label className="leading-5 text-sm sm:text-base" htmlFor="pesertaConfirmPassword">
-                Konfirmasi Password*
-              </Label>
-              <div className="relative">
-                <Input
-                  id="pesertaConfirmPassword"
-                  type={isConfirmPasswordVisible ? "text" : "password"}
-                  placeholder="••••••••••••••••"
-                  className="pr-9 h-10 sm:h-11"
-                />
-                <Button
-                  variant="ghost"
-                  type="button"
-                  size="icon"
-                  onClick={() =>
-                    setIsConfirmPasswordVisible((prevState) => !prevState)
-                  }
-                  className="absolute inset-y-0 right-0 h-10 sm:h-11 w-10 sm:w-11 rounded-l-none text-muted-foreground hover:bg-transparent focus-visible:ring-ring/50"
-                >
-                  {isConfirmPasswordVisible ? <EyeOffIcon className="size-4 sm:size-5" /> : <EyeIcon className="size-4 sm:size-5" />}
-                  <span className="sr-only">
-                    {isConfirmPasswordVisible
-                      ? "Hide password"
-                      : "Show password"}
-                  </span>
-                </Button>
-              </div>
-            </div>
-
-            <Button className="w-full h-10 sm:h-11 mt-4 sm:mt-6 text-sm sm:text-base" variant={"secondary"} type="submit">
-              Daftar
-            </Button>
-          </form>
-
-          <p className="text-center text-sm sm:text-base text-muted-foreground mt-4 sm:mt-6">
-            Sudah punya akun?{" "}
-            <Link href="/auth/login" className="text-secondary hover:underline font-medium">
-              Masuk
-            </Link>
-          </p>
-        </div>
-      )
-    },
+    content: () => <RegisterForm role="peserta" />,
   },
   {
     name: "Event Organizer",
     value: "eo",
-    content: () => {
-      const [isPasswordVisible, setIsPasswordVisible] = useState(false)
-      const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
-        useState(false)
-      return (
-        <div className="space-y-4 sm:space-y-6 mt-4">
-          <form className="space-y-4 sm:space-y-6" onSubmit={(e) => e.preventDefault()}>
-            {/* Email */}
-            <div className="space-y-2 sm:space-y-1">
-              <Label className="leading-5 text-sm sm:text-base" htmlFor="eoEmail">
-                Alamat Email*
-              </Label>
-              <Input
-                type="email"
-                id="eoEmail"
-                placeholder="Masukkan alamat email"
-                className="h-10 sm:h-11"
-              />
-            </div>
-
-            {/* Password */}
-            <div className="w-full space-y-2 sm:space-y-1">
-              <Label className="leading-5 text-sm sm:text-base" htmlFor="eoPassword">
-                Password*
-              </Label>
-              <div className="relative">
-                <Input
-                  id="eoPassword"
-                  type={isPasswordVisible ? "text" : "password"}
-                  placeholder="••••••••••••••••"
-                  className="pr-9 h-10 sm:h-11"
-                />
-                <Button
-                  variant="ghost"
-                  type="button"
-                  size="icon"
-                  onClick={() => setIsPasswordVisible((prevState) => !prevState)}
-                  className="absolute inset-y-0 right-0 h-10 sm:h-11 w-10 sm:w-11 rounded-l-none text-muted-foreground hover:bg-transparent focus-visible:ring-ring/50"
-                >
-                  {isPasswordVisible ? <EyeOffIcon className="size-4 sm:size-5" /> : <EyeIcon className="size-4 sm:size-5" />}
-                  <span className="sr-only">
-                    {isPasswordVisible ? "Hide password" : "Show password"}
-                  </span>
-                </Button>
-              </div>
-            </div>
-
-            {/* Confirm Password */}
-            <div className="w-full space-y-2 sm:space-y-1">
-              <Label className="leading-5 text-sm sm:text-base" htmlFor="eoConfirmPassword">
-                Konfirmasi Password*
-              </Label>
-              <div className="relative">
-                <Input
-                  id="eoConfirmPassword"
-                  type={isConfirmPasswordVisible ? "text" : "password"}
-                  placeholder="••••••••••••••••"
-                  className="pr-9 h-10 sm:h-11"
-                />
-                <Button
-                  variant="ghost"
-                  type="button"
-                  size="icon"
-                  onClick={() =>
-                    setIsConfirmPasswordVisible((prevState) => !prevState)
-                  }
-                  className="absolute inset-y-0 right-0 h-10 sm:h-11 w-10 sm:w-11 rounded-l-none text-muted-foreground hover:bg-transparent focus-visible:ring-ring/50"
-                >
-                  {isConfirmPasswordVisible ? <EyeOffIcon className="size-4 sm:size-5" /> : <EyeIcon className="size-4 sm:size-5" />}
-                  <span className="sr-only">
-                    {isConfirmPasswordVisible
-                      ? "Hide password"
-                      : "Show password"}
-                  </span>
-                </Button>
-              </div>
-            </div>
-
-            <Button className="w-full h-10 sm:h-11 mt-4 sm:mt-6 text-sm sm:text-base" variant={"secondary"} type="submit">
-              Daftar
-            </Button>
-          </form>
-
-          <p className="text-center text-sm sm:text-base text-muted-foreground mt-4 sm:mt-6">
-            Sudah punya akun?{" "}
-            <Link href="/auth/login" className="text-secondary hover:underline font-medium">
-              Masuk
-            </Link>
-          </p>
-        </div>
-      )
-    },
+    content: () => <RegisterForm role="eo" />,
   },
 ]
 
