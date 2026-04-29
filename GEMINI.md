@@ -15,7 +15,7 @@ Your code must be production-ready, highly typed, accessible, and performant.
 - **Form Handling:** React Hook Form
 - **Validation:** Zod (for both Form Validation & API Response Validation)
 - **Data Fetching:** Native `fetch` API (No Axios)
-- **Authentication:** Auth.js (NextAuth v5)
+- **Authentication:** Auth.js (NextAuth v4)
 - **Icons:** Lucide React
 
 ## 4. Directory Structure & Architecture Rules

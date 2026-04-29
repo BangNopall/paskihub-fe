@@ -258,9 +258,9 @@ export default function AdminManagementPage() {
           </Dialog>
         </div>
 
-        <div className="flex flex-col gap-6 rounded-[24px] border border-sky-100 bg-gradient-to-b from-white/60 to-white/40 p-4 shadow-sm backdrop-blur-md md:gap-8 md:p-6">
+        <div className="flex flex-col gap-6 rounded-[24px] border border-sky-100 bg-linear-to-b from-white/60 to-white/40 p-4 shadow-sm backdrop-blur-md md:gap-8 md:p-6">
           <Card className="overflow-hidden rounded-[24px] border-gray-200 bg-white shadow-none">
-            <CardHeader className="border-b border-neutral-100 bg-white px-5 py-6 md:px-6">
+            <CardHeader className="border-b border-neutral-100 bg-white px-5 md:px-6">
               <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div className="relative w-full max-w-md">
                   <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
