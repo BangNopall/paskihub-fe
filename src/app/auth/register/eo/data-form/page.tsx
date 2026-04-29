@@ -24,15 +24,45 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { useForm, Controller } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { eoDataFormSchema, EODataFormData } from "@/schemas/profile.schema"
+import { createEventAction } from "@/actions/profile.actions"
+import { toast } from "sonner"
+import { useRouter } from "next/navigation"
 
 const RegisterEODataForm = () => {
   const [date, setDate] = useState<DateRange | undefined>({
     from: new Date(new Date().getFullYear(), 0, 20),
     to: addDays(new Date(new Date().getFullYear(), 0, 20), 20),
   })
+  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
+
+  const { register, handleSubmit, control, formState: { errors } } = useForm<EODataFormData>({
+    resolver: zodResolver(eoDataFormSchema),
+  })
+
+  const onSubmit = async (data: EODataFormData) => {
+    setIsLoading(true)
+    try {
+      const res = await createEventAction(data)
+      if (res.success) {
+        toast.success("Berhasil", { description: res.message })
+        router.push("/organizer/dashboard")
+      } else {
+        toast.error("Gagal", { description: res.message })
+      }
+    } catch {
+      toast.error("Terjadi Kesalahan", { description: "Gagal memproses formulir." })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   return (
     <div className="relative flex h-auto min-h-screen items-center justify-center overflow-x-hidden px-4 py-8 sm:px-6 md:py-10 lg:px-8">
-      <Card className="z-1 w-full max-w-[90%] border-none bg-glassmorphism-50 p-6 shadow-md sm:max-w-md sm:p-10 md:max-w-xl md:p-16 lg:max-w-2xl">
+      <Card className="z-10 w-full max-w-[90%] border-none bg-glassmorphism-50 p-6 shadow-md sm:max-w-md sm:p-10 md:max-w-xl md:p-16 lg:max-w-2xl">
         <CardHeader className="gap-4 sm:gap-6">
           <div>
             <CardTitle
@@ -44,21 +74,24 @@ const RegisterEODataForm = () => {
         </CardHeader>
         <CardContent>
           <div className="space-y-4 sm:space-y-6 mt-2">
-            <form className="space-y-4 sm:space-y-6" onSubmit={(e) => e.preventDefault()}>
+            <form className="space-y-4 sm:space-y-6" onSubmit={handleSubmit(onSubmit)}>
               <div className="space-y-2 sm:space-y-1">
                 <Label
-                  htmlFor="eventName"
+                  htmlFor="name"
                   className="text-sm leading-5 sm:text-base"
                 >
                   Nama Event
                 </Label>
                 <Input
                   type="text"
-                  id="eventName"
+                  id="name"
                   placeholder="Masukan nama event"
-                  className="h-10 sm:h-11"
+                  className={`h-10 sm:h-11 ${errors.name ? "border-red-500" : ""}`}
+                  {...register("name")}
                 />
+                {errors.name && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.name.message}</p>}
               </div>
+
               <div className="space-y-2 sm:space-y-1">
                 <Field className="w-full">
                   <FieldLabel htmlFor="date-picker-range" className="text-sm leading-5 sm:text-base">
@@ -98,29 +131,38 @@ const RegisterEODataForm = () => {
                   </Popover>
                 </Field>
               </div>
+
               <div className="space-y-2 sm:space-y-1">
                 <Label
-                  htmlFor="address"
+                  htmlFor="level"
                   className="text-sm leading-5 sm:text-base"
                 >
                   Tingkat
                 </Label>
-                <Select>
-                  <SelectTrigger className="w-full h-10 sm:h-11 text-sm sm:text-base px-3">
-                    <SelectValue placeholder="Pilih Tingkat" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Tingkat</SelectLabel>
-                      <SelectItem value="sd">SD/MI</SelectItem>
-                      <SelectItem value="smp">SMP/MTS</SelectItem>
-                      <SelectItem value="sma">SMA/SMK/MA</SelectItem>
-                      <SelectItem value="purna">PURNA</SelectItem>
-                      <SelectItem value="umum">UMUM</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
+                <Controller
+                  name="level"
+                  control={control}
+                  render={({ field }) => (
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <SelectTrigger className={`w-full h-10 sm:h-11 text-sm sm:text-base px-3 ${errors.level ? "border-red-500" : ""}`}>
+                        <SelectValue placeholder="Pilih Tingkat" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Tingkat</SelectLabel>
+                          <SelectItem value="sd">SD/MI</SelectItem>
+                          <SelectItem value="smp">SMP/MTS</SelectItem>
+                          <SelectItem value="sma">SMA/SMK/MA</SelectItem>
+                          <SelectItem value="purna">PURNA</SelectItem>
+                          <SelectItem value="umum">UMUM</SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                {errors.level && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.level.message}</p>}
               </div>
+
               <div className="space-y-2 sm:space-y-1">
                 <Label
                   htmlFor="schoolName"
@@ -130,11 +172,14 @@ const RegisterEODataForm = () => {
                 </Label>
                 <Input
                   id="schoolName"
-                  type={"text"}
+                  type="text"
                   placeholder="Masukan nama sekolah/instansi/penyelenggara"
-                  className="h-10 sm:h-11"
+                  className={`h-10 sm:h-11 ${errors.schoolName ? "border-red-500" : ""}`}
+                  {...register("schoolName")}
                 />
+                {errors.schoolName && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.schoolName.message}</p>}
               </div>
+
               <div className="space-y-2 sm:space-y-1">
                 <Label
                   htmlFor="location"
@@ -144,11 +189,32 @@ const RegisterEODataForm = () => {
                 </Label>
                 <Input
                   id="location"
-                  type={"text"}
+                  type="text"
                   placeholder="Masukan lokasi"
-                  className="h-10 sm:h-11"
+                  className={`h-10 sm:h-11 ${errors.location ? "border-red-500" : ""}`}
+                  {...register("location")}
                 />
+                {errors.location && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.location.message}</p>}
               </div>
+              
+              {/* Note: I'm mapping address the same as location here based on schema, but they could be split in UI if needed. Adding address. */}
+              <div className="space-y-2 sm:space-y-1">
+                <Label
+                  htmlFor="address"
+                  className="text-sm leading-5 sm:text-base"
+                >
+                  Alamat
+                </Label>
+                <Input
+                  id="address"
+                  type="text"
+                  placeholder="Masukan alamat"
+                  className={`h-10 sm:h-11 ${errors.address ? "border-red-500" : ""}`}
+                  {...register("address")}
+                />
+                {errors.address && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.address.message}</p>}
+              </div>
+
               <div className="space-y-2 sm:space-y-1">
                 <Label
                   htmlFor="picName"
@@ -158,11 +224,14 @@ const RegisterEODataForm = () => {
                 </Label>
                 <Input
                   id="picName"
-                  type={"text"}
+                  type="text"
                   placeholder="Masukan nama lengkap penanggung jawab"
-                  className="h-10 sm:h-11"
+                  className={`h-10 sm:h-11 ${errors.picName ? "border-red-500" : ""}`}
+                  {...register("picName")}
                 />
+                {errors.picName && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.picName.message}</p>}
               </div>
+
               <div className="space-y-2 sm:space-y-1">
                 <Label
                   htmlFor="whatsapp"
@@ -172,11 +241,14 @@ const RegisterEODataForm = () => {
                 </Label>
                 <Input
                   id="whatsapp"
-                  type={"text"}
+                  type="text"
                   placeholder="Masukan nomor whatsapp penanggung jawab"
-                  className="h-10 sm:h-11"
+                  className={`h-10 sm:h-11 ${errors.whatsapp ? "border-red-500" : ""}`}
+                  {...register("whatsapp")}
                 />
+                {errors.whatsapp && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.whatsapp.message}</p>}
               </div>
+
               <div className="space-y-2 sm:space-y-1">
                 <Label
                   htmlFor="bankName"
@@ -186,11 +258,14 @@ const RegisterEODataForm = () => {
                 </Label>
                 <Input
                   id="bankName"
-                  type={"text"}
+                  type="text"
                   placeholder="Masukan nama bank"
-                  className="h-10 sm:h-11"
+                  className={`h-10 sm:h-11 ${errors.bankName ? "border-red-500" : ""}`}
+                  {...register("bankName")}
                 />
+                {errors.bankName && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.bankName.message}</p>}
               </div>
+
               <div className="space-y-2 sm:space-y-1">
                 <Label
                   htmlFor="bankNumber"
@@ -200,17 +275,21 @@ const RegisterEODataForm = () => {
                 </Label>
                 <Input
                   id="bankNumber"
-                  type={"text"}
+                  type="text"
                   placeholder="Masukan nomor rekening bank"
-                  className="h-10 sm:h-11"
+                  className={`h-10 sm:h-11 ${errors.bankNumber ? "border-red-500" : ""}`}
+                  {...register("bankNumber")}
                 />
+                {errors.bankNumber && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.bankNumber.message}</p>}
               </div>
+
               <Button
+                disabled={isLoading}
                 variant={"secondary"}
                 className="mt-6 h-10 w-full text-sm sm:mt-8 sm:h-11 sm:text-base"
                 type="submit"
               >
-                Simpan
+                {isLoading ? "Memproses..." : "Simpan"}
               </Button>
             </form>
           </div>
