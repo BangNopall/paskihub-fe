@@ -6,6 +6,7 @@ import Link from "next/link"
 import { Check, XCircle, Loader2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
+import { verifyEmailAction } from "@/actions/auth.actions"
 
 // ==========================================
 // 1. TYPESCRIPT INTERFACES (API-Ready)
@@ -43,28 +44,14 @@ export default function VerifyEmailPage() {
 
     const verifyAccount = async () => {
       try {
-        // TODO: Integrasi API POST /api/auth/verify-email
-        // Contoh Payload: { email: decodeURIComponent(email), token }
-        console.log(
-          `Mencoba verifikasi untuk email: ${decodeURIComponent(email)} dengan token: ${token}`
-        )
-
-        // Simulasi network delay
-        await new Promise((resolve) => setTimeout(resolve, 2000))
-
-        // Simulasi kondisi berhasil (ubah ke `false` untuk test error)
-        const isApiSuccess = true
-
-        if (isApiSuccess) {
+        const res = await verifyEmailAction(decodeURIComponent(email), token);
+        if (res.success) {
           setStatus("success")
         } else {
           setStatus("error")
-          setErrorMessage(
-            "Token verifikasi telah kedaluwarsa atau tidak valid."
-          )
+          setErrorMessage(res.message)
         }
       } catch (error) {
-        console.error("Gagal melakukan verifikasi:", error)
         setStatus("error")
         setErrorMessage(
           "Terjadi kesalahan pada server. Silakan coba beberapa saat lagi."
