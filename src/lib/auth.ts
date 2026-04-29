@@ -37,7 +37,7 @@ export const authOptions: NextAuthOptions = {
             name: parsed.data.user.name,
             accessToken: parsed.data.access_token,
           };
-        } catch (e) {
+        } catch {
           return null;
         }
       }
