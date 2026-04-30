@@ -6,13 +6,51 @@ export default withAuth(
     const { pathname } = req.nextUrl;
     const token = req.nextauth.token;
 
-    // If authenticated user tries to access login or register page
-    if (token && (pathname.startsWith("/auth/login") || pathname === "/auth/register" || pathname === "/auth/forgot-password")) {
-      const role = (token.role as string)?.toLowerCase();
-      // Redirect to their respective dashboard based on role
-      if (role === "eo" || role === "organizer") {
+    // 1. If authenticated user tries to access auth pages
+    const isAuthPage = pathname.startsWith("/auth/login") || 
+                       pathname === "/auth/register" || 
+                       pathname.startsWith("/auth/forgot-password") || 
+                       pathname.startsWith("/auth/verify-email");
+
+    if (token && isAuthPage) {
+      const role = (token.role as string)?.toUpperCase();
+      const name = (token.name as string);
+
+      // If profile is incomplete (name is empty), redirect to data form
+      if (!name || name.trim() === "") {
+        if (role === "ORGANIZER") {
+          return NextResponse.redirect(new URL("/auth/register/eo/data-form", req.url));
+        } else {
+          return NextResponse.redirect(new URL("/auth/register/peserta/data-form", req.url));
+        }
+      }
+
+      // Otherwise, redirect to dashboard
+      if (role === "ORGANIZER") {
         return NextResponse.redirect(new URL("/organizer/dashboard", req.url));
-      } else if (role === "admin") {
+      } else if (role === "ADMIN") {
+        return NextResponse.redirect(new URL("/admin/dashboard", req.url));
+      } else {
+        return NextResponse.redirect(new URL("/peserta/dashboard", req.url));
+      }
+    }
+
+    // 2. Protect root path "/" for logged-in users, redirecting them appropriately
+    if (token && pathname === "/") {
+      const role = (token.role as string)?.toUpperCase();
+      const name = (token.name as string);
+
+      if (!name || name.trim() === "") {
+        if (role === "ORGANIZER") {
+          return NextResponse.redirect(new URL("/auth/register/eo/data-form", req.url));
+        } else {
+          return NextResponse.redirect(new URL("/auth/register/peserta/data-form", req.url));
+        }
+      }
+
+      if (role === "ORGANIZER") {
+        return NextResponse.redirect(new URL("/organizer/dashboard", req.url));
+      } else if (role === "ADMIN") {
         return NextResponse.redirect(new URL("/admin/dashboard", req.url));
       } else {
         return NextResponse.redirect(new URL("/peserta/dashboard", req.url));
