@@ -9,10 +9,10 @@ export const loginFormSchema = z.object({
 export const registerFormSchema = z.object({
   email: z.string().email("Email tidak valid"),
   password: z.string().min(8, "Password minimal 8 karakter"),
-  confirmPassword: z.string().min(8, "Password minimal 8 karakter"),
-}).refine((data) => data.password === data.confirmPassword, {
+  confirm_password: z.string().min(8, "Password minimal 8 karakter"),
+}).refine((data) => data.password === data.confirm_password, {
   message: "Password tidak cocok",
-  path: ["confirmPassword"],
+  path: ["confirm_password"],
 });
 
 export const forgotPasswordSchema = z.object({
@@ -21,10 +21,10 @@ export const forgotPasswordSchema = z.object({
 
 export const resetPasswordSchema = z.object({
   password: z.string().min(8, "Password minimal 8 karakter"),
-  confirmPassword: z.string().min(8, "Password minimal 8 karakter"),
-}).refine((data) => data.password === data.confirmPassword, {
+  confirm_password: z.string().min(8, "Password minimal 8 karakter"),
+}).refine((data) => data.password === data.confirm_password, {
   message: "Password tidak cocok",
-  path: ["confirmPassword"],
+  path: ["confirm_password"],
 });
 
 // API Response Schemas

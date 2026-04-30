@@ -22,7 +22,7 @@ import { registerAction } from "@/actions/auth.actions"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 
-const RegisterForm = ({ role }: { role: "peserta" | "eo" }) => {
+const RegisterForm = ({ role }: { role: "PESERTA" | "ORGANIZER" }) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false)
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -106,8 +106,8 @@ const RegisterForm = ({ role }: { role: "peserta" | "eo" }) => {
               id={`${role}ConfirmPassword`}
               type={isConfirmPasswordVisible ? "text" : "password"}
               placeholder="••••••••••••••••"
-              className={`pr-9 h-10 sm:h-11 ${errors.confirmPassword ? "border-red-500" : ""}`}
-              {...register("confirmPassword")}
+              className={`pr-9 h-10 sm:h-11 ${errors.confirm_password ? "border-red-500" : ""}`}
+              {...register("confirm_password")}
             />
             <Button
               variant="ghost"
@@ -126,7 +126,7 @@ const RegisterForm = ({ role }: { role: "peserta" | "eo" }) => {
               </span>
             </Button>
           </div>
-          {errors.confirmPassword && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.confirmPassword.message}</p>}
+          {errors.confirm_password && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.confirm_password.message}</p>}
         </div>
 
         <Button disabled={isLoading} className="w-full h-10 sm:h-11 mt-4 sm:mt-6 text-sm sm:text-base" variant={"secondary"} type="submit">
@@ -148,12 +148,12 @@ const tabs = [
   {
     name: "Peserta",
     value: "peserta", // Keep value for tabs UI
-    content: () => <RegisterForm role="peserta" />,
+    content: () => <RegisterForm role="PESERTA" />,
   },
   {
     name: "Event Organizer",
     value: "organizer",
-    content: () => <RegisterForm role="eo" />,
+    content: () => <RegisterForm role="ORGANIZER" />,
   },
 ]
 

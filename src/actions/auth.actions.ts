@@ -7,13 +7,13 @@ import {
   resetPasswordSchema, ResetPasswordFormData
 } from "@/schemas/auth.schema";
 
-export async function registerAction(role: "eo" | "peserta", data: RegisterFormData) {
+export async function registerAction(role: "ORGANIZER" | "PESERTA", data: RegisterFormData) {
   try {
     const parsed = registerFormSchema.parse(data);
     await authService.register(role, parsed);
     return { success: true, message: "Registrasi berhasil. Silakan cek email Anda." };
   } catch (error: any) {
-    return { success: false, message: error.message || "Terjadi kesalahan" };
+    return { success: false, message: error.message };
   }
 }
 
