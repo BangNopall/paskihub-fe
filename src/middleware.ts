@@ -8,10 +8,11 @@ export default withAuth(
 
     // If authenticated user tries to access login or register page
     if (token && (pathname.startsWith("/auth/login") || pathname === "/auth/register" || pathname === "/auth/forgot-password")) {
+      const role = (token.role as string)?.toLowerCase();
       // Redirect to their respective dashboard based on role
-      if (token.role === "eo" || token.role === "organizer") {
+      if (role === "eo" || role === "organizer") {
         return NextResponse.redirect(new URL("/organizer/dashboard", req.url));
-      } else if (token.role === "admin") {
+      } else if (role === "admin") {
         return NextResponse.redirect(new URL("/admin/dashboard", req.url));
       } else {
         return NextResponse.redirect(new URL("/peserta/dashboard", req.url));

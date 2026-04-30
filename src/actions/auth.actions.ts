@@ -13,7 +13,7 @@ export async function registerAction(role: "ORGANIZER" | "PESERTA", data: Regist
     await authService.register(role, parsed);
     return { success: true, message: "Registrasi berhasil. Silakan cek email Anda." };
   } catch (error: any) {
-    return { success: false, message: error.message };
+    return { success: false, message: error.message || "Terjadi kesalahan" };
   }
 }
 

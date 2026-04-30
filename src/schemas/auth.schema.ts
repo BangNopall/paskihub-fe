@@ -35,12 +35,12 @@ export const baseResponseSchema = z.object({
 
 export const loginResponseSchema = z.object({
   data: z.object({
-    access_token: z.string(),
+    token: z.string(),
     user: z.object({
-      id: z.string(),
-      email: z.string(),
-      role: z.string(),
-      name: z.string().optional(),
+      id: z.string().optional().or(z.literal("")),
+      email: z.string().optional().or(z.literal("")),
+      role: z.string().optional().or(z.literal("")),
+      name: z.string().optional().or(z.literal("")),
     }),
   }),
 });

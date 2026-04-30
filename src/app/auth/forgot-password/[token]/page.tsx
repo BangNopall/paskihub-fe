@@ -27,7 +27,7 @@ export default function ResetPasswordPage() {
 
   const { register, handleSubmit, formState: { errors } } = useForm<ResetPasswordFormData>({
     resolver: zodResolver(resetPasswordSchema),
-    defaultValues: { password: "", confirmPassword: "" }
+    defaultValues: { password: "", confirm_password: "" }
   })
 
   const onSubmit = async (data: ResetPasswordFormData) => {
@@ -119,26 +119,26 @@ export default function ResetPasswordPage() {
               {/* Field Konfirmasi Password */}
               <div className="flex flex-col gap-2">
                 <Label
-                  htmlFor="confirmPassword"
+                  htmlFor="confirm_password"
                   className={cn(
                     "font-poppins text-sm font-medium sm:text-base",
-                    errors.confirmPassword ? "text-red-600" : "text-neutral-700"
+                    errors.confirm_password ? "text-red-600" : "text-neutral-700"
                   )}
                 >
                   Konfirmasi Password Baru
                 </Label>
                 <div className="relative flex items-center">
                   <Input
-                    id="confirmPassword"
+                    id="confirm_password"
                     type={showConfirmPassword ? "text" : "password"}
                     placeholder="Masukkan ulang kata sandi baru"
                     className={cn(
                       "h-12 bg-white pr-12 font-poppins text-sm shadow-sm sm:h-14 sm:text-base",
-                      errors.confirmPassword ? "border-red-500 focus-visible:ring-red-200" : "border-gray-200 focus-visible:ring-sky-200"
+                      errors.confirm_password ? "border-red-500 focus-visible:ring-red-200" : "border-gray-200 focus-visible:ring-sky-200"
                     )}
-                    {...register("confirmPassword")}
+                    {...register("confirm_password")}
                   />
-                  {errors.confirmPassword ? (
+                  {errors.confirm_password ? (
                     <div className="absolute right-3">
                       <XCircle className="h-5 w-5 text-red-500" />
                     </div>
@@ -157,9 +157,9 @@ export default function ResetPasswordPage() {
                     </button>
                   )}
                 </div>
-                {errors.confirmPassword && (
+                {errors.confirm_password && (
                   <span className="font-poppins text-xs font-medium text-red-500 sm:text-sm">
-                    *{errors.confirmPassword.message}
+                    *{errors.confirm_password.message}
                   </span>
                 )}
               </div>

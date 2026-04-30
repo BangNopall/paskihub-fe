@@ -31,23 +31,13 @@ export default function VerifyEmail() {
         <CardContent>
           <div className="justify-center text-center px-1 sm:px-4 md:px-8">
             <span className="text-sm sm:text-base leading-5 sm:leading-6 font-normal text-muted-foreground">
-              Kami telah mengirimkan email kepada kamu di{" "}
-            </span>
-            <span className="text-sm sm:text-base leading-5 sm:leading-6 font-bold text-muted-foreground">
-              loremipsum@email.com
+              Kami telah mengirimkan email kepada kamu
             </span>
             <span className="text-sm sm:text-base leading-5 sm:leading-6 font-normal text-muted-foreground">
               . Periksa dan ikuti instruksi untuk menyelesaikan proses
               pendaftaran.
             </span>
           </div>
-          <Button
-            variant={"secondary"}
-            className="mt-6 sm:mt-8 h-10 w-full text-sm sm:h-11 sm:text-base"
-            type="submit"
-          >
-            Kirim Ulang Email
-          </Button>
           <p className="mt-4 text-center text-sm sm:text-base text-muted-foreground sm:mt-6">
             Alamat email salah?{" "}
             <Link

@@ -39,6 +39,7 @@ const Login = () => {
         email: data.email,
         password: data.password,
       });
+      console.log(res)
 
       if (res?.error) {
         toast.error("Gagal Masuk", { description: "Email atau password salah." });

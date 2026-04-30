@@ -147,7 +147,7 @@ const RegisterForm = ({ role }: { role: "PESERTA" | "ORGANIZER" }) => {
 const tabs = [
   {
     name: "Peserta",
-    value: "peserta", // Keep value for tabs UI
+    value: "peserta", // UI value
     content: () => <RegisterForm role="PESERTA" />,
   },
   {
