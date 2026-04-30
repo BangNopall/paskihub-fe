@@ -1,4 +1,5 @@
 import { EODataFormData, PesertaDataFormData } from "@/schemas/profile.schema";
+import { safeJson } from "@/lib/utils";
 
 const API_URL = process.env.API_BASE_URL || "http://localhost:3010";
 const API_KEY = process.env.API_KEY;
@@ -15,10 +16,10 @@ export const profileService = {
       body: JSON.stringify(data),
     });
     if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || "Failed to create event");
+      const err = await safeJson(res).catch(() => ({}));
+      throw new Error(err?.message || "Failed to create event");
     }
-    return res.json();
+    return safeJson(res);
   },
 
   async updatePesertaProfile(data: PesertaDataFormData, token: string) {
@@ -32,9 +33,9 @@ export const profileService = {
       body: JSON.stringify(data),
     });
     if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || "Failed to update profile");
+      const err = await safeJson(res).catch(() => ({}));
+      throw new Error(err?.message || "Failed to update profile");
     }
-    return res.json();
+    return safeJson(res);
   }
 };
