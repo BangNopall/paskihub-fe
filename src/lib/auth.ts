@@ -2,6 +2,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { loginResponseSchema } from "@/schemas/auth.schema";
 
 const API_URL = process.env.API_BASE_URL || "http://localhost:3010";
+const API_KEY = process.env.API_KEY;
 
 export const authOptions: any = {
   providers: [
@@ -17,7 +18,10 @@ export const authOptions: any = {
         try {
           const res = await fetch(`${API_URL}/api/v1/users/login`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+              'Content-Type': 'application/json',
+              'x-api-key': API_KEY || ""
+            },
             body: JSON.stringify({
               email: credentials.email,
               password: credentials.password
