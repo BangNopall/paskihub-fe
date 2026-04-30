@@ -32,15 +32,31 @@ export const authOptions: any = {
           }
 
           const data = await res.json()
+          console.log("Response data:", data)
           const parsed = loginResponseSchema.parse(data)
+          
+          let tokenPayload: any = {};
+          if (parsed.data.token) {
+            try {
+              const base64Url = parsed.data.token.split('.')[1];
+              const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+              const jsonPayload = Buffer.from(base64, 'base64').toString('utf-8');
+              tokenPayload = JSON.parse(jsonPayload);
+            } catch (e) {
+              console.error("Failed to decode token", e);
+            }
+          }
+
+          console.log("Token payload:", tokenPayload);
 
           return {
-            id: parsed.data.user.id || "",
-            email: parsed.data.user.email || credentials.email,
-            role: parsed.data.user.role || "",
+            id: parsed.data.user?.id || tokenPayload?.Id || "",
+            email: parsed.data.user?.email || tokenPayload?.Email || credentials.email,
+            role: parsed.data.user?.role || tokenPayload?.Role || "",
             accessToken: parsed.data.token,
           }
         } catch (error: any) {
+          console.error("Auth error:", error);
           return null
         }
       },

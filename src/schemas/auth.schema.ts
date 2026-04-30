@@ -41,7 +41,7 @@ export const loginResponseSchema = z.object({
       email: z.string().optional().or(z.literal("")),
       role: z.string().optional().or(z.literal("")),
       name: z.string().optional().or(z.literal("")),
-    }),
+    }).optional(),
   }),
 });
 

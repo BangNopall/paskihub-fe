@@ -134,50 +134,19 @@ const RegisterEODataForm = () => {
 
               <div className="space-y-2 sm:space-y-1">
                 <Label
-                  htmlFor="level"
-                  className="text-sm leading-5 sm:text-base"
-                >
-                  Tingkat
-                </Label>
-                <Controller
-                  name="level"
-                  control={control}
-                  render={({ field }) => (
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <SelectTrigger className={`w-full h-10 sm:h-11 text-sm sm:text-base px-3 ${errors.level ? "border-red-500" : ""}`}>
-                        <SelectValue placeholder="Pilih Tingkat" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          <SelectLabel>Tingkat</SelectLabel>
-                          <SelectItem value="sd">SD/MI</SelectItem>
-                          <SelectItem value="smp">SMP/MTS</SelectItem>
-                          <SelectItem value="sma">SMA/SMK/MA</SelectItem>
-                          <SelectItem value="purna">PURNA</SelectItem>
-                          <SelectItem value="umum">UMUM</SelectItem>
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-                {errors.level && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.level.message}</p>}
-              </div>
-
-              <div className="space-y-2 sm:space-y-1">
-                <Label
-                  htmlFor="schoolName"
+                  htmlFor="organizer"
                   className="text-sm leading-5 sm:text-base"
                 >
                   Nama Sekolah/Instansi/Penyelenggara
                 </Label>
                 <Input
-                  id="schoolName"
+                  id="organizer"
                   type="text"
                   placeholder="Masukan nama sekolah/instansi/penyelenggara"
-                  className={`h-10 sm:h-11 ${errors.schoolName ? "border-red-500" : ""}`}
-                  {...register("schoolName")}
+                  className={`h-10 sm:h-11 ${errors.organizer ? "border-red-500" : ""}`}
+                  {...register("organizer")}
                 />
-                {errors.schoolName && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.schoolName.message}</p>}
+                {errors.organizer && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.organizer.message}</p>}
               </div>
 
               <div className="space-y-2 sm:space-y-1">
@@ -217,70 +186,70 @@ const RegisterEODataForm = () => {
 
               <div className="space-y-2 sm:space-y-1">
                 <Label
-                  htmlFor="picName"
+                  htmlFor="nama_pj"
                   className="text-sm leading-5 sm:text-base"
                 >
                   Nama Lengkap Penanggung Jawab
                 </Label>
                 <Input
-                  id="picName"
+                  id="nama_pj"
                   type="text"
                   placeholder="Masukan nama lengkap penanggung jawab"
-                  className={`h-10 sm:h-11 ${errors.picName ? "border-red-500" : ""}`}
-                  {...register("picName")}
+                  className={`h-10 sm:h-11 ${errors.nama_pj ? "border-red-500" : ""}`}
+                  {...register("nama_pj")}
                 />
-                {errors.picName && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.picName.message}</p>}
+                {errors.nama_pj && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.nama_pj.message}</p>}
               </div>
 
               <div className="space-y-2 sm:space-y-1">
                 <Label
-                  htmlFor="whatsapp"
+                  htmlFor="no_wa_pj"
                   className="text-sm leading-5 sm:text-base"
                 >
                   Nomor Whatsapp Penanggung Jawab
                 </Label>
                 <Input
-                  id="whatsapp"
+                  id="no_wa_pj"
                   type="text"
                   placeholder="Masukan nomor whatsapp penanggung jawab"
-                  className={`h-10 sm:h-11 ${errors.whatsapp ? "border-red-500" : ""}`}
-                  {...register("whatsapp")}
+                  className={`h-10 sm:h-11 ${errors.no_wa_pj ? "border-red-500" : ""}`}
+                  {...register("no_wa_pj")}
                 />
-                {errors.whatsapp && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.whatsapp.message}</p>}
+                {errors.no_wa_pj && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.no_wa_pj.message}</p>}
               </div>
 
               <div className="space-y-2 sm:space-y-1">
                 <Label
-                  htmlFor="bankName"
+                  htmlFor="bank_name"
                   className="text-sm leading-5 sm:text-base"
                 >
                   Nama Bank
                 </Label>
                 <Input
-                  id="bankName"
+                  id="bank_name"
                   type="text"
                   placeholder="Masukan nama bank"
-                  className={`h-10 sm:h-11 ${errors.bankName ? "border-red-500" : ""}`}
-                  {...register("bankName")}
+                  className={`h-10 sm:h-11 ${errors.bank_name ? "border-red-500" : ""}`}
+                  {...register("bank_name")}
                 />
-                {errors.bankName && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.bankName.message}</p>}
+                {errors.bank_name && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.bank_name.message}</p>}
               </div>
 
               <div className="space-y-2 sm:space-y-1">
                 <Label
-                  htmlFor="bankNumber"
+                  htmlFor="bank_number"
                   className="text-sm leading-5 sm:text-base"
                 >
                   Nomor Rekening Bank
                 </Label>
                 <Input
-                  id="bankNumber"
+                  id="bank_number"
                   type="text"
                   placeholder="Masukan nomor rekening bank"
-                  className={`h-10 sm:h-11 ${errors.bankNumber ? "border-red-500" : ""}`}
-                  {...register("bankNumber")}
+                  className={`h-10 sm:h-11 ${errors.bank_number ? "border-red-500" : ""}`}
+                  {...register("bank_number")}
                 />
-                {errors.bankNumber && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.bankNumber.message}</p>}
+                {errors.bank_number && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.bank_number.message}</p>}
               </div>
 
               <Button
