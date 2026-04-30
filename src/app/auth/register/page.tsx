@@ -22,7 +22,7 @@ import { registerAction } from "@/actions/auth.actions"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 
-const RegisterForm = ({ role }: { role: "PESERTA" | "ORGANIZER" }) => {
+const RegisterForm = ({ role }: { role: "peserta" | "eo" }) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false)
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -148,12 +148,12 @@ const tabs = [
   {
     name: "Peserta",
     value: "peserta", // Keep value for tabs UI
-    content: () => <RegisterForm role="PESERTA" />,
+    content: () => <RegisterForm role="peserta" />,
   },
   {
     name: "Event Organizer",
     value: "organizer",
-    content: () => <RegisterForm role="ORGANIZER" />,
+    content: () => <RegisterForm role="eo" />,
   },
 ]
 

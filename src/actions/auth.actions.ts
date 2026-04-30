@@ -7,19 +7,12 @@ import {
   resetPasswordSchema, ResetPasswordFormData
 } from "@/schemas/auth.schema";
 
-export async function registerAction(role: "ORGANIZER" | "PESERTA", data: RegisterFormData) {
+export async function registerAction(role: "eo" | "peserta", data: RegisterFormData) {
   try {
     const parsed = registerFormSchema.parse(data);
-    const response = await authService.register(role, parsed);
-    
-    // Check for explicit error flags from backend even if res.ok was true
-    if (response && (response.status === "error" || response.error)) {
-        throw new Error(response.message || "Gagal menyimpan data ke database");
-    }
-
+    await authService.register(role, parsed);
     return { success: true, message: "Registrasi berhasil. Silakan cek email Anda." };
   } catch (error: any) {
-    console.error("Register Action Error:", error);
     return { success: false, message: error.message || "Terjadi kesalahan" };
   }
 }
