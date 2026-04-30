@@ -72,7 +72,3 @@ export const authOptions: any = {
     strategy: "jwt",
   }
 };
-sion: {
-    strategy: "jwt",
-  }
-};
