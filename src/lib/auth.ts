@@ -38,7 +38,6 @@ export const authOptions: any = {
             id: parsed.data.user.id || "",
             email: parsed.data.user.email || credentials.email,
             role: parsed.data.user.role || "",
-            name: parsed.data.user.name || "",
             accessToken: parsed.data.token,
           }
         } catch (error: any) {
@@ -53,6 +52,7 @@ export const authOptions: any = {
         token.id = user.id
         token.role = user.role
         token.accessToken = user.accessToken
+        token.name = user.name
       }
       return token
     },
@@ -61,6 +61,7 @@ export const authOptions: any = {
         session.user.id = token.id
         session.user.role = token.role
         session.accessToken = token.accessToken
+        session.user.name = token.name
       }
       return session
     },
