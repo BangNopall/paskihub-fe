@@ -45,7 +45,7 @@ const Login = () => {
         toast.error("Gagal Masuk", { description: "Email atau password salah." });
       } else {
         toast.success("Berhasil", { description: "Anda berhasil masuk." });
-        router.push("/peserta/dashboard"); // Modify as needed based on role redirect
+        router.push("/"); // Middleware will intercept and redirect appropriately
         router.refresh();
       }
     } catch (e: any) {
