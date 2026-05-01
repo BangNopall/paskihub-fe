@@ -63,19 +63,19 @@ const RegisterPesertaDataForm = () => {
             <form className="space-y-4 sm:space-y-6" onSubmit={handleSubmit(onSubmit)}>
               <div className="space-y-2 sm:space-y-1">
                 <Label
-                  htmlFor="instansiName"
+                  htmlFor="name"
                   className="text-sm leading-5 sm:text-base"
                 >
                   Nama Instansi/Sekolah
                 </Label>
                 <Input
                   type="text"
-                  id="instansiName"
+                  id="name"
                   placeholder="Masukan nama instansi"
-                  className={`h-10 sm:h-11 ${errors.instansiName ? "border-red-500" : ""}`}
-                  {...register("instansiName")}
+                  className={`h-10 sm:h-11 ${errors.name ? "border-red-500" : ""}`}
+                  {...register("name")}
                 />
-                {errors.instansiName && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.instansiName.message}</p>}
+                {errors.name && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.name.message}</p>}
               </div>
               <div className="space-y-2 sm:space-y-1">
                 <Label
@@ -95,65 +95,65 @@ const RegisterPesertaDataForm = () => {
               </div>
               <div className="space-y-2 sm:space-y-1">
                 <Label
-                  htmlFor="level"
+                  htmlFor="institution_type"
                   className="text-sm leading-5 sm:text-base"
                 >
                   Tingkat
                 </Label>
                 <Controller
-                  name="level"
+                  name="institution_type"
                   control={control}
                   render={({ field }) => (
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <SelectTrigger className={`w-full h-10 sm:h-11 text-sm sm:text-base px-3 ${errors.level ? "border-red-500" : ""}`}>
+                      <SelectTrigger className={`w-full h-10 sm:h-11 text-sm sm:text-base px-3 ${errors.institution_type ? "border-red-500" : ""}`}>
                         <SelectValue placeholder="Pilih Tingkat" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
                           <SelectLabel>Tingkat</SelectLabel>
-                          <SelectItem value="sd">SD/MI</SelectItem>
-                          <SelectItem value="smp">SMP/MTS</SelectItem>
-                          <SelectItem value="sma">SMA/SMK/MA</SelectItem>
-                          <SelectItem value="purna">PURNA</SelectItem>
-                          <SelectItem value="umum">UMUM</SelectItem>
+                          <SelectItem value="SD">SD/MI</SelectItem>
+                          <SelectItem value="SMP">SMP/MTS</SelectItem>
+                          <SelectItem value="SMA">SMA/SMK/MA</SelectItem>
+                          <SelectItem value="PURNA">PURNA</SelectItem>
+                          <SelectItem value="UMUM">UMUM</SelectItem>
                         </SelectGroup>
                       </SelectContent>
                     </Select>
                   )}
                 />
-                {errors.level && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.level.message}</p>}
+                {errors.institution_type && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.institution_type.message}</p>}
               </div>
               <div className="space-y-2 sm:space-y-1">
                 <Label
-                  htmlFor="picName"
+                  htmlFor="name_pj"
                   className="text-sm leading-5 sm:text-base"
                 >
                   Nama Penanggung Jawab
                 </Label>
                 <Input
-                  id="picName"
+                  id="name_pj"
                   type="text"
                   placeholder="Masukan nama penanggung jawab"
-                  className={`h-10 sm:h-11 ${errors.picName ? "border-red-500" : ""}`}
-                  {...register("picName")}
+                  className={`h-10 sm:h-11 ${errors.name_pj ? "border-red-500" : ""}`}
+                  {...register("name_pj")}
                 />
-                {errors.picName && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.picName.message}</p>}
+                {errors.name_pj && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.name_pj.message}</p>}
               </div>
               <div className="space-y-2 sm:space-y-1">
                 <Label
-                  htmlFor="picWhatsapp"
+                  htmlFor="no_wa_pj"
                   className="text-sm leading-5 sm:text-base"
                 >
                   Nomor Whatsapp Penanggung Jawab
                 </Label>
                 <Input
-                  id="picWhatsapp"
+                  id="no_wa_pj"
                   type="text"
                   placeholder="Masukan nomor whatsapp penanggung jawab"
-                  className={`h-10 sm:h-11 ${errors.picWhatsapp ? "border-red-500" : ""}`}
-                  {...register("picWhatsapp")}
+                  className={`h-10 sm:h-11 ${errors.no_wa_pj ? "border-red-500" : ""}`}
+                  {...register("no_wa_pj")}
                 />
-                {errors.picWhatsapp && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.picWhatsapp.message}</p>}
+                {errors.no_wa_pj && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.no_wa_pj.message}</p>}
               </div>
               <Button
                 disabled={isLoading}

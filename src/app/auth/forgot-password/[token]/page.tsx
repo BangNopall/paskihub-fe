@@ -33,11 +33,12 @@ export default function ResetPasswordPage() {
   const onSubmit = async (data: ResetPasswordFormData) => {
     setIsSubmitting(true)
     try {
-      const res = await resetPasswordAction(decodeURIComponent(token), data)
+      const res = await resetPasswordAction(token, data)
       if (res.success) {
         toast.success("Berhasil", { description: res.message })
         router.push("/auth/login")
       } else {
+        console.log(res)
         toast.error("Gagal", { description: res.message })
       }
     } catch {

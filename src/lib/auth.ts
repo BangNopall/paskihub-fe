@@ -32,6 +32,7 @@ export const authOptions: any = {
           }
 
           const data = await res.json()
+
           const parsed = loginResponseSchema.parse(data)
           return {
             id: parsed.data.id || "",
@@ -40,7 +41,7 @@ export const authOptions: any = {
             accessToken: parsed.data.token,
           }
         } catch (error: any) {
-          console.error("Auth error:", error);
+          console.error("Auth error:", error)
           return null
         }
       },
@@ -51,8 +52,8 @@ export const authOptions: any = {
       if (user) {
         token.id = user.id
         token.role = user.role
+        token.email = user.email
         token.accessToken = user.accessToken
-        token.name = user.name
       }
       return token
     },
@@ -60,8 +61,8 @@ export const authOptions: any = {
       if (token && session.user) {
         session.user.id = token.id
         session.user.role = token.role
+        session.user.email = token.email
         session.accessToken = token.accessToken
-        session.user.name = token.name
       }
       return session
     },

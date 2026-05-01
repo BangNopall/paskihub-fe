@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Montserrat } from "@/lib/fonts"
@@ -33,15 +33,31 @@ import { useRouter } from "next/navigation"
 
 const RegisterEODataForm = () => {
   const [date, setDate] = useState<DateRange | undefined>({
-    from: new Date(new Date().getFullYear(), 0, 20),
-    to: addDays(new Date(new Date().getFullYear(), 0, 20), 20),
+    from: new Date(),
+    to: addDays(new Date(), 30),
   })
+  const [openTime, setOpenTime] = useState("00:00")
+  const [closeTime, setCloseTime] = useState("23:59")
+  
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
-  const { register, handleSubmit, control, formState: { errors } } = useForm<EODataFormData>({
+  const { register, handleSubmit, control, setValue, formState: { errors } } = useForm<EODataFormData>({
     resolver: zodResolver(eoDataFormSchema),
+    defaultValues: {
+      open_date: `${format(new Date(), "yyyy-MM-dd")} 00:00:00`,
+      close_date: `${format(addDays(new Date(), 30), "yyyy-MM-dd")} 23:59:00`,
+    }
   })
+
+  useEffect(() => {
+    if (date?.from) {
+      setValue("open_date", `${format(date.from, "yyyy-MM-dd")} ${openTime}:00`)
+    }
+    if (date?.to) {
+      setValue("close_date", `${format(date.to, "yyyy-MM-dd")} ${closeTime}:00`)
+    }
+  }, [date, openTime, closeTime, setValue])
 
   const onSubmit = async (data: EODataFormData) => {
     setIsLoading(true)
@@ -108,11 +124,11 @@ const RegisterEODataForm = () => {
                         {date?.from ? (
                           date.to ? (
                             <>
-                              {format(date.from, "LLL dd, y")} -{" "}
-                              {format(date.to, "LLL dd, y")}
+                              {format(date.from, "LLL dd, y")} {openTime} -{" "}
+                              {format(date.to, "LLL dd, y")} {closeTime}
                             </>
                           ) : (
-                            format(date.from, "LLL dd, y")
+                            `${format(date.from, "LLL dd, y")} ${openTime}`
                           )
                         ) : (
                           <span>Pick a date</span>
@@ -127,6 +143,26 @@ const RegisterEODataForm = () => {
                         onSelect={setDate}
                         numberOfMonths={2}
                       />
+                      <div className="p-3 flex items-center gap-4 border-t border-border bg-muted/30">
+                        <div className="flex flex-col flex-1">
+                          <Label className="text-xs mb-1.5 text-muted-foreground">Waktu Buka</Label>
+                          <Input 
+                            type="time" 
+                            value={openTime} 
+                            onChange={(e) => setOpenTime(e.target.value)} 
+                            className="h-8 text-xs font-medium" 
+                          />
+                        </div>
+                        <div className="flex flex-col flex-1">
+                          <Label className="text-xs mb-1.5 text-muted-foreground">Waktu Tutup</Label>
+                          <Input 
+                            type="time" 
+                            value={closeTime} 
+                            onChange={(e) => setCloseTime(e.target.value)} 
+                            className="h-8 text-xs font-medium" 
+                          />
+                        </div>
+                      </div>
                     </PopoverContent>
                   </Popover>
                 </Field>
@@ -154,12 +190,12 @@ const RegisterEODataForm = () => {
                   htmlFor="location"
                   className="text-sm leading-5 sm:text-base"
                 >
-                  Lokasi
+                  Lokasi Kota
                 </Label>
                 <Input
                   id="location"
                   type="text"
-                  placeholder="Masukan lokasi"
+                  placeholder="Masukan lokasi nama kota"
                   className={`h-10 sm:h-11 ${errors.location ? "border-red-500" : ""}`}
                   {...register("location")}
                 />

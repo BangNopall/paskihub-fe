@@ -68,11 +68,38 @@ const navMain = [
     },
   ]
 
-export default function DashboardPesertaLayout({
+import { getServerSession } from "next-auth"
+import { redirect } from "next/navigation"
+import { authOptions } from "@/lib/auth"
+import { profileService } from "@/services/profile.service"
+
+export default async function DashboardPesertaLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const session = await getServerSession(authOptions)
+  if (!session) redirect("/auth/login")
+
+  const response = await profileService.getPesertaProfile(session.accessToken)
+  const pesertaData = response
+
+  if (!pesertaData || (Array.isArray(pesertaData) && pesertaData.length === 0) || !pesertaData.institution) {
+    redirect("/auth/register/peserta/data-form")
+  }
+
+  const inst = pesertaData.institution
+  const isProfileIncomplete =
+    !inst.name ||
+    !inst.address ||
+    !inst.institution_type ||
+    !inst.name_pj ||
+    !inst.no_wa_pj
+
+  if (isProfileIncomplete) {
+    redirect("/auth/register/peserta/data-form")
+  }
+
   return (
     <SidebarProvider
       style={

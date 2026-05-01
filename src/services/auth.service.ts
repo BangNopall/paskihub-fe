@@ -39,13 +39,14 @@ export const authService = {
   },
 
   async resetPassword(token: string, data: ResetPasswordFormData) {
+    console.log(token)
     const res = await fetch(`${API_URL}/api/v1/users/reset-password/${token}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
         "x-api-key": API_KEY || "",
       },
-      body: JSON.stringify({ password: data.password }),
+      body: JSON.stringify(data),
     })
     if (!res.ok) throw new Error("Gagal mereset password")
     return res.json()
