@@ -71,9 +71,6 @@ export default async function OrganizerEventDetailPage() {
       name: l.name,
       regis_fee: l.regis_fee,
       dp_fee: l.dp_fee,
-      registered: l.registered,
-      remaining: l.remaining,
-      total_quota: l.total_quota
     }))
   }
 
