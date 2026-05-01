@@ -445,7 +445,9 @@ export default function OrganizerEventForm({ initialData }: EventFormProps) {
 
       toast.success("Perubahan berhasil disimpan!")
       setIsEditing(false)
-      window.location.reload()
+      setTimeout(() => {
+        window.location.reload()
+      }, 2000)
     } catch (error: any) {
       console.log(error)
       console.error("Gagal menyimpan data:", error)
