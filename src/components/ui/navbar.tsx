@@ -1,17 +1,17 @@
 "use client"
-import { MenuIcon } from 'lucide-react'
-import { Montserrat } from '@/lib/fonts'
-import { useEffect, useState } from 'react'
+import { MenuIcon } from "lucide-react"
+import { Montserrat } from "@/lib/fonts"
+import { useEffect, useState } from "react"
 
-import { Button } from '@/components/ui/button'
+import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu'
-import Link from 'next/link'
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import Link from "next/link"
 
 type NavigationItem = {
   title: string
@@ -19,46 +19,62 @@ type NavigationItem = {
 }[]
 
 const Navbar = ({ navigationData }: { navigationData: NavigationItem }) => {
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false)
 
-    useEffect(() => {
-        const handleScroll = () => {
-            if (window.scrollY > 10) {
-                setIsScrolled(true);
-            } else {
-                setIsScrolled(false);
-            }
-        };
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 10) {
+        setIsScrolled(true)
+      } else {
+        setIsScrolled(false)
+      }
+    }
 
-        window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll)
 
-        return () => {
-            window.removeEventListener("scroll", handleScroll);
-        };
-    }, []);
+    return () => {
+      window.removeEventListener("scroll", handleScroll)
+    }
+  }, [])
   return (
-    <header className={`bg-background sticky top-0 z-50 transition-all duration-300 ${isScrolled ? 'drop-shadow-lg bg-background' : 'bg-transparent'}`}>
-      <div className='mx-auto flex flex-wrap max-w-7xl items-center justify-between gap-2 sm:gap-8 px-4 py-7 sm:px-6'>
-        <Link href={`#`} className={`${Montserrat.className} text-dark-blue text-3xl font-bold leading-9 justify-start`}>PaskiHub</Link>
-        <div className='text-neutral-700 flex flex-1 items-center gap-8 font-medium md:justify-center lg:gap-16'>
+    <header
+      className={`sticky top-0 z-50 bg-background transition-all duration-300 ${isScrolled ? "bg-background drop-shadow-lg" : "bg-transparent"}`}
+    >
+      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-2 px-4 py-7 sm:gap-8 sm:px-6">
+        <Link
+          href={`#`}
+          className={`${Montserrat.className} justify-start text-3xl leading-9 font-bold text-dark-blue`}
+        >
+          PaskiHub
+        </Link>
+        <div className="flex flex-1 items-center gap-8 font-medium text-neutral-700 md:justify-center lg:gap-16">
           {navigationData.map((item, index) => (
-            <a href={item.href} key={index} className='hover:text-primary max-md:hidden'>
+            <a
+              href={item.href}
+              key={index}
+              className="hover:text-primary max-md:hidden"
+            >
               {item.title}
             </a>
           ))}
         </div>
-        <div className='flex items-center gap-6'>
+        <div className="flex items-center gap-6">
           <Link href={`/auth/login`}>
-            <Button variant='secondary' className='font-bold leading-6 px-7 py-4'>Masuk</Button>
+            <Button
+              variant="secondary"
+              className="px-7 py-4 leading-6 font-bold"
+            >
+              Masuk
+            </Button>
           </Link>
           <DropdownMenu>
-            <DropdownMenuTrigger className='md:hidden' asChild>
-              <Button variant='outline' size='icon'>
+            <DropdownMenuTrigger className="md:hidden" asChild>
+              <Button variant="outline" size="icon">
                 <MenuIcon />
-                <span className='sr-only'>Menu</span>
+                <span className="sr-only">Menu</span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className='w-56' align='end'>
+            <DropdownMenuContent className="w-56" align="end">
               <DropdownMenuGroup>
                 {navigationData.map((item, index) => (
                   <DropdownMenuItem key={index}>

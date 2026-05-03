@@ -291,27 +291,27 @@ export default function HomePage() {
       {/* contact us */}
       <section className="my-20 flex h-full w-full flex-col items-center space-y-10 md:my-32 md:space-y-16">
         <Card className="w-full max-w-4xl bg-primary-100 p-6 sm:p-8 md:p-12">
-          <CardHeader className="text-center px-0 pb-6 md:pb-8">
+          <CardHeader className="px-0 pb-6 text-center md:pb-8">
             <CardTitle className="text-xl font-bold sm:text-2xl md:text-3xl">
               Butuh Bantuan? Hubungi Kami
             </CardTitle>
-            <CardDescription className="mx-auto max-w-xl text-sm sm:text-base mt-2 md:mt-3">
+            <CardDescription className="mx-auto mt-2 max-w-xl text-sm sm:text-base md:mt-3">
               Kami siap membantu Event Organizer dan peserta dalam menggunakan
               PaskiHub dengan lebih optimal.
             </CardDescription>
           </CardHeader>
           <CardContent className="px-0 pb-0">
             <div className="flex w-full flex-col items-center justify-between gap-4 rounded-3xl bg-white p-4 text-center sm:flex-row sm:rounded-[50px] sm:py-2 sm:pr-2 sm:pl-6 sm:text-left">
-              <div className="text-sm font-normal leading-relaxed text-neutral-700 md:text-base">
+              <div className="text-sm leading-relaxed font-normal text-neutral-700 md:text-base">
                 Klik di sini untuk mendapatkan bantuan terkait PaskiHub
               </div>
               <Link href="#" className="w-full sm:w-auto">
                 <Button
                   variant={"secondary"}
-                  className="w-full flex items-center justify-center gap-2 font-semibold sm:w-auto"
+                  className="flex w-full items-center justify-center gap-2 font-semibold sm:w-auto"
                 >
                   Whatsapp{" "}
-                  <span className="flex items-center justify-center rotate-45 rounded-full bg-secondary-200 p-0.75 text-foreground">
+                  <span className="flex rotate-45 items-center justify-center rounded-full bg-secondary-200 p-0.75 text-foreground">
                     <Icon icon="formkit:arrowup" width="9" height="16" />
                   </span>
                 </Button>

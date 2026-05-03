@@ -1,38 +1,69 @@
 "use client"
 
-import React, { useState, useEffect } from "react"
-import { Coins, Save, CreditCard } from "lucide-react"
+import React, { useState, useEffect, useTransition } from "react"
+import { Coins, Save, CreditCard, Loader2 } from "lucide-react"
 
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Spinner } from "@/components/ui/spinner"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
 import { Poppins } from "@/lib/fonts"
-
-// ==========================================
-// 1. MAIN PAGE COMPONENT
-// ==========================================
+import { systemSettingService } from "@/services/system-setting.service"
+import { updateSystemSettingsAction } from "@/actions/system-setting.actions"
+import { useSession } from "next-auth/react"
+import { UpdateSystemSettingReqSchema } from "@/schemas/system-setting.schema"
 
 export default function AdminSettingsPage() {
+  const { data: session } = useSession() as any
   const [isLoading, setIsLoading] = useState(true)
-  const [isSaving, setIsSaving] = useState(false)
+  const [isPending, startTransition] = useTransition()
+
+  const [formData, setFormData] = useState({
+    coin_rate: 0,
+    approval_fee: 0,
+    bank_name: "",
+    account_number: "",
+    account_name: "",
+  })
 
   useEffect(() => {
-    // Simulasi loading data konfigurasi
-    const timer = setTimeout(() => setIsLoading(false), 1000)
-    return () => clearTimeout(timer)
-  }, [])
+    const fetchSettings = async () => {
+      if (!session?.accessToken) return
+      try {
+        const data = await systemSettingService.getSettings(session.accessToken)
+        setFormData({
+          coin_rate: data.coin_rate,
+          approval_fee: data.approval_fee || 1, // Default 1 if not set
+          bank_name: data.bank_info.bank_name,
+          account_number: data.bank_info.account_number,
+          account_name: data.bank_info.account_name,
+        })
+      } catch (error) {
+        toast.error("Gagal memuat pengaturan")
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    fetchSettings()
+  }, [session])
 
   const handleSave = () => {
-    setIsSaving(true)
-    // TODO: Integrasi endpoint API PATCH /api/admin/settings di sini
-    setTimeout(() => {
-      setIsSaving(false)
-      toast.success("Konfigurasi sistem berhasil diperbarui")
-    }, 2000)
+    const result = UpdateSystemSettingReqSchema.safeParse(formData)
+    if (!result.success) {
+      toast.error(result.error.issues[0].message)
+      return
+    }
+
+    startTransition(async () => {
+      try {
+        await updateSystemSettingsAction(result.data)
+        toast.success("Konfigurasi sistem berhasil diperbarui")
+      } catch (error: any) {
+        toast.error(error.message || "Gagal memperbarui konfigurasi")
+      }
+    })
   }
 
   return (
@@ -51,14 +82,14 @@ export default function AdminSettingsPage() {
             variant={"default"}
             className="h-12 rounded-full px-8 shadow-lg transition-all active:scale-95"
             onClick={handleSave}
-            disabled={isSaving || isLoading}
+            disabled={isPending || isLoading}
           >
-            {isSaving ? (
-              <Spinner className="mr-2 h-4 w-4" />
+            {isPending ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (
               <Save className="mr-2 h-4 w-4" />
             )}
-            {isSaving ? "Menyimpan..." : "Simpan Perubahan"}
+            {isPending ? "Menyimpan..." : "Simpan Perubahan"}
           </Button>
         </div>
 
@@ -83,12 +114,12 @@ export default function AdminSettingsPage() {
                     </h3>
                   </div>
                   <p className="text-sm leading-relaxed text-neutral-500">
-                    Atur rasio konversi koin.
+                    Atur rasio konversi koin dan biaya layanan.
                   </p>
                 </div>
                 <div className="space-y-6 lg:col-span-2">
                   <Card className="rounded-[24px] border-gray-200 bg-white p-6 shadow-none md:p-8">
-                    <div className="w-full">
+                    <div className="grid grid-cols-1 gap-6">
                       <div className="space-y-3">
                         <Label
                           htmlFor="coin-price"
@@ -102,10 +133,47 @@ export default function AdminSettingsPage() {
                           </span>
                           <Input
                             id="coin-price"
-                            defaultValue="1.000"
+                            type="number"
+                            value={formData.coin_rate}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                coin_rate: Number(e.target.value),
+                              })
+                            }
                             className="h-12 rounded-xl border-neutral-200 bg-neutral-50 pl-12 focus-visible:ring-info-500"
                           />
                         </div>
+                      </div>
+
+                      <div className="space-y-3">
+                        <Label
+                          htmlFor="approval-fee"
+                          className="text-sm font-semibold text-neutral-700"
+                        >
+                          Biaya Approve Tim (Koin)
+                        </Label>
+                        <div className="relative">
+                          <Input
+                            id="approval-fee"
+                            type="number"
+                            value={formData.approval_fee}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                approval_fee: Number(e.target.value),
+                              })
+                            }
+                            className="h-12 rounded-xl border-neutral-200 bg-neutral-50 pr-12 focus-visible:ring-info-500"
+                          />
+                          <span className="absolute top-1/2 right-4 -translate-y-1/2 font-bold text-neutral-400">
+                            Koin
+                          </span>
+                        </div>
+                        <p className="text-[10px] text-neutral-400">
+                          *Koin yang akan dipotong dari saldo Organizer setiap
+                          kali menyetujui pendaftaran tim.
+                        </p>
                       </div>
                     </div>
                   </Card>
@@ -140,6 +208,13 @@ export default function AdminSettingsPage() {
                         </Label>
                         <Input
                           id="bank-name"
+                          value={formData.bank_name}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              bank_name: e.target.value,
+                            })
+                          }
                           placeholder="Contoh: Bank Central Asia (BCA)"
                           className="h-12 rounded-xl border-neutral-200 bg-neutral-50 px-4 focus-visible:ring-info-500"
                         />
@@ -154,6 +229,13 @@ export default function AdminSettingsPage() {
                           </Label>
                           <Input
                             id="account-number"
+                            value={formData.account_number}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                account_number: e.target.value,
+                              })
+                            }
                             placeholder="Contoh: 1234567890"
                             className="h-12 rounded-xl border-neutral-200 bg-neutral-50 px-4 focus-visible:ring-info-500"
                           />
@@ -167,6 +249,13 @@ export default function AdminSettingsPage() {
                           </Label>
                           <Input
                             id="account-name"
+                            value={formData.account_name}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                account_name: e.target.value,
+                              })
+                            }
                             placeholder="Contoh: PT PaskiHub Indonesia"
                             className="h-12 rounded-xl border-neutral-200 bg-neutral-50 px-4 focus-visible:ring-info-500"
                           />

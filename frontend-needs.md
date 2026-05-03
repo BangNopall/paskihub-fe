@@ -5,6 +5,7 @@ Dokumen ini berisi daftar lengkap endpoint API yang dibutuhkan oleh frontend Pas
 ## 1. Autentikasi & Akun
 
 ### Login
+
 - **Endpoint:** `/api/auth/login`
 - **Method:** `POST`
 - **Payload:**
@@ -29,6 +30,7 @@ Dokumen ini berisi daftar lengkap endpoint API yang dibutuhkan oleh frontend Pas
   ```
 
 ### Register (Dasar)
+
 - **Endpoint:** `/api/auth/register`
 - **Method:** `POST`
 - **Payload:**
@@ -43,12 +45,14 @@ Dokumen ini berisi daftar lengkap endpoint API yang dibutuhkan oleh frontend Pas
 - **Expected Response:** `201 Created`
 
 ### Lupa Password
+
 - **Endpoint:** `/api/auth/forgot-password`
 - **Method:** `POST`
 - **Payload:** `{ "email": "string" }`
 - **Expected Response:** `200 OK`
 
 ### Reset Password
+
 - **Endpoint:** `/api/auth/reset-password`
 - **Method:** `POST`
 - **Payload:**
@@ -65,6 +69,7 @@ Dokumen ini berisi daftar lengkap endpoint API yang dibutuhkan oleh frontend Pas
 ## 2. Organizer (Penyelenggara)
 
 ### Dashboard Overview
+
 - **Endpoint:** `/api/organizer/dashboard`
 - **Method:** `GET`
 - **Expected Response (OrganizerDashboardData):**
@@ -98,6 +103,7 @@ Dokumen ini berisi daftar lengkap endpoint API yang dibutuhkan oleh frontend Pas
   ```
 
 ### Detail Event (Get & Update)
+
 - **Endpoint:** `/api/organizer/events/{id}`
 - **Method:** `GET` | `PUT`
 - **Payload (PUT - Multipart/FormData):**
@@ -158,6 +164,7 @@ Dokumen ini berisi daftar lengkap endpoint API yang dibutuhkan oleh frontend Pas
   ```
 
 ### Manajemen Juri
+
 - **GET All:** `/api/organizer/juries`
 - **POST Create:** `/api/organizer/juries` (Payload: `{ "name": "string" }`)
 - **PUT Update:** `/api/organizer/juries/{id}` (Payload: `{ "name": "string" }`)
@@ -165,6 +172,7 @@ Dokumen ini berisi daftar lengkap endpoint API yang dibutuhkan oleh frontend Pas
 - **Expected Response (Jury):** `{ "id": "string", "name": "string" }`
 
 ### Manajemen Tim (Peserta di Event)
+
 - **GET All Teams:** `/api/organizer/teams`
 - **Approve Tim:** `POST /api/organizer/teams/{id}/approve`
 - **Reject Tim:** `POST /api/organizer/teams/{id}/reject` (Payload: `{ "reason": "string" }`)
@@ -183,7 +191,10 @@ Dokumen ini berisi daftar lengkap endpoint API yang dibutuhkan oleh frontend Pas
     "recommendationLetterName": "string",
     "recommendationLetterUrl": "string",
     "members": {
-      "pelatih": [], "danpas": [], "official": [], "pasukan": []
+      "pelatih": [],
+      "danpas": [],
+      "official": [],
+      "pasukan": []
     }
   }
   ```
@@ -193,6 +204,7 @@ Dokumen ini berisi daftar lengkap endpoint API yang dibutuhkan oleh frontend Pas
 ## 3. Peserta (Tim Lomba)
 
 ### Profil & Keamanan
+
 - **GET Profile:** `/api/peserta/profile`
 - **PUT Update Profile:** `/api/peserta/profile`
 - **POST Change Password:** `/api/peserta/change-password`
@@ -210,6 +222,7 @@ Dokumen ini berisi daftar lengkap endpoint API yang dibutuhkan oleh frontend Pas
   ```
 
 ### Manajemen Tim Saya
+
 - **GET All My Teams:** `/api/peserta/teams`
 - **POST Create Team:** `/api/peserta/teams` (Multipart/FormData)
 - **PUT Update Team:** `/api/peserta/teams/{id}` (Multipart/FormData)
@@ -223,6 +236,7 @@ Dokumen ini berisi daftar lengkap endpoint API yang dibutuhkan oleh frontend Pas
   - `members`: JSON String of members data
 
 ### Dashboard & Event
+
 - **GET Dashboard Stats:** `/api/peserta/dashboard`
 - **GET All Available Events:** `/api/peserta/events`
 - **GET Event Detail:** `/api/peserta/events/{id}`
@@ -250,6 +264,7 @@ Dokumen ini berisi daftar lengkap endpoint API yang dibutuhkan oleh frontend Pas
 ## 4. Admin
 
 ### Dashboard & Users
+
 - **GET Users:** `/api/admin/users`
 - **GET Admins:** `/api/admin/admins`
 - **GET Transactions:** `/api/admin/transactions`
@@ -258,7 +273,9 @@ Dokumen ini berisi daftar lengkap endpoint API yang dibutuhkan oleh frontend Pas
 ---
 
 ## 5. Struktur Global Error
+
 Semua endpoint harus mengembalikan struktur error yang konsisten jika gagal:
+
 ```json
 {
   "error": {

@@ -59,7 +59,7 @@ const Footer = () => {
           <div className="hidden h-36 border-l-2 border-dark-blue md:block" />
 
           {/* Column 3: Social Links */}
-          <div className="flex flex-col my-auto items-center justify-center gap-4">
+          <div className="my-auto flex flex-col items-center justify-center gap-4">
             <Link
               href="#"
               className="group flex items-center justify-center gap-2 text-xs leading-4 font-semibold text-dark-blue transition-colors hover:text-dark-blue/80 md:justify-start"

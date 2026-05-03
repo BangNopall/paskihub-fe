@@ -339,7 +339,10 @@ export default function PesertaTeamPage() {
             Team Saya
           </h1>
           <Link href="/peserta/dashboard/team/new" className="w-full sm:w-auto">
-            <Button className="w-full rounded-full px-6 font-poppins font-bold text-white shadow-sm" variant={'secondary'}>
+            <Button
+              className="w-full rounded-full px-6 font-poppins font-bold text-white shadow-sm"
+              variant={"secondary"}
+            >
               <Plus className="mr-2 h-4 w-4" /> Buat Tim Baru
             </Button>
           </Link>
@@ -530,7 +533,7 @@ export default function PesertaTeamPage() {
 
         {/* 1. MODAL DETAIL TIM */}
         <Dialog open={isDetailModalOpen} onOpenChange={setIsDetailModalOpen}>
-          <DialogContent className="max-h-[90vh] w-full sm:min-w-xl gap-0 overflow-y-auto rounded-3xl bg-white p-0 sm:rounded-[40px]">
+          <DialogContent className="max-h-[90vh] w-full gap-0 overflow-y-auto rounded-3xl bg-white p-0 sm:min-w-xl sm:rounded-[40px]">
             {selectedTeam && (
               <div className="flex flex-col">
                 <DialogHeader className="flex flex-row items-start justify-between space-y-0 border-b border-neutral-200 p-6 pb-4 sm:px-10 sm:pt-8">

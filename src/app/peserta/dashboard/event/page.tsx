@@ -259,7 +259,8 @@ export default function MyEventPage() {
 
   // --- STATE UNTUK MODAL UPLOAD ULANG ---
   const [isReuploadModalOpen, setIsReuploadModalOpen] = useState<boolean>(false)
-  const [reuploadActiveEvent, setReuploadActiveEvent] = useState<ActiveEvent | null>(null)
+  const [reuploadActiveEvent, setReuploadActiveEvent] =
+    useState<ActiveEvent | null>(null)
   const [reuploadProof, setReuploadProof] = useState<File | null>(null)
   const [isReuploading, setIsReuploading] = useState<boolean>(false)
   const reuploadFileInputRef = useRef<HTMLInputElement>(null)
@@ -320,7 +321,9 @@ export default function MyEventPage() {
   }
 
   const handleReupload = (activeEvent: ActiveEvent) => {
-    const matchedEvent = exploreEvents.find((e) => e.title === activeEvent.eventName)
+    const matchedEvent = exploreEvents.find(
+      (e) => e.title === activeEvent.eventName
+    )
     setSelectedEventToRegister(matchedEvent || null)
     setReuploadActiveEvent(activeEvent)
     setReuploadProof(null)
@@ -346,7 +349,10 @@ export default function MyEventPage() {
 
     try {
       // TODO: Integrasi API POST /api/events/reupload-proof
-      console.log("=== PAYLOAD REUPLOAD ===", { eventId: reuploadActiveEvent.id, proof: reuploadProof })
+      console.log("=== PAYLOAD REUPLOAD ===", {
+        eventId: reuploadActiveEvent.id,
+        proof: reuploadProof,
+      })
       await new Promise((resolve) => setTimeout(resolve, 2000)) // Simulasi Loading
 
       alert("Upload ulang bukti pembayaran berhasil!")
@@ -655,7 +661,9 @@ export default function MyEventPage() {
                                 </TableCell>
                                 <TableCell className="p-4">
                                   <div className="flex justify-center">
-                                    {(event.paymentStatus === "Terdaftar" || event.paymentStatus === "Belum Lunas/DP") && (
+                                    {(event.paymentStatus === "Terdaftar" ||
+                                      event.paymentStatus ===
+                                        "Belum Lunas/DP") && (
                                       <Button
                                         onClick={() =>
                                           handleDashboardAction(event.id)
@@ -674,7 +682,7 @@ export default function MyEventPage() {
                                       </Button>
                                     )}
                                     {event.paymentStatus ===
-                                      "Verifikasi Pembayaran"  && (
+                                      "Verifikasi Pembayaran" && (
                                       <span className="font-poppins text-sm font-bold text-neutral-400">
                                         -
                                       </span>
@@ -1075,7 +1083,10 @@ export default function MyEventPage() {
         {/* =========================================
             MODAL UPLOAD ULANG BUKTI PEMBAYARAN
             ========================================= */}
-        <Dialog open={isReuploadModalOpen} onOpenChange={setIsReuploadModalOpen}>
+        <Dialog
+          open={isReuploadModalOpen}
+          onOpenChange={setIsReuploadModalOpen}
+        >
           <DialogContent className="max-h-[90vh] w-full max-w-2xl gap-0 overflow-y-auto rounded-xl p-0 sm:rounded-3xl">
             {!selectedEventToRegister && (
               <DialogTitle className="sr-only">Upload Ulang Bukti</DialogTitle>
@@ -1170,20 +1181,21 @@ export default function MyEventPage() {
                         {reuploadActiveEvent.teamName}
                       </div>
                     </div>
-                    
+
                     <div className="flex flex-col gap-2">
                       <Label className="font-poppins text-sm font-normal text-neutral-700">
                         Jenis Pembayaran
                       </Label>
                       <div className="flex h-12 items-center justify-between rounded-lg border border-blue-500 bg-blue-50/50 px-4">
                         <span className="font-poppins text-sm font-semibold text-blue-700">
-                          {reuploadActiveEvent.paymentType === "dp" ? "Bayar DP (Down Payment)" : "Bayar Lunas"}
+                          {reuploadActiveEvent.paymentType === "dp"
+                            ? "Bayar DP (Down Payment)"
+                            : "Bayar Lunas"}
                         </span>
                         <span className="font-poppins text-sm font-bold text-blue-700">
-                          {reuploadActiveEvent.paymentType === "dp" 
+                          {reuploadActiveEvent.paymentType === "dp"
                             ? formatRupiah(selectedEventToRegister.price / 2)
-                            : formatRupiah(selectedEventToRegister.price)
-                          }
+                            : formatRupiah(selectedEventToRegister.price)}
                         </span>
                       </div>
                     </div>
@@ -1192,7 +1204,8 @@ export default function MyEventPage() {
                   {/* FIELD: Upload Bukti */}
                   <div className="flex flex-col gap-2">
                     <Label className="font-poppins text-sm font-normal text-neutral-700">
-                      Upload Bukti Pembayaran <span className="text-red-500">*</span>
+                      Upload Bukti Pembayaran{" "}
+                      <span className="text-red-500">*</span>
                     </Label>
 
                     <input
@@ -1266,7 +1279,8 @@ export default function MyEventPage() {
                     >
                       {isReuploading ? (
                         <>
-                          <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Uploading...
+                          <Loader2 className="mr-2 h-5 w-5 animate-spin" />{" "}
+                          Uploading...
                         </>
                       ) : (
                         "Upload Bukti"

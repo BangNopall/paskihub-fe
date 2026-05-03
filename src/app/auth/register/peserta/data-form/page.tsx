@@ -16,7 +16,10 @@ import { Label } from "@/components/ui/label"
 import { Montserrat } from "@/lib/fonts"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { pesertaDataFormSchema, PesertaDataFormData } from "@/schemas/profile.schema"
+import {
+  pesertaDataFormSchema,
+  PesertaDataFormData,
+} from "@/schemas/profile.schema"
 import { updatePesertaProfileAction } from "@/actions/profile.actions"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
@@ -25,7 +28,12 @@ const RegisterPesertaDataForm = () => {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
-  const { register, handleSubmit, control, formState: { errors } } = useForm<PesertaDataFormData>({
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm<PesertaDataFormData>({
     resolver: zodResolver(pesertaDataFormSchema),
   })
 
@@ -40,7 +48,9 @@ const RegisterPesertaDataForm = () => {
         toast.error("Gagal", { description: res.message })
       }
     } catch {
-      toast.error("Terjadi Kesalahan", { description: "Gagal memproses formulir." })
+      toast.error("Terjadi Kesalahan", {
+        description: "Gagal memproses formulir.",
+      })
     } finally {
       setIsLoading(false)
     }
@@ -59,8 +69,11 @@ const RegisterPesertaDataForm = () => {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4 sm:space-y-6 mt-2">
-            <form className="space-y-4 sm:space-y-6" onSubmit={handleSubmit(onSubmit)}>
+          <div className="mt-2 space-y-4 sm:space-y-6">
+            <form
+              className="space-y-4 sm:space-y-6"
+              onSubmit={handleSubmit(onSubmit)}
+            >
               <div className="space-y-2 sm:space-y-1">
                 <Label
                   htmlFor="name"
@@ -75,7 +88,11 @@ const RegisterPesertaDataForm = () => {
                   className={`h-10 sm:h-11 ${errors.name ? "border-red-500" : ""}`}
                   {...register("name")}
                 />
-                {errors.name && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.name.message}</p>}
+                {errors.name && (
+                  <p className="mt-1 text-xs text-red-500 sm:text-sm">
+                    {errors.name.message}
+                  </p>
+                )}
               </div>
               <div className="space-y-2 sm:space-y-1">
                 <Label
@@ -91,7 +108,11 @@ const RegisterPesertaDataForm = () => {
                   className={`h-10 sm:h-11 ${errors.address ? "border-red-500" : ""}`}
                   {...register("address")}
                 />
-                {errors.address && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.address.message}</p>}
+                {errors.address && (
+                  <p className="mt-1 text-xs text-red-500 sm:text-sm">
+                    {errors.address.message}
+                  </p>
+                )}
               </div>
               <div className="space-y-2 sm:space-y-1">
                 <Label
@@ -104,8 +125,13 @@ const RegisterPesertaDataForm = () => {
                   name="institution_type"
                   control={control}
                   render={({ field }) => (
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <SelectTrigger className={`w-full h-10 sm:h-11 text-sm sm:text-base px-3 ${errors.institution_type ? "border-red-500" : ""}`}>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <SelectTrigger
+                        className={`h-10 w-full px-3 text-sm sm:h-11 sm:text-base ${errors.institution_type ? "border-red-500" : ""}`}
+                      >
                         <SelectValue placeholder="Pilih Tingkat" />
                       </SelectTrigger>
                       <SelectContent>
@@ -121,7 +147,11 @@ const RegisterPesertaDataForm = () => {
                     </Select>
                   )}
                 />
-                {errors.institution_type && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.institution_type.message}</p>}
+                {errors.institution_type && (
+                  <p className="mt-1 text-xs text-red-500 sm:text-sm">
+                    {errors.institution_type.message}
+                  </p>
+                )}
               </div>
               <div className="space-y-2 sm:space-y-1">
                 <Label
@@ -137,7 +167,11 @@ const RegisterPesertaDataForm = () => {
                   className={`h-10 sm:h-11 ${errors.name_pj ? "border-red-500" : ""}`}
                   {...register("name_pj")}
                 />
-                {errors.name_pj && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.name_pj.message}</p>}
+                {errors.name_pj && (
+                  <p className="mt-1 text-xs text-red-500 sm:text-sm">
+                    {errors.name_pj.message}
+                  </p>
+                )}
               </div>
               <div className="space-y-2 sm:space-y-1">
                 <Label
@@ -153,7 +187,11 @@ const RegisterPesertaDataForm = () => {
                   className={`h-10 sm:h-11 ${errors.no_wa_pj ? "border-red-500" : ""}`}
                   {...register("no_wa_pj")}
                 />
-                {errors.no_wa_pj && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.no_wa_pj.message}</p>}
+                {errors.no_wa_pj && (
+                  <p className="mt-1 text-xs text-red-500 sm:text-sm">
+                    {errors.no_wa_pj.message}
+                  </p>
+                )}
               </div>
               <Button
                 disabled={isLoading}

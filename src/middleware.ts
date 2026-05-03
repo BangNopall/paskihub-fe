@@ -17,8 +17,10 @@ export default withAuth(
 
       // Helper for dashboard redirect
       const redirectToDashboard = () => {
-        if (role === "ORGANIZER") return NextResponse.redirect(new URL("/organizer/dashboard", req.url))
-        if (role === "ADMIN") return NextResponse.redirect(new URL("/admin/dashboard", req.url))
+        if (role === "ORGANIZER")
+          return NextResponse.redirect(new URL("/organizer/dashboard", req.url))
+        if (role === "ADMIN")
+          return NextResponse.redirect(new URL("/admin/dashboard", req.url))
         return NextResponse.redirect(new URL("/peserta/dashboard", req.url))
       }
 
@@ -39,7 +41,10 @@ export default withAuth(
       }
 
       // 3. Handle Dashboard/Protected Route Access
-      if (pathname.startsWith("/organizer") || pathname.startsWith("/peserta")) {
+      if (
+        pathname.startsWith("/organizer") ||
+        pathname.startsWith("/peserta")
+      ) {
         // Prevent cross-role access
         if (role === "ORGANIZER" && !pathname.startsWith("/organizer")) {
           return redirectToDashboard()

@@ -9,11 +9,11 @@ export default function VerifyEmail() {
     <div className="relative flex h-auto min-h-screen items-center justify-center overflow-x-hidden px-4 py-8 sm:px-6 md:py-10 lg:px-8">
       <Card className="z-1 w-full max-w-[90%] border-none bg-glassmorphism-50 p-6 shadow-md sm:max-w-md sm:p-10 md:max-w-xl md:p-16 lg:max-w-2xl">
         <CardHeader className="gap-4 sm:gap-6">
-          <div className="flex flex-col justify-center items-center">
-            <div className="flex items-center justify-center mb-4 sm:mb-6 rounded-full border border-primary-500 bg-primary-100 p-3 sm:p-4">
+          <div className="flex flex-col items-center justify-center">
+            <div className="mb-4 flex items-center justify-center rounded-full border border-primary-500 bg-primary-100 p-3 sm:mb-6 sm:p-4">
               <Icon
                 icon="material-symbols:mail-outline"
-                className="w-6 h-6 sm:w-8 sm:h-8 text-primary-700"
+                className="h-6 w-6 text-primary-700 sm:h-8 sm:w-8"
               />
             </div>
             <CardTitle
@@ -22,23 +22,23 @@ export default function VerifyEmail() {
               Hampir selesai!
             </CardTitle>
             <CardTitle
-              className={`${Montserrat.className} mb-1.5 text-center text-xl sm:text-2xl lg:text-3xl font-bold text-dark-blue`}
+              className={`${Montserrat.className} mb-1.5 text-center text-xl font-bold text-dark-blue sm:text-2xl lg:text-3xl`}
             >
               Verifikasi email untuk memulai.
             </CardTitle>
           </div>
         </CardHeader>
         <CardContent>
-          <div className="justify-center text-center px-1 sm:px-4 md:px-8">
-            <span className="text-sm sm:text-base leading-5 sm:leading-6 font-normal text-muted-foreground">
+          <div className="justify-center px-1 text-center sm:px-4 md:px-8">
+            <span className="text-sm leading-5 font-normal text-muted-foreground sm:text-base sm:leading-6">
               Kami telah mengirimkan email kepada kamu
             </span>
-            <span className="text-sm sm:text-base leading-5 sm:leading-6 font-normal text-muted-foreground">
+            <span className="text-sm leading-5 font-normal text-muted-foreground sm:text-base sm:leading-6">
               . Periksa dan ikuti instruksi untuk menyelesaikan proses
               pendaftaran.
             </span>
           </div>
-          <p className="mt-4 text-center text-sm sm:text-base text-muted-foreground sm:mt-6">
+          <p className="mt-4 text-center text-sm text-muted-foreground sm:mt-6 sm:text-base">
             Alamat email salah?{" "}
             <Link
               href="/auth/register"

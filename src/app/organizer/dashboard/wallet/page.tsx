@@ -1,6 +1,6 @@
 import React from "react"
 import { Coins, Info, AlertCircle } from "lucide-react"
-import { getServerSession } from "next-auth"
+import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 import { redirect } from "next/navigation"
 
@@ -30,7 +30,10 @@ export default async function WalletPage() {
   if (!session) redirect("/auth/login")
 
   // Ambil event pertama user
-  const events = await profileService.getEventsByUserId(session.accessToken, session.user.id)
+  const events = await profileService.getEventsByUserId(
+    session.accessToken,
+    session.user.id
+  )
   if (!events || events.length === 0) redirect("/auth/register/eo/data-form")
   const eventId = events[0].id
 
@@ -38,7 +41,7 @@ export default async function WalletPage() {
   const [walletData, transactions, settings] = await Promise.all([
     walletService.getWalletInfo(session.accessToken, eventId),
     walletService.getWalletLogs(session.accessToken, eventId),
-    walletService.getPublicSettings(session.accessToken)
+    walletService.getPublicSettings(session.accessToken),
   ])
 
   if (!walletData) {
@@ -48,7 +51,9 @@ export default async function WalletPage() {
         <h2 className="font-montserrat text-xl font-bold text-slate-900">
           Gagal Memuat Data Wallet
         </h2>
-        <p className="mt-2 text-neutral-500">Hubungi admin jika masalah berlanjut.</p>
+        <p className="mt-2 text-neutral-500">
+          Hubungi admin jika masalah berlanjut.
+        </p>
       </div>
     )
   }
@@ -57,12 +62,12 @@ export default async function WalletPage() {
 
   const coinBalance = walletData.coin_balance || 0
   const coinRate = settings.coin_rate || 0
-  
+
   // Mapping Bank Info
   const bankInfo = {
     bankName: settings.bank_info?.bank_name || null,
     accountNumber: settings.bank_info?.account_number || null,
-    accountName: settings.bank_info?.account_name || null
+    accountName: settings.bank_info?.account_name || null,
   }
 
   return (
@@ -77,7 +82,9 @@ export default async function WalletPage() {
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
             <div className="flex flex-col items-center justify-center gap-4 rounded-3xl border border-sky-100 bg-gradient-to-b from-white/70 to-white/60 p-6 shadow-sm lg:col-span-2">
               <div className="flex flex-col items-center gap-2">
-                <span className="font-poppins text-sm text-neutral-700">Saldo Koin</span>
+                <span className="font-poppins text-sm text-neutral-700">
+                  Saldo Koin
+                </span>
                 <div className="flex items-center gap-2">
                   <Coins className="h-8 w-8 text-neutral-700" />
                   <span className="font-poppins text-3xl font-semibold text-neutral-700 md:text-4xl">
@@ -105,13 +112,17 @@ export default async function WalletPage() {
                   <span className="font-poppins text-3xl font-semibold text-green-500">
                     {walletData.successful_topup_count || 0}
                   </span>
-                  <span className="font-poppins text-sm text-neutral-700">Top Up Berhasil</span>
+                  <span className="font-poppins text-sm text-neutral-700">
+                    Top Up Berhasil
+                  </span>
                 </div>
                 <div className="flex flex-col items-center justify-center gap-1 rounded-2xl border border-gray-50 bg-white p-6 shadow-sm">
                   <span className="font-poppins text-3xl font-semibold text-amber-400">
                     {walletData.pending_topup_count || 0}
                   </span>
-                  <span className="font-poppins text-sm text-neutral-700">Menunggu Approval</span>
+                  <span className="font-poppins text-sm text-neutral-700">
+                    Menunggu Approval
+                  </span>
                 </div>
               </div>
             </div>
@@ -119,13 +130,21 @@ export default async function WalletPage() {
 
           {/* MAIN SECTION: TOP UP FORM */}
           <div className="flex flex-col gap-6 rounded-3xl border border-sky-100 bg-gradient-to-b from-white/60 to-white/50 p-4 shadow-sm md:p-8">
-            <h2 className="font-poppins text-lg font-medium text-slate-900">Top Up Koin</h2>
-            <WalletTopUpForm eventId={eventId} bankInfo={bankInfo} coinRate={coinRate} />
+            <h2 className="font-poppins text-lg font-medium text-slate-900">
+              Top Up Koin
+            </h2>
+            <WalletTopUpForm
+              eventId={eventId}
+              bankInfo={bankInfo}
+              coinRate={coinRate}
+            />
           </div>
 
           {/* HISTORY SECTION */}
           <div className="flex flex-col gap-4 rounded-3xl border border-sky-100 bg-gradient-to-b from-white/70 to-white/60 p-4 shadow-sm md:p-6">
-            <h2 className="font-poppins text-lg font-medium text-slate-900">History Transaksi</h2>
+            <h2 className="font-poppins text-lg font-medium text-slate-900">
+              History Transaksi
+            </h2>
             <WalletTransactionTable transactions={transactions} />
           </div>
         </div>

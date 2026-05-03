@@ -1,4 +1,4 @@
-import { getServerSession } from "next-auth"
+import { getServerSession } from "next-auth/next"
 import { redirect } from "next/navigation"
 import { authOptions } from "@/lib/auth"
 import { profileService } from "@/services/profile.service"
@@ -8,12 +8,15 @@ export default async function EODataFormLayout({
 }: {
   children: React.ReactNode
 }) {
-  const session = await getServerSession(authOptions)
+  const session: any = await getServerSession(authOptions)
   if (!session) redirect("/auth/login")
 
-  const response = await profileService.getEventsByUserId(session.accessToken, session.user.id)
+  const response = await profileService.getEventsByUserId(
+    session.accessToken,
+    session.user.id
+  )
   const events = response || []
-  
+
   if (events.length > 0) {
     const event = events[0]
     const isProfileIncomplete =

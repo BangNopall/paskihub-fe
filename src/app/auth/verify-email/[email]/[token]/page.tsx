@@ -44,7 +44,7 @@ export default function VerifyEmailPage() {
 
     const verifyAccount = async () => {
       try {
-        const res = await verifyEmailAction(decodeURIComponent(email), token);
+        const res = await verifyEmailAction(decodeURIComponent(email), token)
         if (res.success) {
           setStatus("success")
         } else {
@@ -102,7 +102,7 @@ export default function VerifyEmailPage() {
       <div className="mt-4 w-full max-w-sm">
         <Button
           onClick={() => router.push("/auth/login")}
-          variant={'secondary'}
+          variant={"secondary"}
           className="h-12 w-full rounded-full font-poppins text-base font-bold transition-colors"
         >
           Masuk

@@ -62,7 +62,11 @@ function SectionWrapper({
   )
 }
 
-export function WalletTopUpForm({ eventId, bankInfo, coinRate }: WalletTopUpFormProps) {
+export function WalletTopUpForm({
+  eventId,
+  bankInfo,
+  coinRate,
+}: WalletTopUpFormProps) {
   const [selectedOption, setSelectedOption] = useState<number | null>(null)
   const [customAmount, setCustomAmount] = useState<string>("")
   const [couponCode, setCouponCode] = useState<string>("")
@@ -184,20 +188,34 @@ export function WalletTopUpForm({ eventId, bankInfo, coinRate }: WalletTopUpForm
         <div className="flex flex-col gap-6">
           <div className="grid grid-cols-1 gap-4 rounded-3xl border border-gray-50 bg-white p-6 shadow-sm sm:grid-cols-3">
             <div className="flex flex-col gap-1">
-              <span className="font-poppins text-sm text-neutral-500">Nama Bank</span>
-              <span className="font-poppins text-sm font-semibold text-neutral-700">{bankInfo.bankName}</span>
+              <span className="font-poppins text-sm text-neutral-500">
+                Nama Bank
+              </span>
+              <span className="font-poppins text-sm font-semibold text-neutral-700">
+                {bankInfo.bankName}
+              </span>
             </div>
             <div className="flex flex-col gap-1">
-              <span className="font-poppins text-sm text-neutral-500">Nomor Rekening</span>
-              <span className="font-poppins text-sm font-semibold text-neutral-700">{bankInfo.accountNumber}</span>
+              <span className="font-poppins text-sm text-neutral-500">
+                Nomor Rekening
+              </span>
+              <span className="font-poppins text-sm font-semibold text-neutral-700">
+                {bankInfo.accountNumber}
+              </span>
             </div>
             <div className="flex flex-col gap-1">
-              <span className="font-poppins text-sm text-neutral-500">Atas Nama</span>
-              <span className="font-poppins text-sm font-semibold text-neutral-700">{bankInfo.accountName}</span>
+              <span className="font-poppins text-sm text-neutral-500">
+                Atas Nama
+              </span>
+              <span className="font-poppins text-sm font-semibold text-neutral-700">
+                {bankInfo.accountName}
+              </span>
             </div>
           </div>
           <div className="flex flex-col gap-2">
-            <span className="font-poppins text-sm font-semibold text-neutral-700">Ketentuan:</span>
+            <span className="font-poppins text-sm font-semibold text-neutral-700">
+              Ketentuan:
+            </span>
             <ul className="list-disc space-y-1 pl-5 font-poppins text-sm text-neutral-700">
               <li>Transfer sesuai jumlah yang dipilih ke rekening di atas</li>
               <li>Simpan bukti transfer dan upload di bawah ini</li>
@@ -223,21 +241,33 @@ export function WalletTopUpForm({ eventId, bankInfo, coinRate }: WalletTopUpForm
             {paymentProof ? (
               <>
                 <FileText className="h-12 w-12 text-blue-600" />
-                <p className="font-poppins text-sm font-semibold text-neutral-800">{paymentProof.name}</p>
+                <p className="font-poppins text-sm font-semibold text-neutral-800">
+                  {paymentProof.name}
+                </p>
               </>
             ) : (
               <>
                 <UploadCloud className="h-12 w-12 text-neutral-500 group-hover:text-blue-500" />
-                <span className="font-montserrat text-sm text-neutral-700">Klik untuk unggah bukti transfer</span>
+                <span className="font-montserrat text-sm text-neutral-700">
+                  Klik untuk unggah bukti transfer
+                </span>
               </>
             )}
           </div>
           <Button
             type="submit"
-            disabled={isSubmitting || (!selectedOption && !customAmount) || !paymentProof}
+            disabled={
+              isSubmitting ||
+              (!selectedOption && !customAmount) ||
+              !paymentProof
+            }
             className="h-12 w-full rounded-full bg-red-400 font-poppins text-base font-bold text-white hover:bg-red-500"
           >
-            {isSubmitting ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : "Ajukan Top Up"}
+            {isSubmitting ? (
+              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+            ) : (
+              "Ajukan Top Up"
+            )}
           </Button>
         </div>
       </SectionWrapper>

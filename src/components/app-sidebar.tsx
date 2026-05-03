@@ -15,7 +15,11 @@ import {
 } from "@/components/ui/sidebar"
 import { Montserrat } from "@/lib/fonts"
 
-export function AppSidebar({ items, user, ...props }: React.ComponentProps<typeof Sidebar> & {
+export function AppSidebar({
+  items,
+  user,
+  ...props
+}: React.ComponentProps<typeof Sidebar> & {
   items: {
     title: string
     url: string
@@ -37,7 +41,11 @@ export function AppSidebar({ items, user, ...props }: React.ComponentProps<typeo
               className="data-[slot=sidebar-menu-button]:p-1.5!"
             >
               <a href="#">
-                <span className={`text-dark-blue text-2xl font-bold ${Montserrat.className}`}>PaskiHub</span>
+                <span
+                  className={`text-2xl font-bold text-dark-blue ${Montserrat.className}`}
+                >
+                  PaskiHub
+                </span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>

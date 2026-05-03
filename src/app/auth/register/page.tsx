@@ -24,11 +24,16 @@ import { useRouter } from "next/navigation"
 
 const RegisterForm = ({ role }: { role: "PESERTA" | "ORGANIZER" }) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false)
-  const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false)
+  const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
+    useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
-  const { register, handleSubmit, formState: { errors } } = useForm<RegisterFormData>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<RegisterFormData>({
     resolver: zodResolver(registerFormSchema),
   })
 
@@ -43,18 +48,26 @@ const RegisterForm = ({ role }: { role: "PESERTA" | "ORGANIZER" }) => {
         toast.error("Registrasi Gagal", { description: res.message })
       }
     } catch {
-      toast.error("Terjadi Kesalahan", { description: "Gagal terhubung ke server." })
+      toast.error("Terjadi Kesalahan", {
+        description: "Gagal terhubung ke server.",
+      })
     } finally {
       setIsLoading(false)
     }
   }
 
   return (
-    <div className="space-y-4 sm:space-y-6 mt-4">
-      <form className="space-y-4 sm:space-y-6" onSubmit={handleSubmit(onSubmit)}>
+    <div className="mt-4 space-y-4 sm:space-y-6">
+      <form
+        className="space-y-4 sm:space-y-6"
+        onSubmit={handleSubmit(onSubmit)}
+      >
         {/* Email */}
         <div className="space-y-2 sm:space-y-1">
-          <Label className="leading-5 text-sm sm:text-base" htmlFor={`${role}Email`}>
+          <Label
+            className="text-sm leading-5 sm:text-base"
+            htmlFor={`${role}Email`}
+          >
             Alamat Email*
           </Label>
           <Input
@@ -64,12 +77,19 @@ const RegisterForm = ({ role }: { role: "PESERTA" | "ORGANIZER" }) => {
             className={`h-10 sm:h-11 ${errors.email ? "border-red-500" : ""}`}
             {...register("email")}
           />
-          {errors.email && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.email.message}</p>}
+          {errors.email && (
+            <p className="mt-1 text-xs text-red-500 sm:text-sm">
+              {errors.email.message}
+            </p>
+          )}
         </div>
 
         {/* Password */}
         <div className="w-full space-y-2 sm:space-y-1">
-          <Label className="leading-5 text-sm sm:text-base" htmlFor={`${role}Password`}>
+          <Label
+            className="text-sm leading-5 sm:text-base"
+            htmlFor={`${role}Password`}
+          >
             Password*
           </Label>
           <div className="relative">
@@ -77,7 +97,7 @@ const RegisterForm = ({ role }: { role: "PESERTA" | "ORGANIZER" }) => {
               id={`${role}Password`}
               type={isPasswordVisible ? "text" : "password"}
               placeholder="••••••••••••••••"
-              className={`pr-9 h-10 sm:h-11 ${errors.password ? "border-red-500" : ""}`}
+              className={`h-10 pr-9 sm:h-11 ${errors.password ? "border-red-500" : ""}`}
               {...register("password")}
             />
             <Button
@@ -85,20 +105,31 @@ const RegisterForm = ({ role }: { role: "PESERTA" | "ORGANIZER" }) => {
               type="button"
               size="icon"
               onClick={() => setIsPasswordVisible((prevState) => !prevState)}
-              className="absolute inset-y-0 right-0 h-10 sm:h-11 w-10 sm:w-11 rounded-l-none text-muted-foreground hover:bg-transparent focus-visible:ring-ring/50"
+              className="absolute inset-y-0 right-0 h-10 w-10 rounded-l-none text-muted-foreground hover:bg-transparent focus-visible:ring-ring/50 sm:h-11 sm:w-11"
             >
-              {isPasswordVisible ? <EyeOffIcon className="size-4 sm:size-5" /> : <EyeIcon className="size-4 sm:size-5" />}
+              {isPasswordVisible ? (
+                <EyeOffIcon className="size-4 sm:size-5" />
+              ) : (
+                <EyeIcon className="size-4 sm:size-5" />
+              )}
               <span className="sr-only">
                 {isPasswordVisible ? "Hide password" : "Show password"}
               </span>
             </Button>
           </div>
-          {errors.password && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.password.message}</p>}
+          {errors.password && (
+            <p className="mt-1 text-xs text-red-500 sm:text-sm">
+              {errors.password.message}
+            </p>
+          )}
         </div>
 
         {/* Confirm Password */}
         <div className="w-full space-y-2 sm:space-y-1">
-          <Label className="leading-5 text-sm sm:text-base" htmlFor={`${role}ConfirmPassword`}>
+          <Label
+            className="text-sm leading-5 sm:text-base"
+            htmlFor={`${role}ConfirmPassword`}
+          >
             Konfirmasi Password*
           </Label>
           <div className="relative">
@@ -106,7 +137,7 @@ const RegisterForm = ({ role }: { role: "PESERTA" | "ORGANIZER" }) => {
               id={`${role}ConfirmPassword`}
               type={isConfirmPasswordVisible ? "text" : "password"}
               placeholder="••••••••••••••••"
-              className={`pr-9 h-10 sm:h-11 ${errors.confirm_password ? "border-red-500" : ""}`}
+              className={`h-10 pr-9 sm:h-11 ${errors.confirm_password ? "border-red-500" : ""}`}
               {...register("confirm_password")}
             />
             <Button
@@ -116,27 +147,41 @@ const RegisterForm = ({ role }: { role: "PESERTA" | "ORGANIZER" }) => {
               onClick={() =>
                 setIsConfirmPasswordVisible((prevState) => !prevState)
               }
-              className="absolute inset-y-0 right-0 h-10 sm:h-11 w-10 sm:w-11 rounded-l-none text-muted-foreground hover:bg-transparent focus-visible:ring-ring/50"
+              className="absolute inset-y-0 right-0 h-10 w-10 rounded-l-none text-muted-foreground hover:bg-transparent focus-visible:ring-ring/50 sm:h-11 sm:w-11"
             >
-              {isConfirmPasswordVisible ? <EyeOffIcon className="size-4 sm:size-5" /> : <EyeIcon className="size-4 sm:size-5" />}
+              {isConfirmPasswordVisible ? (
+                <EyeOffIcon className="size-4 sm:size-5" />
+              ) : (
+                <EyeIcon className="size-4 sm:size-5" />
+              )}
               <span className="sr-only">
-                {isConfirmPasswordVisible
-                  ? "Hide password"
-                  : "Show password"}
+                {isConfirmPasswordVisible ? "Hide password" : "Show password"}
               </span>
             </Button>
           </div>
-          {errors.confirm_password && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.confirm_password.message}</p>}
+          {errors.confirm_password && (
+            <p className="mt-1 text-xs text-red-500 sm:text-sm">
+              {errors.confirm_password.message}
+            </p>
+          )}
         </div>
 
-        <Button disabled={isLoading} className="w-full h-10 sm:h-11 mt-4 sm:mt-6 text-sm sm:text-base" variant={"secondary"} type="submit">
+        <Button
+          disabled={isLoading}
+          className="mt-4 h-10 w-full text-sm sm:mt-6 sm:h-11 sm:text-base"
+          variant={"secondary"}
+          type="submit"
+        >
           {isLoading ? "Memproses..." : "Daftar"}
         </Button>
       </form>
 
-      <p className="text-center text-sm sm:text-base text-muted-foreground mt-4 sm:mt-6">
+      <p className="mt-4 text-center text-sm text-muted-foreground sm:mt-6 sm:text-base">
         Sudah punya akun?{" "}
-        <Link href="/auth/login" className="text-secondary hover:underline font-medium">
+        <Link
+          href="/auth/login"
+          className="font-medium text-secondary hover:underline"
+        >
           Masuk
         </Link>
       </p>
@@ -160,21 +205,27 @@ const tabs = [
 const Register = () => {
   return (
     <div className="relative flex h-auto min-h-screen items-center justify-center overflow-x-hidden px-4 sm:px-6 lg:px-8">
-      <Card className="z-1 w-full border-none shadow-md max-w-[90%] sm:max-w-md md:max-w-xl lg:max-w-2xl p-6 sm:p-10 md:p-16 bg-glassmorphism-50">
+      <Card className="z-1 w-full max-w-[90%] border-none bg-glassmorphism-50 p-6 shadow-md sm:max-w-md sm:p-10 md:max-w-xl md:p-16 lg:max-w-2xl">
         <CardHeader className="gap-4 sm:gap-6">
           <div>
-            <CardTitle className={`${Montserrat.className} mb-1.5 text-2xl sm:text-3xl text-center font-bold text-dark-blue`}>
+            <CardTitle
+              className={`${Montserrat.className} mb-1.5 text-center text-2xl font-bold text-dark-blue sm:text-3xl`}
+            >
               Daftar ke PaskiHub
             </CardTitle>
           </div>
         </CardHeader>
 
         <CardContent>
-          <div className="w-full mx-auto">
+          <div className="mx-auto w-full">
             <Tabs defaultValue="peserta" className="w-full gap-4">
-              <TabsList className="w-full rounded-full h-auto p-1 py-1 sm:py-1.5">
+              <TabsList className="h-auto w-full rounded-full p-1 py-1 sm:py-1.5">
                 {tabs.map((tab) => (
-                  <TabsTrigger key={tab.value} value={tab.value} className="text-sm sm:text-base px-3 sm:px-6 py-1.5 sm:py-2">
+                  <TabsTrigger
+                    key={tab.value}
+                    value={tab.value}
+                    className="px-3 py-1.5 text-sm sm:px-6 sm:py-2 sm:text-base"
+                  >
                     {tab.name}
                   </TabsTrigger>
                 ))}
@@ -183,7 +234,9 @@ const Register = () => {
               <TabsContents className="mx-1 -mt-2 mb-1 h-full rounded-sm">
                 {tabs.map((tab) => (
                   <TabsContent key={tab.value} value={tab.value}>
-                    <div className="text-sm sm:text-base text-foreground">{tab.content()}</div>
+                    <div className="text-sm text-foreground sm:text-base">
+                      {tab.content()}
+                    </div>
                   </TabsContent>
                 ))}
               </TabsContents>

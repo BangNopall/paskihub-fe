@@ -4,12 +4,14 @@ import { ArrowLeft, AlertCircle } from "lucide-react"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 import { profileService } from "@/services/profile.service"
-import OrganizerEventForm, { EventData } from "@/components/organizer/event-form"
+import OrganizerEventForm, {
+  EventData,
+} from "@/components/organizer/event-form"
 import { Button } from "@/components/ui/button"
 
 export default async function OrganizerEventDetailPage() {
   const session: any = await getServerSession(authOptions)
-  
+
   if (!session) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center p-8 text-center">
@@ -22,7 +24,10 @@ export default async function OrganizerEventDetailPage() {
     )
   }
 
-  const events = await profileService.getEventsByUserId(session.accessToken, session.user.id)
+  const events = await profileService.getEventsByUserId(
+    session.accessToken,
+    session.user.id
+  )
   const event = events.length > 0 ? events[0] : null
 
   if (!event) {
@@ -32,7 +37,9 @@ export default async function OrganizerEventDetailPage() {
         <h2 className="font-montserrat text-xl font-bold text-slate-900">
           Belum Ada Event
         </h2>
-        <p className="mt-2 text-neutral-500">Anda belum membuat event apapun.</p>
+        <p className="mt-2 text-neutral-500">
+          Anda belum membuat event apapun.
+        </p>
         <Link href="/auth/register/eo/data-form">
           <Button className="mt-4 rounded-full bg-blue-500 hover:bg-blue-600">
             Buat Event Sekarang
@@ -42,8 +49,16 @@ export default async function OrganizerEventDetailPage() {
     )
   }
 
-  const logo_path = event.logo_path ? (event.logo_path.startsWith("http") ? event.logo_path : process.env.NEXT_PUBLIC_API_URL + "/" + event.logo_path) : null
-  const poster_path = event.poster_path ? (event.poster_path.startsWith("http") ? event.poster_path : process.env.NEXT_PUBLIC_API_URL + "/" +event.poster_path) : null
+  const logo_path = event.logo_path
+    ? event.logo_path.startsWith("http")
+      ? event.logo_path
+      : process.env.NEXT_PUBLIC_API_URL + "/" + event.logo_path
+    : null
+  const poster_path = event.poster_path
+    ? event.poster_path.startsWith("http")
+      ? event.poster_path
+      : process.env.NEXT_PUBLIC_API_URL + "/" + event.poster_path
+    : null
 
   // Map API response to our EventData interface
   const initialData: EventData = {
@@ -71,7 +86,7 @@ export default async function OrganizerEventDetailPage() {
       name: l.name,
       regis_fee: l.regis_fee,
       dp_fee: l.dp_fee,
-    }))
+    })),
   }
 
   return (

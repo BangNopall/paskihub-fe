@@ -1,10 +1,10 @@
-import { defineConfig, globalIgnores } from "eslint/config";
-import nextVitals from "eslint-config-next/core-web-vitals";
-import nextTs from "eslint-config-next/typescript";
-import eslint from "@eslint/js";
-import tseslint from "typescript-eslint";
-import pluginReact from "eslint-plugin-react";
-import globals from "globals";
+import { defineConfig, globalIgnores } from "eslint/config"
+import nextVitals from "eslint-config-next/core-web-vitals"
+import nextTs from "eslint-config-next/typescript"
+import eslint from "@eslint/js"
+import tseslint from "typescript-eslint"
+import pluginReact from "eslint-plugin-react"
+import globals from "globals"
 
 const eslintConfig = defineConfig([
   eslint.configs.recommended,
@@ -65,6 +65,6 @@ const eslintConfig = defineConfig([
       },
     },
   },
-]);
+])
 
-export default eslintConfig;
+export default eslintConfig

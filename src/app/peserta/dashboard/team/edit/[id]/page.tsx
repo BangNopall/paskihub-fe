@@ -439,7 +439,7 @@ export default function EditTeamPage() {
             </h1>
             <Button
               type="submit"
-              variant={'secondary'}
+              variant={"secondary"}
               disabled={isSubmitting}
               className="h-12 w-full rounded-full px-8 text-base font-bold sm:w-auto"
             >

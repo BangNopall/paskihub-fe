@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 
 export default async function OrganizerProfilePage() {
   const session: any = await getServerSession(authOptions)
-  
+
   if (!session?.accessToken) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center p-8 text-center">
@@ -15,7 +15,9 @@ export default async function OrganizerProfilePage() {
         <h2 className="font-montserrat text-xl font-bold text-slate-900">
           Sesi Berakhir
         </h2>
-        <p className="text-neutral-500 mt-2">Silakan login kembali untuk mengakses halaman ini.</p>
+        <p className="mt-2 text-neutral-500">
+          Silakan login kembali untuk mengakses halaman ini.
+        </p>
       </div>
     )
   }
@@ -24,13 +26,13 @@ export default async function OrganizerProfilePage() {
     // Fetch initial data in parallel
     const [profileRes, staffRes] = await Promise.all([
       profileService.getEOProfile(session.accessToken),
-      profileService.getEOStaff(session.accessToken)
+      profileService.getEOStaff(session.accessToken),
     ])
 
     return (
-      <OrganizerProfileContent 
-        primaryEmail={profileRes.data.email} 
-        initialStaff={staffRes.data || []} 
+      <OrganizerProfileContent
+        primaryEmail={profileRes.data.email}
+        initialStaff={staffRes.data || []}
       />
     )
   } catch (error) {
@@ -41,7 +43,9 @@ export default async function OrganizerProfilePage() {
         <h2 className="font-montserrat text-xl font-bold text-slate-900">
           Gagal Memuat Profil
         </h2>
-        <p className="text-neutral-500 mt-2">Terjadi kesalahan saat mengambil data dari server.</p>
+        <p className="mt-2 text-neutral-500">
+          Terjadi kesalahan saat mengambil data dari server.
+        </p>
         <Button
           asChild
           className="mt-4 rounded-full bg-blue-500 hover:bg-blue-600"

@@ -38,16 +38,22 @@ const RegisterEODataForm = () => {
   })
   const [openTime, setOpenTime] = useState("00:00")
   const [closeTime, setCloseTime] = useState("23:59")
-  
+
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
-  const { register, handleSubmit, control, setValue, formState: { errors } } = useForm<EODataFormData>({
+  const {
+    register,
+    handleSubmit,
+    control,
+    setValue,
+    formState: { errors },
+  } = useForm<EODataFormData>({
     resolver: zodResolver(eoDataFormSchema),
     defaultValues: {
       open_date: `${format(new Date(), "yyyy-MM-dd")} 00:00:00`,
       close_date: `${format(addDays(new Date(), 30), "yyyy-MM-dd")} 23:59:00`,
-    }
+    },
   })
 
   useEffect(() => {
@@ -70,7 +76,9 @@ const RegisterEODataForm = () => {
         toast.error("Gagal", { description: res.message })
       }
     } catch {
-      toast.error("Terjadi Kesalahan", { description: "Gagal memproses formulir." })
+      toast.error("Terjadi Kesalahan", {
+        description: "Gagal memproses formulir.",
+      })
     } finally {
       setIsLoading(false)
     }
@@ -89,8 +97,11 @@ const RegisterEODataForm = () => {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4 sm:space-y-6 mt-2">
-            <form className="space-y-4 sm:space-y-6" onSubmit={handleSubmit(onSubmit)}>
+          <div className="mt-2 space-y-4 sm:space-y-6">
+            <form
+              className="space-y-4 sm:space-y-6"
+              onSubmit={handleSubmit(onSubmit)}
+            >
               <div className="space-y-2 sm:space-y-1">
                 <Label
                   htmlFor="name"
@@ -105,12 +116,19 @@ const RegisterEODataForm = () => {
                   className={`h-10 sm:h-11 ${errors.name ? "border-red-500" : ""}`}
                   {...register("name")}
                 />
-                {errors.name && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.name.message}</p>}
+                {errors.name && (
+                  <p className="mt-1 text-xs text-red-500 sm:text-sm">
+                    {errors.name.message}
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2 sm:space-y-1">
                 <Field className="w-full">
-                  <FieldLabel htmlFor="date-picker-range" className="text-sm leading-5 sm:text-base">
+                  <FieldLabel
+                    htmlFor="date-picker-range"
+                    className="text-sm leading-5 sm:text-base"
+                  >
                     Tanggal Pendaftaran Dibuka hingga Ditutup
                   </FieldLabel>
                   <Popover>
@@ -118,7 +136,7 @@ const RegisterEODataForm = () => {
                       <Button
                         variant="outline"
                         id="date-picker-range"
-                        className="w-full h-10 sm:h-11 justify-start px-3 font-normal text-sm sm:text-base"
+                        className="h-10 w-full justify-start px-3 text-sm font-normal sm:h-11 sm:text-base"
                       >
                         <CalendarIcon className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                         {date?.from ? (
@@ -143,23 +161,27 @@ const RegisterEODataForm = () => {
                         onSelect={setDate}
                         numberOfMonths={2}
                       />
-                      <div className="p-3 flex items-center gap-4 border-t border-border bg-muted/30">
-                        <div className="flex flex-col flex-1">
-                          <Label className="text-xs mb-1.5 text-muted-foreground">Waktu Buka</Label>
-                          <Input 
-                            type="time" 
-                            value={openTime} 
-                            onChange={(e) => setOpenTime(e.target.value)} 
-                            className="h-8 text-xs font-medium" 
+                      <div className="flex items-center gap-4 border-t border-border bg-muted/30 p-3">
+                        <div className="flex flex-1 flex-col">
+                          <Label className="mb-1.5 text-xs text-muted-foreground">
+                            Waktu Buka
+                          </Label>
+                          <Input
+                            type="time"
+                            value={openTime}
+                            onChange={(e) => setOpenTime(e.target.value)}
+                            className="h-8 text-xs font-medium"
                           />
                         </div>
-                        <div className="flex flex-col flex-1">
-                          <Label className="text-xs mb-1.5 text-muted-foreground">Waktu Tutup</Label>
-                          <Input 
-                            type="time" 
-                            value={closeTime} 
-                            onChange={(e) => setCloseTime(e.target.value)} 
-                            className="h-8 text-xs font-medium" 
+                        <div className="flex flex-1 flex-col">
+                          <Label className="mb-1.5 text-xs text-muted-foreground">
+                            Waktu Tutup
+                          </Label>
+                          <Input
+                            type="time"
+                            value={closeTime}
+                            onChange={(e) => setCloseTime(e.target.value)}
+                            className="h-8 text-xs font-medium"
                           />
                         </div>
                       </div>
@@ -182,7 +204,11 @@ const RegisterEODataForm = () => {
                   className={`h-10 sm:h-11 ${errors.organizer ? "border-red-500" : ""}`}
                   {...register("organizer")}
                 />
-                {errors.organizer && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.organizer.message}</p>}
+                {errors.organizer && (
+                  <p className="mt-1 text-xs text-red-500 sm:text-sm">
+                    {errors.organizer.message}
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2 sm:space-y-1">
@@ -199,9 +225,13 @@ const RegisterEODataForm = () => {
                   className={`h-10 sm:h-11 ${errors.location ? "border-red-500" : ""}`}
                   {...register("location")}
                 />
-                {errors.location && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.location.message}</p>}
+                {errors.location && (
+                  <p className="mt-1 text-xs text-red-500 sm:text-sm">
+                    {errors.location.message}
+                  </p>
+                )}
               </div>
-              
+
               {/* Note: I'm mapping address the same as location here based on schema, but they could be split in UI if needed. Adding address. */}
               <div className="space-y-2 sm:space-y-1">
                 <Label
@@ -217,7 +247,11 @@ const RegisterEODataForm = () => {
                   className={`h-10 sm:h-11 ${errors.address ? "border-red-500" : ""}`}
                   {...register("address")}
                 />
-                {errors.address && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.address.message}</p>}
+                {errors.address && (
+                  <p className="mt-1 text-xs text-red-500 sm:text-sm">
+                    {errors.address.message}
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2 sm:space-y-1">
@@ -234,7 +268,11 @@ const RegisterEODataForm = () => {
                   className={`h-10 sm:h-11 ${errors.nama_pj ? "border-red-500" : ""}`}
                   {...register("nama_pj")}
                 />
-                {errors.nama_pj && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.nama_pj.message}</p>}
+                {errors.nama_pj && (
+                  <p className="mt-1 text-xs text-red-500 sm:text-sm">
+                    {errors.nama_pj.message}
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2 sm:space-y-1">
@@ -251,7 +289,11 @@ const RegisterEODataForm = () => {
                   className={`h-10 sm:h-11 ${errors.no_wa_pj ? "border-red-500" : ""}`}
                   {...register("no_wa_pj")}
                 />
-                {errors.no_wa_pj && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.no_wa_pj.message}</p>}
+                {errors.no_wa_pj && (
+                  <p className="mt-1 text-xs text-red-500 sm:text-sm">
+                    {errors.no_wa_pj.message}
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2 sm:space-y-1">
@@ -268,7 +310,11 @@ const RegisterEODataForm = () => {
                   className={`h-10 sm:h-11 ${errors.bank_name ? "border-red-500" : ""}`}
                   {...register("bank_name")}
                 />
-                {errors.bank_name && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.bank_name.message}</p>}
+                {errors.bank_name && (
+                  <p className="mt-1 text-xs text-red-500 sm:text-sm">
+                    {errors.bank_name.message}
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2 sm:space-y-1">
@@ -285,7 +331,11 @@ const RegisterEODataForm = () => {
                   className={`h-10 sm:h-11 ${errors.bank_number ? "border-red-500" : ""}`}
                   {...register("bank_number")}
                 />
-                {errors.bank_number && <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.bank_number.message}</p>}
+                {errors.bank_number && (
+                  <p className="mt-1 text-xs text-red-500 sm:text-sm">
+                    {errors.bank_number.message}
+                  </p>
+                )}
               </div>
 
               <Button

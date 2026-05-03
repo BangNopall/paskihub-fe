@@ -1,4 +1,4 @@
-import { getServerSession } from "next-auth"
+import { getServerSession } from "next-auth/next"
 import { redirect } from "next/navigation"
 import { authOptions } from "@/lib/auth"
 import { profileService } from "@/services/profile.service"
@@ -8,7 +8,7 @@ export default async function PesertaDataFormLayout({
 }: {
   children: React.ReactNode
 }) {
-  const session = await getServerSession(authOptions)
+  const session: any = await getServerSession(authOptions)
   if (!session) redirect("/auth/login")
 
   const response = await profileService.getPesertaProfile(session.accessToken)

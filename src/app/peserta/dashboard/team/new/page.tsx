@@ -296,7 +296,7 @@ export default function NewTeamPage() {
             </h1>
             <Button
               type="submit"
-              variant={'secondary'}
+              variant={"secondary"}
               className="h-12 w-full rounded-full px-8 text-base font-bold sm:w-auto"
             >
               Buat Tim

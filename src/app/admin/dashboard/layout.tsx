@@ -1,15 +1,15 @@
 import { AppSidebar } from "@/components/app-sidebar"
 import { SiteHeader } from "@/components/site-header"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
-import { 
-  LayoutDashboardIcon, 
-  Users, 
-  CreditCard, 
-  Settings, 
-  Megaphone, 
-  History, 
+import {
+  LayoutDashboardIcon,
+  Users,
+  CreditCard,
+  Settings,
+  Megaphone,
+  History,
   ShieldCheck,
-  User
+  User,
 } from "lucide-react"
 
 const data = {
@@ -49,23 +49,23 @@ const data = {
 
 // Breadcrumb/Quick Nav for SiteHeader
 const navHeader = [
-    {
-      title: "Manajemen User",
-      url: "/admin/dashboard/users",
-    },
-    {
-      title: "Kelola Admin",
-      url: "/admin/dashboard/admins",
-    },
-    {
-      title: "Transaksi Koin",
-      url: "/admin/dashboard/transactions",
-    },
-    {
-      title: "Pengaturan Admin",
-      url: "/admin/dashboard/settings"
-    }
-  ]
+  {
+    title: "Manajemen User",
+    url: "/admin/dashboard/users",
+  },
+  {
+    title: "Kelola Admin",
+    url: "/admin/dashboard/admins",
+  },
+  {
+    title: "Transaksi Koin",
+    url: "/admin/dashboard/transactions",
+  },
+  {
+    title: "Pengaturan Admin",
+    url: "/admin/dashboard/settings",
+  },
+]
 
 export default function SuperAdminLayout({
   children,
@@ -85,9 +85,7 @@ export default function SuperAdminLayout({
       <SidebarInset className="overflow-hidden">
         <SiteHeader navMain={navHeader} />
         <div className="h-full w-full bg-[url('/frame.png')] bg-cover bg-no-repeat">
-          <div className="container mx-auto">
-            {children}
-          </div>
+          <div className="container mx-auto">{children}</div>
         </div>
       </SidebarInset>
     </SidebarProvider>

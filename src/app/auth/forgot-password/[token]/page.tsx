@@ -10,7 +10,10 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { resetPasswordSchema, ResetPasswordFormData } from "@/schemas/auth.schema"
+import {
+  resetPasswordSchema,
+  ResetPasswordFormData,
+} from "@/schemas/auth.schema"
 import { resetPasswordAction } from "@/actions/auth.actions"
 import { toast } from "sonner"
 
@@ -25,9 +28,13 @@ export default function ResetPasswordPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const { register, handleSubmit, formState: { errors } } = useForm<ResetPasswordFormData>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ResetPasswordFormData>({
     resolver: zodResolver(resetPasswordSchema),
-    defaultValues: { password: "", confirm_password: "" }
+    defaultValues: { password: "", confirm_password: "" },
   })
 
   const onSubmit = async (data: ResetPasswordFormData) => {
@@ -42,7 +49,9 @@ export default function ResetPasswordPage() {
         toast.error("Gagal", { description: res.message })
       }
     } catch {
-      toast.error("Terjadi Kesalahan", { description: "Gagal mereset password." })
+      toast.error("Terjadi Kesalahan", {
+        description: "Gagal mereset password.",
+      })
     } finally {
       setIsSubmitting(false)
     }
@@ -87,7 +96,9 @@ export default function ResetPasswordPage() {
                     placeholder="Masukkan kata sandi baru"
                     className={cn(
                       "h-12 bg-white pr-12 font-poppins text-sm shadow-sm sm:h-14 sm:text-base",
-                      errors.password ? "border-red-500 focus-visible:ring-red-200" : "border-gray-200 focus-visible:ring-sky-200"
+                      errors.password
+                        ? "border-red-500 focus-visible:ring-red-200"
+                        : "border-gray-200 focus-visible:ring-sky-200"
                     )}
                     {...register("password")}
                   />
@@ -123,7 +134,9 @@ export default function ResetPasswordPage() {
                   htmlFor="confirm_password"
                   className={cn(
                     "font-poppins text-sm font-medium sm:text-base",
-                    errors.confirm_password ? "text-red-600" : "text-neutral-700"
+                    errors.confirm_password
+                      ? "text-red-600"
+                      : "text-neutral-700"
                   )}
                 >
                   Konfirmasi Password Baru
@@ -135,7 +148,9 @@ export default function ResetPasswordPage() {
                     placeholder="Masukkan ulang kata sandi baru"
                     className={cn(
                       "h-12 bg-white pr-12 font-poppins text-sm shadow-sm sm:h-14 sm:text-base",
-                      errors.confirm_password ? "border-red-500 focus-visible:ring-red-200" : "border-gray-200 focus-visible:ring-sky-200"
+                      errors.confirm_password
+                        ? "border-red-500 focus-visible:ring-red-200"
+                        : "border-gray-200 focus-visible:ring-sky-200"
                     )}
                     {...register("confirm_password")}
                   />
@@ -146,7 +161,9 @@ export default function ResetPasswordPage() {
                   ) : (
                     <button
                       type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
                       className="absolute right-4 text-neutral-400 transition-colors hover:text-neutral-600"
                       tabIndex={-1}
                     >

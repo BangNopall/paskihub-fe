@@ -29,13 +29,13 @@ import {
 import { toast } from "sonner"
 import { format, parse } from "date-fns"
 import { id } from "date-fns/locale"
-import { 
-  updateEventAction, 
-  uploadEventLogoAction, 
+import {
+  updateEventAction,
+  uploadEventLogoAction,
   uploadEventPosterAction,
   createEventLevelAction,
   updateEventLevelAction,
-  deleteEventLevelAction
+  deleteEventLevelAction,
 } from "@/actions/event.actions"
 
 // ==========================================
@@ -85,7 +85,13 @@ interface EventFormProps {
 // ==========================================
 
 function formatRupiah(amount: string | number) {
-  if (amount === undefined || amount === null || amount === "" || amount === "0") return "-"
+  if (
+    amount === undefined ||
+    amount === null ||
+    amount === "" ||
+    amount === "0"
+  )
+    return "-"
   const numericAmount = typeof amount === "string" ? parseInt(amount) : amount
   return new Intl.NumberFormat("id-ID", {
     style: "currency",
@@ -134,7 +140,14 @@ function EditableField({
 }) {
   // Handle display for non-editing mode
   const displayValue = (val: any) => {
-    if (val === undefined || val === null || val === "" || val === 0 || val === "null") return "-"
+    if (
+      val === undefined ||
+      val === null ||
+      val === "" ||
+      val === 0 ||
+      val === "null"
+    )
+      return "-"
     return val
   }
 
@@ -143,7 +156,7 @@ function EditableField({
     let datePart = ""
     let timePart = "00:00:00"
     let formattedDisplay = "-"
-    
+
     if (valStr) {
       try {
         const d = new Date(valStr)
@@ -157,8 +170,8 @@ function EditableField({
           timePart = parts[1] ? parts[1].split(/[+Z]/)[0] : "00:00:00"
           formattedDisplay = valStr
         }
-      } catch(e) {
-         formattedDisplay = valStr
+      } catch (e) {
+        formattedDisplay = valStr
       }
     }
 
@@ -264,12 +277,14 @@ export default function OrganizerEventForm({ initialData }: EventFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [formData, setFormData] = useState<EventData>(initialData)
   const [deletedLevelIds, setDeletedLevelIds] = useState<string[]>([])
-  
+
   // Track files locally
   const [logoFile, setLogoFile] = useState<File | null>(null)
   const [logoPreview, setLogoPreview] = useState<string>(initialData.logo_path)
   const [posterFile, setPosterFile] = useState<File | null>(null)
-  const [posterPreview, setPosterPreview] = useState<string>(initialData.poster_path)
+  const [posterPreview, setPosterPreview] = useState<string>(
+    initialData.poster_path
+  )
 
   // Referensi untuk file input
   const logoInputRef = useRef<HTMLInputElement>(null)
@@ -282,36 +297,38 @@ export default function OrganizerEventForm({ initialData }: EventFormProps) {
       setFormData({ ...formData, [field]: e.target.value })
     }
 
-  const handleDateTimeChange = (field: keyof EventData, type: "date" | "time") => (e: React.ChangeEvent<HTMLInputElement>) => {
-    const rawVal = String(formData[field] || "").replace("null", "")
-    let datePart = ""
-    let timePart = "00:00:00"
-    
-    if (rawVal) {
-      try {
-        const d = new Date(rawVal)
-        if (!isNaN(d.getTime())) {
-          datePart = format(d, "yyyy-MM-dd")
-          timePart = format(d, "HH:mm:ss")
-        } else {
-          const parts = rawVal.split(/[ T]/)
-          datePart = parts[0] || ""
-          timePart = parts[1] ? parts[1].split(/[+Z]/)[0] : "00:00:00"
-        }
-      } catch(e) {}
-    }
-    
-    if (!datePart) datePart = format(new Date(), "yyyy-MM-dd")
+  const handleDateTimeChange =
+    (field: keyof EventData, type: "date" | "time") =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const rawVal = String(formData[field] || "").replace("null", "")
+      let datePart = ""
+      let timePart = "00:00:00"
 
-    if (type === "date") {
-      datePart = e.target.value
-    } else {
-      timePart = e.target.value
-      if (timePart.split(":").length === 2) timePart += ":00"
-    }
+      if (rawVal) {
+        try {
+          const d = new Date(rawVal)
+          if (!isNaN(d.getTime())) {
+            datePart = format(d, "yyyy-MM-dd")
+            timePart = format(d, "HH:mm:ss")
+          } else {
+            const parts = rawVal.split(/[ T]/)
+            datePart = parts[0] || ""
+            timePart = parts[1] ? parts[1].split(/[+Z]/)[0] : "00:00:00"
+          }
+        } catch (e) {}
+      }
 
-    setFormData({ ...formData, [field]: `${datePart}T${timePart}+07:00` })
-  }
+      if (!datePart) datePart = format(new Date(), "yyyy-MM-dd")
+
+      if (type === "date") {
+        datePart = e.target.value
+      } else {
+        timePart = e.target.value
+        if (timePart.split(":").length === 2) timePart += ":00"
+      }
+
+      setFormData({ ...formData, [field]: `${datePart}T${timePart}+07:00` })
+    }
 
   const handleLevelChange = (
     id: string,
@@ -332,21 +349,21 @@ export default function OrganizerEventForm({ initialData }: EventFormProps) {
       name: "Jenjang Baru",
       regis_fee: "0",
       dp_fee: "0",
-      isNew: true
+      isNew: true,
     }
     setFormData({
       ...formData,
-      levels: [...formData.levels, newLevel]
+      levels: [...formData.levels, newLevel],
     })
   }
 
   const handleRemoveLevel = (levelId: string) => {
-    if (!levelId.startsWith('temp-')) {
-       setDeletedLevelIds([...deletedLevelIds, levelId])
+    if (!levelId.startsWith("temp-")) {
+      setDeletedLevelIds([...deletedLevelIds, levelId])
     }
     setFormData({
       ...formData,
-      levels: formData.levels.filter(l => l.id !== levelId)
+      levels: formData.levels.filter((l) => l.id !== levelId),
     })
   }
 
@@ -415,7 +432,10 @@ export default function OrganizerEventForm({ initialData }: EventFormProps) {
       if (posterFile) {
         const posterFormData = new FormData()
         posterFormData.append("poster", posterFile)
-        const posterRes = await uploadEventPosterAction(formData.id, posterFormData)
+        const posterRes = await uploadEventPosterAction(
+          formData.id,
+          posterFormData
+        )
         if (!posterRes.success) toast.error(posterRes.message)
       }
 
@@ -431,14 +451,14 @@ export default function OrganizerEventForm({ initialData }: EventFormProps) {
             name: level.name,
             regis_fee: String(level.regis_fee),
             dp_fee: String(level.dp_fee),
-            event_id: formData.id
+            event_id: formData.id,
           })
         } else {
           await updateEventLevelAction(formData.id, level.id, {
             name: level.name,
             regis_fee: String(level.regis_fee),
             dp_fee: String(level.dp_fee),
-            event_id: formData.id
+            event_id: formData.id,
           })
         }
       }
@@ -451,7 +471,9 @@ export default function OrganizerEventForm({ initialData }: EventFormProps) {
     } catch (error: any) {
       console.log(error)
       console.error("Gagal menyimpan data:", error)
-      toast.error(error.message || "Terjadi kesalahan saat menyimpan perubahan.")
+      toast.error(
+        error.message || "Terjadi kesalahan saat menyimpan perubahan."
+      )
     } finally {
       setIsSubmitting(false)
     }
@@ -470,7 +492,7 @@ export default function OrganizerEventForm({ initialData }: EventFormProps) {
   return (
     <div className="flex flex-col gap-6 rounded-[24px] border border-sky-50 bg-gradient-to-b from-white/60 to-white/50 p-4 shadow-sm md:p-6">
       {/* HEADER ACTIONS */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-4">
+      <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h2 className="font-poppins text-lg font-medium text-slate-900">
           Info Dasar Event
         </h2>
@@ -637,7 +659,7 @@ export default function OrganizerEventForm({ initialData }: EventFormProps) {
             label="Atas Nama"
             value={formData.name_pj} // Selalu ambil dari name_pj
             isEditing={false}
-            onChange={() => {}} 
+            onChange={() => {}}
             className="md:col-span-2"
           />
         </div>
@@ -704,9 +726,7 @@ export default function OrganizerEventForm({ initialData }: EventFormProps) {
                 onChange={handlePosterChange}
               />
               <div
-                onClick={() =>
-                  isEditing && posterInputRef.current?.click()
-                }
+                onClick={() => isEditing && posterInputRef.current?.click()}
                 className={cn(
                   "flex h-32 w-full max-w-[240px] items-center justify-center overflow-hidden rounded-2xl border border-stone-300 bg-neutral-100 transition-all",
                   isEditing
