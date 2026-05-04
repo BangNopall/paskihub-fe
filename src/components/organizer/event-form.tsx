@@ -26,6 +26,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { LEVEL_OPTIONS, getLevelLabel } from "@/lib/constants"
 import { toast } from "sonner"
 import { format, parse } from "date-fns"
 import { id } from "date-fns/locale"
@@ -346,7 +354,7 @@ export default function OrganizerEventForm({ initialData }: EventFormProps) {
   const handleAddLevel = () => {
     const newLevel: EventLevel = {
       id: `temp-${Date.now()}`,
-      name: "Jenjang Baru",
+      name: "SD",
       regis_fee: "0",
       dp_fee: "0",
       isNew: true,
@@ -819,19 +827,25 @@ export default function OrganizerEventForm({ initialData }: EventFormProps) {
                       </TableCell>
                       <TableCell className="font-poppins text-sm text-neutral-700">
                         {isEditing ? (
-                          <Input
-                            className="bg-white focus-visible:ring-sky-200"
+                          <Select
                             value={level.name || ""}
-                            onChange={(e) =>
-                              handleLevelChange(
-                                level.id,
-                                "name",
-                                e.target.value
-                              )
+                            onValueChange={(val) =>
+                              handleLevelChange(level.id, "name", val)
                             }
-                          />
+                          >
+                            <SelectTrigger className="w-full bg-white focus-visible:ring-sky-200">
+                              <SelectValue placeholder="Pilih Jenjang" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {LEVEL_OPTIONS.map((opt) => (
+                                <SelectItem key={opt.value} value={opt.value}>
+                                  {opt.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         ) : (
-                          level.name || "-"
+                          getLevelLabel(level.name) || "-"
                         )}
                       </TableCell>
                       <TableCell className="text-center font-poppins text-sm text-neutral-700">

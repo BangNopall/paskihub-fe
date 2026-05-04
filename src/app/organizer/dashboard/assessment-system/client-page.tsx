@@ -6,6 +6,7 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 
 import { cn } from "@/lib/utils"
+import { getLevelLabel } from "@/lib/constants"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -117,7 +118,7 @@ export default function AssessmentSystemClient({
                     : "border-gray-200 bg-white text-zinc-600 hover:bg-gray-50"
                 )}
               >
-                {level.name}
+                {getLevelLabel(level.name)}
               </Button>
             ))}
           </div>

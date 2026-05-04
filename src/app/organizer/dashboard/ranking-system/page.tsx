@@ -4,7 +4,8 @@ import { redirect } from "next/navigation"
 import { authOptions } from "@/lib/auth"
 import { profileService } from "@/services/profile.service"
 import { assessmentService } from "@/services/assessment.service"
-import { RankingSystemClient, RankingAward } from "./ranking-system-client"
+import { rankingService } from "@/services/ranking.service"
+import { RankingSystemClient } from "./ranking-system-client"
 
 // ==========================================
 // MAIN SERVER COMPONENT
@@ -31,20 +32,23 @@ export default async function RankingSystemPage() {
       name: l.name,
     })) || []
 
-  // 3. Fetch Score Categories untuk setiap level secara paralel
-  const scoreCategories: { id: string; name: string; eventLevelId: string }[] =
-    []
+  // 3. Fetch Score Categories dan Awards secara paralel
+  let scoreCategories: { id: string; name: string; eventLevelId: string }[] = []
+  let initialAwards: any[] = []
 
   try {
-    const unifiedResults = await Promise.all(
-      eventLevels.map((lvl: any) =>
-        assessmentService.getUnifiedAssessment(
-          eventId,
-          lvl.id,
-          session.accessToken
+    const [unifiedResults, awards] = await Promise.all([
+      Promise.all(
+        eventLevels.map((lvl: any) =>
+          assessmentService.getUnifiedAssessment(
+            eventId,
+            lvl.id,
+            session.accessToken
+          )
         )
-      )
-    )
+      ),
+      rankingService.getAwards(eventId, session.accessToken),
+    ])
 
     unifiedResults.forEach((res, index) => {
       const levelId = eventLevels[index].id
@@ -56,14 +60,18 @@ export default async function RankingSystemPage() {
         })
       })
     })
-  } catch (error) {
-    console.error("Gagal mengambil data kategori penilaian:", error)
-    // Lanjutkan dengan array kosong jika gagal, client akan menampilkan warning
-  }
 
-  // 4. Mock Data for Awards (Until Backend API is ready)
-  // TODO: Fetch from new API GET /api/v1/eo/events/{eventId}/awards
-  const initialAwards: RankingAward[] = []
+    initialAwards = awards.map((a) => ({
+      id: a.id,
+      event_level_id: a.event_level_id,
+      name: a.name,
+      limit_rank: a.limit_rank,
+      score_category_ids: a.score_categories.map((c) => c.id),
+      score_categories: a.score_categories,
+    }))
+  } catch (error) {
+    console.error("Gagal mengambil data sistem ranking:", error)
+  }
 
   return (
     <div className="flex flex-1 flex-col">

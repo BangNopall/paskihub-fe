@@ -14,6 +14,7 @@ import {
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { getLevelLabel } from "@/lib/constants"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -430,7 +431,7 @@ export default function TeamListClient({
                             </span>
                             <div className="mt-1 flex items-center gap-1.5">
                               <Badge className="w-fit border-gray-300 bg-sky-50 px-2 py-0 font-poppins text-[10px] font-medium text-slate-500 hover:bg-sky-50">
-                                {team.institution_type}
+                                {getLevelLabel(team.institution_type)}
                               </Badge>
                               <Badge
                                 className={cn(
@@ -710,7 +711,7 @@ export default function TeamListClient({
                               Kategori Tingkat:
                             </span>
                             <span className="font-semibold text-neutral-800">
-                              {teamDetail.event_level}
+                              {getLevelLabel(teamDetail.event_level)}
                             </span>
                           </div>
                           <div className="flex items-center justify-between font-poppins text-sm">

@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 import { revalidatePath } from "next/cache"
 import { RankingAwardFormData } from "@/schemas/ranking.schema"
+import { rankingService } from "@/services/ranking.service"
 
 const REVALIDATE_PATH = "/organizer/dashboard/ranking-system"
 
@@ -19,11 +20,7 @@ export async function createRankingAwardAction(
 ) {
   try {
     const session = await getSession()
-
-    // TODO: Call actual service when backend is ready
-    // await rankingService.createAward(eventId, data, session.accessToken)
-
-    console.log("Creating award for event", eventId, data)
+    await rankingService.createAward(eventId, data, session.accessToken)
 
     revalidatePath(REVALIDATE_PATH)
     return { success: true, message: "Konfigurasi juara berhasil ditambahkan" }
@@ -42,9 +39,7 @@ export async function updateRankingAwardAction(
 ) {
   try {
     const session = await getSession()
-
-    // TODO: Call actual service when backend is ready
-    // await rankingService.updateAward(eventId, id, data, session.accessToken)
+    await rankingService.updateAward(eventId, id, data, session.accessToken)
 
     revalidatePath(REVALIDATE_PATH)
     return { success: true, message: "Konfigurasi juara berhasil diperbarui" }
@@ -59,9 +54,7 @@ export async function updateRankingAwardAction(
 export async function deleteRankingAwardAction(eventId: string, id: string) {
   try {
     const session = await getSession()
-
-    // TODO: Call actual service when backend is ready
-    // await rankingService.deleteAward(eventId, id, session.accessToken)
+    await rankingService.deleteAward(eventId, id, session.accessToken)
 
     revalidatePath(REVALIDATE_PATH)
     return { success: true, message: "Konfigurasi juara berhasil dihapus" }

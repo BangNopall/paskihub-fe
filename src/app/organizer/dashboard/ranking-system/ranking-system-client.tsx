@@ -5,6 +5,7 @@ import { Pencil, Plus, Trash2, Loader2 } from "lucide-react"
 
 // --- SHADCN UI COMPONENTS ---
 import { cn } from "@/lib/utils"
+import { getLevelLabel } from "@/lib/constants"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -31,9 +32,10 @@ import { toast } from "sonner"
 export interface RankingAward {
   id: string
   name: string
-  limitRank: number
-  scoreCategoryIds: string[]
-  eventLevelId: string
+  limit_rank: number
+  score_category_ids: string[]
+  event_level_id: string
+  score_categories?: { id: string; name: string }[]
 }
 
 interface RankingSystemClientProps {
@@ -71,6 +73,11 @@ export function RankingSystemClient({
     eventLevels[0]?.id || ""
   )
 
+  // Sync data with initialData from SSR
+  React.useEffect(() => {
+    setData(initialData)
+  }, [initialData])
+
   // --- MODAL STATES ---
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
@@ -97,8 +104,8 @@ export function RankingSystemClient({
   const handleOpenEditModal = (award: RankingAward) => {
     setSelectedAward(award)
     setFormName(award.name)
-    setFormLimit(award.limitRank)
-    setFormCategoryIds(award.scoreCategoryIds)
+    setFormLimit(award.limit_rank)
+    setFormCategoryIds(award.score_category_ids)
     setIsEditModalOpen(true)
   }
 
@@ -119,7 +126,7 @@ export function RankingSystemClient({
 
   // Filter awards by active level
   const currentLevelAwards = data.filter(
-    (a) => a.eventLevelId === activeLevelId
+    (a) => a.event_level_id === activeLevelId
   )
 
   // --- HANDLERS: SUBMISSIONS (SSR Actions) ---
@@ -137,16 +144,8 @@ export function RankingSystemClient({
 
       if (result.success) {
         toast.success(result.message)
-        // Sementara update local state karena backend award belum ada
-        const newAward: RankingAward = {
-          id: Math.random().toString(36).substr(2, 9),
-          name: formName,
-          limitRank: formLimit,
-          scoreCategoryIds: formCategoryIds,
-          eventLevelId: activeLevelId,
-        }
-        setData((prev) => [...prev, newAward])
         setIsAddModalOpen(false)
+        resetForm()
       } else {
         toast.error(result.message)
       }
@@ -171,18 +170,6 @@ export function RankingSystemClient({
 
       if (result.success) {
         toast.success(result.message)
-        setData((prev) =>
-          prev.map((a) =>
-            a.id === selectedAward.id
-              ? {
-                  ...a,
-                  name: formName,
-                  limitRank: formLimit,
-                  scoreCategoryIds: formCategoryIds,
-                }
-              : a
-          )
-        )
         setIsEditModalOpen(false)
       } else {
         toast.error(result.message)
@@ -203,7 +190,6 @@ export function RankingSystemClient({
 
       if (result.success) {
         toast.success(result.message)
-        setData((prev) => prev.filter((a) => a.id !== selectedAward.id))
         setIsDeleteModalOpen(false)
       } else {
         toast.error(result.message)
@@ -235,7 +221,7 @@ export function RankingSystemClient({
                   : "border-gray-200 bg-white text-zinc-600 hover:bg-gray-50"
               )}
             >
-              {level.name}
+              {getLevelLabel(level.name)}
             </Button>
           ))}
         </div>
@@ -246,7 +232,9 @@ export function RankingSystemClient({
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <h2 className="font-poppins text-lg font-medium text-slate-900">
             Konfigurasi Juara{" "}
-            {eventLevels.find((l) => l.id === activeLevelId)?.name}
+            {getLevelLabel(
+              eventLevels.find((l) => l.id === activeLevelId)?.name || ""
+            )}
           </h2>
           <Button
             onClick={handleOpenAddModal}
@@ -275,10 +263,10 @@ export function RankingSystemClient({
                     {award.name}
                   </span>
                   <span className="font-poppins text-xs leading-relaxed font-normal text-neutral-500">
-                    Urutan: {generateUrutanString(award.limitRank)}{" "}
+                    Urutan: {generateUrutanString(award.limit_rank)}{" "}
                     &nbsp;|&nbsp; Kategori:{" "}
                     {scoreCategories
-                      .filter((c) => award.scoreCategoryIds.includes(c.id))
+                      .filter((c) => award.score_category_ids.includes(c.id))
                       .map((c) => c.name)
                       .join(" + ")}
                   </span>

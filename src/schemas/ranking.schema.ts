@@ -11,3 +11,19 @@ export const RankingAwardSchema = z.object({
 })
 
 export type RankingAwardFormData = z.infer<typeof RankingAwardSchema>
+
+export const AwardResSchema = z.object({
+  id: z.string().uuid(),
+  event_id: z.string().uuid(),
+  event_level_id: z.string().uuid(),
+  name: z.string(),
+  limit_rank: z.number(),
+  score_categories: z.array(
+    z.object({
+      id: z.string().uuid(),
+      name: z.string(),
+    })
+  ),
+})
+
+export type AwardRes = z.infer<typeof AwardResSchema>
