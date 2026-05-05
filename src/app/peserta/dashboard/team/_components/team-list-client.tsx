@@ -37,6 +37,7 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
@@ -471,11 +472,11 @@ export default function TeamListClient({ initialTeams, token }: TeamListClientPr
               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
                 <Trash2 className="h-8 w-8 text-red-500" />
               </div>
-              <h2 className="font-montserrat text-2xl font-bold text-neutral-800">Hapus Tim</h2>
-              <p className="font-poppins text-sm text-neutral-600">
+              <DialogTitle className="font-montserrat text-2xl font-bold text-neutral-800">Hapus Tim</DialogTitle>
+              <DialogDescription className="font-poppins text-sm text-neutral-600">
                 Apakah kamu yakin ingin menghapus tim ini?<br />
                 Tindakan ini tidak dapat dibatalkan.
-              </p>
+              </DialogDescription>
             </div>
             <div className="flex flex-col-reverse gap-3 sm:flex-row">
               <DialogClose asChild>
