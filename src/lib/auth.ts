@@ -4,6 +4,14 @@ import { loginResponseSchema } from "@/schemas/auth.schema"
 const API_URL = process.env.API_BASE_URL || "http://localhost:3010"
 const API_KEY = process.env.API_KEY
 
+function parseJwt(token: string) {
+  try {
+    return JSON.parse(Buffer.from(token.split(".")[1], "base64").toString())
+  } catch (e) {
+    return null
+  }
+}
+
 export const authOptions: any = {
   providers: [
     CredentialsProvider({
@@ -34,11 +42,14 @@ export const authOptions: any = {
           const data = await res.json()
 
           const parsed = loginResponseSchema.parse(data)
+          const decoded = parseJwt(parsed.data.token)
+
           return {
             id: parsed.data.id || "",
             email: parsed.data.email || credentials.email,
             role: parsed.data.role || "",
             accessToken: parsed.data.token,
+            accessTokenExpires: decoded?.exp ? decoded.exp * 1000 : 0,
           }
         } catch (error: any) {
           console.error("Auth error:", error)
@@ -54,6 +65,18 @@ export const authOptions: any = {
         token.role = user.role
         token.email = user.email
         token.accessToken = user.accessToken
+        token.accessTokenExpires = user.accessTokenExpires
+      }
+
+      // Check if the access token has expired
+      if (
+        token.accessTokenExpires &&
+        Date.now() > (token.accessTokenExpires as number)
+      ) {
+        return {
+          ...token,
+          error: "SessionExpired",
+        }
       }
       return token
     },
@@ -63,7 +86,9 @@ export const authOptions: any = {
         session.user.role = token.role
         session.user.email = token.email
         session.accessToken = token.accessToken
+        session.error = token.error
       }
+      // console.log(token)
       return session
     },
   },
@@ -72,6 +97,7 @@ export const authOptions: any = {
   },
   session: {
     strategy: "jwt",
+    maxAge: 3600, // 1 hour to match backend token
   },
   secret: process.env.NEXTAUTH_SECRET,
 }

@@ -63,7 +63,8 @@ export default async function RankingSystemPage() {
 
     initialAwards = awards.map((a) => ({
       id: a.id,
-      event_level_id: a.event_level_id,
+      event_level_ids: a.event_level_ids,
+      levels: a.levels,
       name: a.name,
       limit_rank: a.limit_rank,
       score_category_ids: a.score_categories.map((c) => c.id),

@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useMemo } from "react"
 import { Pencil, Plus, Trash2, Loader2 } from "lucide-react"
 
 // --- SHADCN UI COMPONENTS ---
@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Badge } from "@/components/ui/badge"
 import {
   Dialog,
   DialogContent,
@@ -34,7 +35,8 @@ export interface RankingAward {
   name: string
   limit_rank: number
   score_category_ids: string[]
-  event_level_id: string
+  event_level_ids: string[]
+  levels?: { id: string; name: string }[]
   score_categories?: { id: string; name: string }[]
 }
 
@@ -69,9 +71,6 @@ export function RankingSystemClient({
   eventId,
 }: RankingSystemClientProps) {
   const [data, setData] = useState<RankingAward[]>(initialData)
-  const [activeLevelId, setActiveLevelId] = useState<string>(
-    eventLevels[0]?.id || ""
-  )
 
   // Sync data with initialData from SSR
   React.useEffect(() => {
@@ -88,11 +87,13 @@ export function RankingSystemClient({
   // --- FORM STATES ---
   const [formName, setFormName] = useState("")
   const [formLimit, setFormLimit] = useState(3)
+  const [formLevelIds, setFormLevelIds] = useState<string[]>([])
   const [formCategoryIds, setFormCategoryIds] = useState<string[]>([])
 
   const resetForm = () => {
     setFormName("")
     setFormLimit(3)
+    setFormLevelIds([])
     setFormCategoryIds([])
   }
 
@@ -105,6 +106,7 @@ export function RankingSystemClient({
     setSelectedAward(award)
     setFormName(award.name)
     setFormLimit(award.limit_rank)
+    setFormLevelIds(award.event_level_ids)
     setFormCategoryIds(award.score_category_ids)
     setIsEditModalOpen(true)
   }
@@ -114,20 +116,60 @@ export function RankingSystemClient({
     setIsDeleteModalOpen(true)
   }
 
-  const handleCategoryToggle = (checked: boolean, id: string) => {
-    if (checked) setFormCategoryIds((prev) => [...prev, id])
-    else setFormCategoryIds((prev) => prev.filter((k) => k !== id))
+  const handleLevelToggle = (checked: boolean, id: string) => {
+    if (checked) {
+      setFormLevelIds((prev) => [...prev, id])
+    } else {
+      setFormLevelIds((prev) => prev.filter((k) => k !== id))
+    }
   }
 
-  // Filter categories by active level
-  const activeLevelCategories = scoreCategories.filter(
-    (c) => c.eventLevelId === activeLevelId
-  )
+  // --- FAIRNESS RULE LOGIC ---
+  // Only category names that exist in ALL selected levels
+  const availableCategoryNames = useMemo(() => {
+    if (formLevelIds.length === 0) return []
 
-  // Filter awards by active level
-  const currentLevelAwards = data.filter(
-    (a) => a.event_level_id === activeLevelId
-  )
+    const nameToLevelMap: Record<string, Set<string>> = {}
+    scoreCategories.forEach((cat) => {
+      if (formLevelIds.includes(cat.eventLevelId)) {
+        if (!nameToLevelMap[cat.name]) nameToLevelMap[cat.name] = new Set()
+        nameToLevelMap[cat.name].add(cat.eventLevelId)
+      }
+    })
+
+    return Object.keys(nameToLevelMap).filter(
+      (name) => nameToLevelMap[name].size === formLevelIds.length
+    )
+  }, [formLevelIds, scoreCategories])
+
+  const handleCategoryNameToggle = (checked: boolean, name: string) => {
+    const idsForName = scoreCategories
+      .filter(
+        (cat) => cat.name === name && formLevelIds.includes(cat.eventLevelId)
+      )
+      .map((cat) => cat.id)
+
+    if (checked) {
+      setFormCategoryIds((prev) => [...new Set([...prev, ...idsForName])])
+    } else {
+      setFormCategoryIds((prev) =>
+        prev.filter((id) => !idsForName.includes(id))
+      )
+    }
+  }
+
+  const isCategoryNameChecked = (name: string) => {
+    const idsForName = scoreCategories
+      .filter(
+        (cat) => cat.name === name && formLevelIds.includes(cat.eventLevelId)
+      )
+      .map((cat) => cat.id)
+
+    return (
+      idsForName.length > 0 &&
+      idsForName.every((id) => formCategoryIds.includes(id))
+    )
+  }
 
   // --- HANDLERS: SUBMISSIONS (SSR Actions) ---
 
@@ -135,11 +177,24 @@ export function RankingSystemClient({
     e.preventDefault()
     setIsSubmitting(true)
     try {
+      // Ensure only categories in the current intersection are sent
+      const validIds = scoreCategories
+        .filter(
+          (cat) =>
+            availableCategoryNames.includes(cat.name) &&
+            formLevelIds.includes(cat.eventLevelId)
+        )
+        .map((cat) => cat.id)
+
+      const submissionCategoryIds = formCategoryIds.filter((id) =>
+        validIds.includes(id)
+      )
+
       const result = await createRankingAwardAction(eventId, {
         name: formName,
         limit_rank: formLimit,
-        score_category_ids: formCategoryIds,
-        event_level_id: activeLevelId,
+        score_category_ids: submissionCategoryIds,
+        event_level_ids: formLevelIds,
       })
 
       if (result.success) {
@@ -161,11 +216,23 @@ export function RankingSystemClient({
     if (!selectedAward) return
     setIsSubmitting(true)
     try {
+      const validIds = scoreCategories
+        .filter(
+          (cat) =>
+            availableCategoryNames.includes(cat.name) &&
+            formLevelIds.includes(cat.eventLevelId)
+        )
+        .map((cat) => cat.id)
+
+      const submissionCategoryIds = formCategoryIds.filter((id) =>
+        validIds.includes(id)
+      )
+
       const result = await updateRankingAwardAction(eventId, selectedAward.id, {
         name: formName,
         limit_rank: formLimit,
-        score_category_ids: formCategoryIds,
-        event_level_id: activeLevelId,
+        score_category_ids: submissionCategoryIds,
+        event_level_ids: formLevelIds,
       })
 
       if (result.success) {
@@ -203,38 +270,11 @@ export function RankingSystemClient({
 
   return (
     <div className="flex flex-col gap-8 rounded-[24px] border border-sky-100 bg-gradient-to-b from-white/60 to-white/50 p-4 shadow-sm backdrop-blur-md md:p-8">
-      {/* PILIH JENJANG TINGKAT */}
-      <div className="flex flex-col gap-3 md:flex-row md:items-center">
-        <span className="font-poppins text-sm font-medium text-slate-900">
-          Pilih Jenjang Tingkat:
-        </span>
-        <div className="flex flex-wrap items-center gap-2">
-          {eventLevels.map((level) => (
-            <Button
-              key={level.id}
-              variant={activeLevelId === level.id ? "default" : "outline"}
-              onClick={() => setActiveLevelId(level.id)}
-              className={cn(
-                "h-9 rounded-lg px-4 py-2 font-poppins text-sm",
-                activeLevelId === level.id
-                  ? "border-red-400 bg-rose-50 text-red-500 hover:bg-rose-100 hover:text-red-600"
-                  : "border-gray-200 bg-white text-zinc-600 hover:bg-gray-50"
-              )}
-            >
-              {getLevelLabel(level.name)}
-            </Button>
-          ))}
-        </div>
-      </div>
-
       {/* MAIN LIST CARD */}
       <div className="flex flex-col gap-6 rounded-2xl border border-sky-100 bg-gradient-to-b from-white/70 to-white/60 p-5 shadow-sm md:p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <h2 className="font-poppins text-lg font-medium text-slate-900">
-            Konfigurasi Juara{" "}
-            {getLevelLabel(
-              eventLevels.find((l) => l.id === activeLevelId)?.name || ""
-            )}
+            Daftar Konfigurasi Juara
           </h2>
           <Button
             onClick={handleOpenAddModal}
@@ -246,29 +286,43 @@ export function RankingSystemClient({
         </div>
 
         <div className="flex flex-col gap-3">
-          {currentLevelAwards.length === 0 ? (
+          {data.length === 0 ? (
             <div className="rounded-2xl border border-gray-100 bg-white py-12 text-center">
               <p className="font-poppins text-sm text-neutral-500">
                 Belum ada peringkat juara yang dikonfigurasi.
               </p>
             </div>
           ) : (
-            currentLevelAwards.map((award) => (
+            data.map((award) => (
               <div
                 key={award.id}
                 className="flex flex-col justify-between gap-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm transition-colors hover:border-sky-200 sm:flex-row sm:items-center"
               >
-                <div className="flex flex-col gap-1.5">
-                  <span className="font-poppins text-base font-medium text-neutral-700">
-                    {award.name}
-                  </span>
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="font-poppins text-base font-medium text-neutral-700">
+                      {award.name}
+                    </span>
+                    <div className="flex gap-1">
+                      {award.levels?.map((lvl) => (
+                        <Badge
+                          key={lvl.id}
+                          variant="secondary"
+                          className="h-5 px-2 text-[10px] font-medium"
+                        >
+                          {getLevelLabel(lvl.name)}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
                   <span className="font-poppins text-xs leading-relaxed font-normal text-neutral-500">
                     Urutan: {generateUrutanString(award.limit_rank)}{" "}
                     &nbsp;|&nbsp; Kategori:{" "}
-                    {scoreCategories
-                      .filter((c) => award.score_category_ids.includes(c.id))
-                      .map((c) => c.name)
-                      .join(" + ")}
+                    {award.score_categories
+                      ? Array.from(
+                          new Set(award.score_categories.map((c) => c.name))
+                        ).join(" + ")
+                      : "-"}
                   </span>
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
@@ -344,29 +398,68 @@ export function RankingSystemClient({
               </div>
 
               <div className="flex flex-col gap-3">
-                <Label>Kategori Penilaian yang Dihitung</Label>
-                <div className="grid grid-cols-2 gap-4">
-                  {activeLevelCategories.map((cat) => (
-                    <div key={cat.id} className="flex items-center space-x-2">
+                <Label>Jenjang Juara</Label>
+                <div className="flex flex-wrap gap-4">
+                  {eventLevels.map((lvl) => (
+                    <div key={lvl.id} className="flex items-center space-x-2">
                       <Checkbox
-                        id={`cat-${cat.id}`}
-                        checked={formCategoryIds.includes(cat.id)}
+                        id={`lvl-${lvl.id}`}
+                        checked={formLevelIds.includes(lvl.id)}
                         onCheckedChange={(checked) =>
-                          handleCategoryToggle(checked as boolean, cat.id)
+                          handleLevelToggle(checked as boolean, lvl.id)
                         }
                       />
                       <Label
-                        htmlFor={`cat-${cat.id}`}
+                        htmlFor={`lvl-${lvl.id}`}
                         className="cursor-pointer font-normal"
                       >
-                        {cat.name}
+                        {getLevelLabel(lvl.name)}
                       </Label>
                     </div>
                   ))}
                 </div>
-                {activeLevelCategories.length === 0 && (
+              </div>
+
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center justify-between">
+                  <Label>Kategori Penilaian yang Dihitung</Label>
+                  <Badge
+                    variant="outline"
+                    className="text-[10px] text-amber-600"
+                  >
+                    Fairness Rule Active
+                  </Badge>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  {availableCategoryNames.map((name) => (
+                    <div key={name} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`cat-${name}`}
+                        checked={isCategoryNameChecked(name)}
+                        onCheckedChange={(checked) =>
+                          handleCategoryNameToggle(checked as boolean, name)
+                        }
+                      />
+                      <Label
+                        htmlFor={`cat-${name}`}
+                        className="cursor-pointer font-normal"
+                      >
+                        {name}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+                {availableCategoryNames.length === 0 && (
                   <p className="text-xs text-amber-600 italic">
-                    Belum ada kategori penilaian di jenjang ini.
+                    {formLevelIds.length === 0
+                      ? "Pilih jenjang terlebih dahulu."
+                      : "Tidak ada kategori yang sama di semua jenjang terpilih."}
+                  </p>
+                )}
+                {formLevelIds.length > 1 && (
+                  <p className="text-[10px] text-muted-foreground">
+                    * Menampilkan kategori yang tersedia di seluruh{" "}
+                    {formLevelIds.length} jenjang terpilih.
                   </p>
                 )}
               </div>
@@ -386,7 +479,7 @@ export function RankingSystemClient({
                 <Button
                   type="submit"
                   disabled={
-                    isSubmitting || !formName || formCategoryIds.length === 0
+                    isSubmitting || !formName || formLevelIds.length === 0
                   }
                   className="flex-1 rounded-full bg-red-400 hover:bg-red-500"
                 >

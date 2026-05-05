@@ -37,6 +37,26 @@ export const assessmentService = {
     return UnifiedAssessmentSchema.parse(data.data)
   },
 
+  async getJudges(eventId: string, token: string): Promise<any[]> {
+    const res = await fetch(
+      `${API_URL}/api/v1/eo/events/${eventId}/assessment/judges`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": API_KEY || "",
+          Authorization: `Bearer ${token}`,
+        },
+        cache: "no-store",
+      }
+    )
+    if (!res.ok) {
+      throw new Error("Failed to fetch judges")
+    }
+    const data = await res.json()
+    return data.data || []
+  },
+
   // Violations
   async createViolation(eventId: string, data: any, token: string) {
     const res = await fetch(
@@ -218,6 +238,23 @@ export const assessmentService = {
     if (!res.ok) {
       const err = await res.json().catch(() => ({}))
       throw new Error(err.message || "Failed to delete sub-category")
+    }
+    return res.json()
+  },
+
+  async finalizeAssessment(data: any, token: string) {
+    const res = await fetch(`${API_URL}/api/v1/assessment/finalize`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": API_KEY || "",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    })
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}))
+      throw new Error(err.message || "Failed to finalize assessment")
     }
     return res.json()
   },

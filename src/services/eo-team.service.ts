@@ -82,6 +82,28 @@ class EOTeamService {
     const json = await res.json()
     return EOTeamStatsResSchema.parse(json.data)
   }
+
+  async startAssessment(
+    token: string,
+    eventId: string,
+    registrationId: string
+  ): Promise<void> {
+    const res = await fetch(
+      `${API_URL}/api/v1/eo/events/${eventId}/teams/${registrationId}/start-assessment`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "x-api-key": process.env.API_KEY!,
+        },
+      }
+    )
+
+    if (!res.ok) {
+      const json = await res.json().catch(() => ({}))
+      throw new Error(json.message || "Gagal memulai penilaian")
+    }
+  }
 }
 
 export const eoTeamService = new EOTeamService()

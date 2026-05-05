@@ -6,6 +6,8 @@ import {
   EODataFormData,
   pesertaDataFormSchema,
   PesertaDataFormData,
+  pesertaUpdatePasswordSchema,
+  PesertaUpdatePasswordData,
   eoUpdatePasswordSchema,
   EOUpdatePasswordData,
   eoStaffCreateSchema,
@@ -37,7 +39,23 @@ export async function updatePesertaProfileAction(data: PesertaDataFormData) {
 
     const parsed = pesertaDataFormSchema.parse(data)
     await profileService.updatePesertaProfile(parsed, session.accessToken)
+    revalidatePath("/peserta/dashboard/profile")
     return { success: true, message: "Profil berhasil diperbarui." }
+  } catch (error: any) {
+    return { success: false, message: error.message || "Terjadi kesalahan" }
+  }
+}
+
+export async function updatePesertaPasswordAction(
+  data: PesertaUpdatePasswordData
+) {
+  try {
+    const session: any = await getServerSession(authOptions)
+    if (!session?.accessToken) throw new Error("Unauthorized")
+
+    const parsed = pesertaUpdatePasswordSchema.parse(data)
+    await profileService.updatePesertaPassword(parsed, session.accessToken)
+    return { success: true, message: "Password berhasil diperbarui." }
   } catch (error: any) {
     return { success: false, message: error.message || "Terjadi kesalahan" }
   }

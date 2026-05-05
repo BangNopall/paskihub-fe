@@ -12,7 +12,7 @@ export default async function PesertaDataFormLayout({
   if (!session) redirect("/auth/login")
 
   const response = await profileService.getPesertaProfile(session.accessToken)
-  const pesertaData = response
+  const pesertaData = response.data
 
   if (pesertaData && !Array.isArray(pesertaData) && pesertaData.institution) {
     const inst = pesertaData.institution

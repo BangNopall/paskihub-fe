@@ -10,13 +10,14 @@ import {
   Trash2,
   Image as ImageIcon,
   Loader2,
+  Save,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
-import { createTeamAction } from "@/actions/team.actions"
-import { TeamFormData, TeamFormSchema } from "@/schemas/team.schema"
+import { updateTeamAction } from "@/actions/team.actions"
+import { TeamDetailRes, TeamFormData } from "@/schemas/team.schema"
 
 // ==========================================
 // 1. REUSABLE UI COMPONENTS
@@ -166,46 +167,71 @@ function SubSectionCard({
   )
 }
 
-// ==========================================
-// 2. FORM STATE LOGIC
-// ==========================================
+interface TeamEditClientProps {
+  initialData: TeamDetailRes
+  id: string
+}
 
 type MemberState = {
   id: string
   fullName: string
   role: string
   idCard: File | null
+  idCardUrl: string | null
   photo: File | null
-  photoUrl: string
+  photoUrl: string | null
 }
 
-export default function NewTeamPage() {
+export default function TeamEditClient({
+  initialData,
+  id,
+}: TeamEditClientProps) {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // --- STATE UNTUK INFO TIM ---
-  const [namaTim, setNamaTim] = useState("")
-  const [logoTim, setLogoTim] = useState<File | null>(null)
-  const [logoTimUrl, setLogoTimUrl] = useState("")
-  const [suratRekTim, setSuratRekTim] = useState<File | null>(null)
-  const [pelatihName, setPelatihName] = useState("")
+  const API_URL =
+    process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3010"
 
-  // --- STATE UNTUK LIST ANGGOTA ---
+  // --- STATE UNTUK INFO TIM ---
+  const [namaTim, setNamaTim] = useState(initialData.name)
+  const [pelatihName, setPelatihName] = useState(initialData.pelatih)
+  const [logoTim, setLogoTim] = useState<File | null>(null)
+  const [logoTimUrl, setLogoTimUrl] = useState(
+    initialData.logo_path ? `${API_URL}${initialData.logo_path}` : ""
+  )
+  const [suratRekTim, setSuratRekTim] = useState<File | null>(null)
+  const [suratRekUrl, setSuratRekUrl] = useState(
+    initialData.rec_letter_path
+      ? `${API_URL}${initialData.rec_letter_path}`
+      : ""
+  )
+
+  // Flatten grouped members for editing state
+  const initialMembers: MemberState[] = Object.values(
+    initialData.members_grouped
+  )
+    .flat()
+    .map((m) => ({
+      id: m.id,
+      fullName: m.full_name,
+      role: m.role,
+      idCard: null,
+      idCardUrl: m.id_card_path ? `${API_URL}${m.id_card_path}` : null,
+      photo: null,
+      photoUrl: m.photo_path ? `${API_URL}${m.photo_path}` : null,
+    }))
+
+  const [members, setMembers] = useState<MemberState[]>(initialMembers)
+
   const createEmptyMember = (role: string): MemberState => ({
     id: Math.random().toString(36).substring(2, 9),
     fullName: "",
     role: role,
     idCard: null,
+    idCardUrl: null,
     photo: null,
     photoUrl: "",
   })
-
-  const [members, setMembers] = useState<MemberState[]>([
-    createEmptyMember("DANPAS"),
-    createEmptyMember("OFFICIAL"),
-    createEmptyMember("PASUKAN"),
-    createEmptyMember("PASUKAN"),
-  ])
 
   const handleAddMember = (role: string) => {
     setMembers((prev) => [...prev, createEmptyMember(role)])
@@ -227,7 +253,14 @@ export default function NewTeamPage() {
             return {
               ...m,
               photo: value,
-              photoUrl: value ? URL.createObjectURL(value) : "",
+              photoUrl: value ? URL.createObjectURL(value) : m.photoUrl,
+            }
+          }
+          if (field === "idCard") {
+            return {
+              ...m,
+              idCard: value,
+              idCardUrl: value ? value.name : m.idCardUrl,
             }
           }
           return { ...m, [field]: value }
@@ -261,12 +294,13 @@ export default function NewTeamPage() {
     }
 
     try {
-      const res = await createTeamAction(payload)
+      const res = await updateTeamAction(id, payload)
       if (res.success) {
-        toast.success("Tim berhasil dibuat")
+        toast.success("Tim berhasil diperbarui")
         router.push("/peserta/dashboard/team")
+        router.refresh()
       } else {
-        toast.error(res.error || "Gagal membuat tim")
+        toast.error(res.error || "Gagal memperbarui tim")
       }
     } catch (error) {
       toast.error("Terjadi kesalahan")
@@ -288,7 +322,7 @@ export default function NewTeamPage() {
           </Link>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <h1 className="text-2xl font-bold text-slate-900 md:text-3xl">
-              Buat Tim Baru
+              Edit Tim
             </h1>
             <Button
               type="submit"
@@ -297,9 +331,15 @@ export default function NewTeamPage() {
               className="h-12 w-full rounded-full px-8 text-base font-bold sm:w-auto"
             >
               {isSubmitting ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
+                <>
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  Menyimpan...
+                </>
               ) : (
-                "Buat Tim"
+                <>
+                  <Save className="mr-2 h-5 w-5" />
+                  Simpan Perubahan
+                </>
               )}
             </Button>
           </div>
@@ -331,10 +371,22 @@ export default function NewTeamPage() {
                 <FileUploadInput
                   placeholder="Upload file gambar..."
                   accept="image/*"
-                  value={logoTim ? logoTim.name : ""}
+                  value={
+                    logoTim
+                      ? logoTim.name
+                      : initialData.logo_path
+                        ? "Logo Terunggah"
+                        : ""
+                  }
                   onChange={(file) => {
                     setLogoTim(file)
-                    setLogoTimUrl(file ? URL.createObjectURL(file) : "")
+                    setLogoTimUrl(
+                      file
+                        ? URL.createObjectURL(file)
+                        : initialData.logo_path
+                          ? `${API_URL}${initialData.logo_path}`
+                          : ""
+                    )
                   }}
                 />
                 <div className="mt-1 flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-black/10 bg-stone-200">
@@ -354,9 +406,25 @@ export default function NewTeamPage() {
                 <FileUploadInput
                   placeholder="Upload surat rekomendasi .pdf"
                   accept=".pdf"
-                  value={suratRekTim ? suratRekTim.name : ""}
+                  value={
+                    suratRekTim
+                      ? suratRekTim.name
+                      : initialData.rec_letter_path
+                        ? "Surat Terunggah"
+                        : ""
+                  }
                   onChange={(file) => setSuratRekTim(file)}
                 />
+                {suratRekUrl && !suratRekTim && (
+                  <a
+                    href={suratRekUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-1 block text-xs text-blue-500 hover:underline"
+                  >
+                    Lihat Dokumen Saat Ini
+                  </a>
+                )}
               </FormGroup>
             </div>
           </GlassCard>
@@ -407,7 +475,13 @@ export default function NewTeamPage() {
                             <FileUploadInput
                               accept="image/*,.pdf"
                               placeholder="Upload Kartu..."
-                              value={member.idCard ? member.idCard.name : ""}
+                              value={
+                                member.idCard
+                                  ? member.idCard.name
+                                  : member.idCardUrl
+                                    ? "Dokumen Terunggah"
+                                    : ""
+                              }
                               onChange={(file) =>
                                 handleMemberChange(member.id, "idCard", file)
                               }
@@ -417,7 +491,13 @@ export default function NewTeamPage() {
                             <FileUploadInput
                               accept="image/*"
                               placeholder="Upload Foto..."
-                              value={member.photo ? member.photo.name : ""}
+                              value={
+                                member.photo
+                                  ? member.photo.name
+                                  : member.photoUrl
+                                    ? "Foto Terunggah"
+                                    : ""
+                              }
                               onChange={(file) =>
                                 handleMemberChange(member.id, "photo", file)
                               }

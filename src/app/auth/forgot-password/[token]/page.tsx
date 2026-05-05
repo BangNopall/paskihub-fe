@@ -45,7 +45,6 @@ export default function ResetPasswordPage() {
         toast.success("Berhasil", { description: res.message })
         router.push("/auth/login")
       } else {
-        console.log(res)
         toast.error("Gagal", { description: res.message })
       }
     } catch {

@@ -44,7 +44,6 @@ import {
   kickTeamAction,
 } from "@/actions/eo-team.actions"
 import { eoTeamService } from "@/services/eo-team.service"
-import { useSession } from "next-auth/react"
 import {
   Pagination,
   PaginationContent,

@@ -172,3 +172,20 @@ export async function deleteSubCategoryAction(eventId: string, id: string) {
     }
   }
 }
+
+export async function finalizeAssessmentAction(data: any) {
+  try {
+    const session = await getSession()
+    await assessmentService.finalizeAssessment(data, session.accessToken)
+    revalidatePath("/organizer/dashboard/assessment-form")
+    return {
+      success: true,
+      message: "Penilaian berhasil disimpan secara final",
+    }
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || "Gagal menyimpan penilaian secara final",
+    }
+  }
+}

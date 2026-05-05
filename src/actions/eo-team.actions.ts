@@ -59,7 +59,7 @@ export async function rejectTeamAction(
 
   if (!res.ok) {
     const json = await res.json()
-    throw new Error(json.message || "Gagal menolak pendaftaran")
+    throw new Error(json.message || "Gagal menolak tim")
   }
 
   revalidatePath("/organizer/dashboard/team")
@@ -75,6 +75,7 @@ export async function kickTeamAction(eventId: string, registrationId: string) {
     {
       method: "PUT",
       headers: {
+        "Content-Type": "application/json",
         Authorization: `Bearer ${session.accessToken}`,
         "x-api-key": `Key ${process.env.API_KEY}`,
       },
@@ -87,5 +88,32 @@ export async function kickTeamAction(eventId: string, registrationId: string) {
   }
 
   revalidatePath("/organizer/dashboard/team")
+  return { success: true }
+}
+
+export async function startAssessmentAction(
+  eventId: string,
+  registrationId: string
+) {
+  const session: any = await getServerSession(authOptions)
+  if (!session) throw new Error("Unauthorized")
+
+  const res = await fetch(
+    `${API_URL}/api/v1/eo/events/${eventId}/teams/${registrationId}/start-assessment`,
+    {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${session.accessToken}`,
+        "x-api-key": `Key ${process.env.API_KEY}`,
+      },
+    }
+  )
+
+  if (!res.ok) {
+    const json = await res.json().catch(() => ({}))
+    throw new Error(json.message || "Gagal memulai penilaian")
+  }
+
+  revalidatePath("/organizer/dashboard/assessment-form")
   return { success: true }
 }

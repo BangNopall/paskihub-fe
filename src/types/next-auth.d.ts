@@ -7,6 +7,7 @@ declare module "next-auth" {
       name?: string
     }
     accessToken: string
+    error?: "SessionExpired"
   }
   interface User {
     id: string
@@ -14,6 +15,7 @@ declare module "next-auth" {
     role: string
     name?: string
     accessToken: string
+    accessTokenExpires: number
   }
 }
 
@@ -21,6 +23,9 @@ declare module "next-auth/jwt" {
   interface JWT {
     id: string
     role: string
+    email: string
     accessToken: string
+    accessTokenExpires: number
+    error?: "SessionExpired"
   }
 }

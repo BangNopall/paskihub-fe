@@ -92,7 +92,7 @@ export default async function DashboardPesertaLayout({
   if (!session) redirect("/auth/login")
 
   const response = await profileService.getPesertaProfile(session.accessToken)
-  const pesertaData = response
+  const pesertaData = response.data
 
   if (
     !pesertaData ||

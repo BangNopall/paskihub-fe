@@ -59,9 +59,25 @@ export const eoStaffResetPasswordSchema = z
     path: ["confirm_password"],
   })
 
+export const pesertaUpdatePasswordSchema = z
+  .object({
+    old_password: z.string().min(8, "Password lama minimal 8 karakter"),
+    new_password: z.string().min(8, "Password baru minimal 8 karakter"),
+    confirm_password: z
+      .string()
+      .min(8, "Konfirmasi password minimal 8 karakter"),
+  })
+  .refine((data) => data.new_password === data.confirm_password, {
+    message: "Konfirmasi password tidak cocok",
+    path: ["confirm_password"],
+  })
+
 export type EODataFormData = z.infer<typeof eoDataFormSchema>
 export type PesertaDataFormData = z.infer<typeof pesertaDataFormSchema>
 export type EOUpdatePasswordData = z.infer<typeof eoUpdatePasswordSchema>
+export type PesertaUpdatePasswordData = z.infer<
+  typeof pesertaUpdatePasswordSchema
+>
 export type EOStaffCreateData = z.infer<typeof eoStaffCreateSchema>
 export type EOStaffResetPasswordData = z.infer<
   typeof eoStaffResetPasswordSchema

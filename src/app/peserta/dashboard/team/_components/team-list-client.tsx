@@ -100,9 +100,12 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 function MemberCard({ member }: { member: ParticipantTeamMemberRes }) {
-  const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3010"
+  const API_URL =
+    process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3010"
   const photoUrl = member.photo_path ? `${API_URL}${member.photo_path}` : null
-  const idCardUrl = member.id_card_path ? `${API_URL}${member.id_card_path}` : null
+  const idCardUrl = member.id_card_path
+    ? `${API_URL}${member.id_card_path}`
+    : null
 
   return (
     <div className="flex w-full items-center gap-4 rounded-xl bg-gray-50 px-4 py-3">
@@ -145,7 +148,10 @@ interface TeamListClientProps {
   token: string
 }
 
-export default function TeamListClient({ initialTeams, token }: TeamListClientProps) {
+export default function TeamListClient({
+  initialTeams,
+  token,
+}: TeamListClientProps) {
   const [teams, setTeams] = useState<ParticipantTeamRes[]>(initialTeams)
   const [searchQuery, setSearchQuery] = useState("")
   const [filterStatus, setFilterStatus] = useState<string>("Semua")
@@ -165,7 +171,8 @@ export default function TeamListClient({ initialTeams, token }: TeamListClientPr
     { label: "Rejected", value: "REJECTED" },
   ]
 
-  const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3010"
+  const API_URL =
+    process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3010"
 
   const fetchDetail = async (id: string) => {
     setIsLoadingDetail(true)
@@ -210,7 +217,8 @@ export default function TeamListClient({ initialTeams, token }: TeamListClientPr
     const matchSearch =
       team.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       team.pelatih.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchStatus = filterStatus === "Semua" || team.payment_status === filterStatus
+    const matchStatus =
+      filterStatus === "Semua" || team.payment_status === filterStatus
     return matchSearch && matchStatus
   })
 
@@ -243,9 +251,11 @@ export default function TeamListClient({ initialTeams, token }: TeamListClientPr
               <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48 rounded-xl font-poppins text-sm">
-            {statusFilter.map((opt) => 
-            (
+          <DropdownMenuContent
+            align="end"
+            className="w-48 rounded-xl font-poppins text-sm"
+          >
+            {statusFilter.map((opt) => (
               <DropdownMenuItem
                 key={opt.value}
                 onClick={() => setFilterStatus(opt.value)}
@@ -264,42 +274,68 @@ export default function TeamListClient({ initialTeams, token }: TeamListClientPr
           <Table className="min-w-[800px]">
             <TableHeader className="bg-blue-100/80">
               <TableRow className="border-sky-100 hover:bg-transparent">
-                <TableHead className="w-16 py-4 text-center font-poppins text-sm font-semibold text-neutral-700">No</TableHead>
-                <TableHead className="py-4 font-poppins text-sm font-semibold text-neutral-700">Tim</TableHead>
-                <TableHead className="py-4 font-poppins text-sm font-semibold text-neutral-700">Nama Pelatih</TableHead>
-                <TableHead className="py-4 text-center font-poppins text-sm font-semibold text-neutral-700">Status</TableHead>
-                <TableHead className="py-4 text-center font-poppins text-sm font-semibold text-neutral-700">Aksi</TableHead>
+                <TableHead className="w-16 py-4 text-center font-poppins text-sm font-semibold text-neutral-700">
+                  No
+                </TableHead>
+                <TableHead className="py-4 font-poppins text-sm font-semibold text-neutral-700">
+                  Tim
+                </TableHead>
+                <TableHead className="py-4 font-poppins text-sm font-semibold text-neutral-700">
+                  Nama Pelatih
+                </TableHead>
+                <TableHead className="py-4 text-center font-poppins text-sm font-semibold text-neutral-700">
+                  Status
+                </TableHead>
+                <TableHead className="py-4 text-center font-poppins text-sm font-semibold text-neutral-700">
+                  Aksi
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredTeams.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="py-10 text-center font-poppins text-sm text-neutral-500">
+                  <TableCell
+                    colSpan={5}
+                    className="py-10 text-center font-poppins text-sm text-neutral-500"
+                  >
                     Tidak ada tim yang ditemukan.
                   </TableCell>
                 </TableRow>
               ) : (
                 filteredTeams.map((team, index) => (
-                  <TableRow key={team.id} className="border-sky-100 bg-transparent hover:bg-white/50">
-                    <TableCell className="py-4 text-center font-poppins text-sm font-medium text-neutral-700">{index + 1}</TableCell>
+                  <TableRow
+                    key={team.id}
+                    className="border-sky-100 bg-transparent hover:bg-white/50"
+                  >
+                    <TableCell className="py-4 text-center font-poppins text-sm font-medium text-neutral-700">
+                      {index + 1}
+                    </TableCell>
                     <TableCell className="py-4">
                       <div className="flex items-center gap-3">
                         <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-zinc-200">
                           {team.logo_path ? (
-                            <img src={`${API_URL}${team.logo_path}`} alt="Logo" className="h-full w-full object-cover" />
+                            <img
+                              src={`${API_URL}${team.logo_path}`}
+                              alt="Logo"
+                              className="h-full w-full object-cover"
+                            />
                           ) : (
                             <ImageIcon className="h-5 w-5 text-neutral-400" />
                           )}
                         </div>
                         <div className="flex flex-col">
-                          <span className="font-poppins text-sm font-semibold text-neutral-800">{team.name}</span>
+                          <span className="font-poppins text-sm font-semibold text-neutral-800">
+                            {team.name}
+                          </span>
                           <Badge className="mt-1 w-fit border-gray-300 bg-sky-50 px-2 py-0 font-poppins text-[10px] font-medium text-slate-500 hover:bg-sky-50">
                             {team.institution_type}
                           </Badge>
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="py-4 font-poppins text-sm text-neutral-600">{team.pelatih}</TableCell>
+                    <TableCell className="py-4 font-poppins text-sm text-neutral-600">
+                      {team.pelatih}
+                    </TableCell>
                     <TableCell className="py-4">
                       <div className="flex justify-center">
                         <StatusBadge status={team.payment_status} />
@@ -342,7 +378,9 @@ export default function TeamListClient({ initialTeams, token }: TeamListClientPr
               </div>
               <div className="flex flex-col items-start gap-1">
                 <DialogTitle className="font-poppins text-lg font-semibold text-neutral-900 sm:text-xl">
-                  {isLoadingDetail ? "Memuat Detail Tim..." : (teamDetail?.name || "Detail Tim")}
+                  {isLoadingDetail
+                    ? "Memuat Detail Tim..."
+                    : teamDetail?.name || "Detail Tim"}
                 </DialogTitle>
                 {!isLoadingDetail && teamDetail && (
                   <Badge variant="secondary" className="bg-sky-50 text-sky-600">
@@ -374,22 +412,46 @@ export default function TeamListClient({ initialTeams, token }: TeamListClientPr
             <div className="flex flex-col p-6 sm:px-10 sm:pt-6 sm:pb-10">
               <Tabs defaultValue="umum" className="w-full">
                 <TabsList className="mb-6 flex h-12 w-full rounded-full bg-neutral-100 p-1.5">
-                  <TabsTrigger value="umum" className="flex-1 rounded-full font-poppins text-sm font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm">Info Umum</TabsTrigger>
-                  <TabsTrigger value="anggota" className="flex-1 rounded-full font-poppins text-sm font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm">Anggota</TabsTrigger>
-                  <TabsTrigger value="berkas" className="flex-1 rounded-full font-poppins text-sm font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm">Berkas</TabsTrigger>
+                  <TabsTrigger
+                    value="umum"
+                    className="flex-1 rounded-full font-poppins text-sm font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm"
+                  >
+                    Info Umum
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="anggota"
+                    className="flex-1 rounded-full font-poppins text-sm font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm"
+                  >
+                    Anggota
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="berkas"
+                    className="flex-1 rounded-full font-poppins text-sm font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm"
+                  >
+                    Berkas
+                  </TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="umum" className="mt-0 flex flex-col gap-4 outline-none">
+                <TabsContent
+                  value="umum"
+                  className="mt-0 flex flex-col gap-4 outline-none"
+                >
                   <div className="flex flex-col gap-3 rounded-2xl bg-gray-50 p-5">
-                    <h3 className="font-poppins text-base font-semibold text-neutral-800">Informasi Tim</h3>
+                    <h3 className="font-poppins text-base font-semibold text-neutral-800">
+                      Informasi Tim
+                    </h3>
                     <div className="flex flex-col gap-2 font-poppins text-sm">
                       <div className="flex items-center gap-2">
                         <span className="text-neutral-500">Nama Tim:</span>
-                        <span className="font-semibold text-neutral-800">{teamDetail.name}</span>
+                        <span className="font-semibold text-neutral-800">
+                          {teamDetail.name}
+                        </span>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="text-neutral-500">Pelatih:</span>
-                        <span className="font-semibold text-neutral-800">{teamDetail.pelatih}</span>
+                        <span className="font-semibold text-neutral-800">
+                          {teamDetail.pelatih}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -400,11 +462,28 @@ export default function TeamListClient({ initialTeams, token }: TeamListClientPr
                         <FileText className="h-5 w-5" />
                       </div>
                       <div className="flex flex-1 flex-col">
-                        <span className="font-poppins text-sm font-semibold text-blue-600">Surat Rekomendasi</span>
-                        <a href={`${API_URL}${teamDetail.rec_letter_path}`} target="_blank" rel="noreferrer" className="font-poppins text-xs text-blue-500 hover:underline">Lihat Dokumen</a>
+                        <span className="font-poppins text-sm font-semibold text-blue-600">
+                          Surat Rekomendasi
+                        </span>
+                        <a
+                          href={`${API_URL}${teamDetail.rec_letter_path}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="font-poppins text-xs text-blue-500 hover:underline"
+                        >
+                          Lihat Dokumen
+                        </a>
                       </div>
-                      <a href={`${API_URL}${teamDetail.rec_letter_path}`} download className="shrink-0">
-                        <Button variant="outline" size="icon" className="h-8 w-8 rounded-lg border-blue-200 text-blue-600 hover:bg-blue-100">
+                      <a
+                        href={`${API_URL}${teamDetail.rec_letter_path}`}
+                        download
+                        className="shrink-0"
+                      >
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="h-8 w-8 rounded-lg border-blue-200 text-blue-600 hover:bg-blue-100"
+                        >
                           <Download className="h-4 w-4" />
                         </Button>
                       </a>
@@ -414,25 +493,36 @@ export default function TeamListClient({ initialTeams, token }: TeamListClientPr
 
                 <TabsContent value="anggota" className="mt-0 outline-none">
                   <div className="grid grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-2">
-                    {Object.entries(teamDetail.members_grouped).map(([role, item]) => (
-                      <div key={role} className="flex flex-col gap-3">
-                        <h3 className="border-b border-gray-100 pb-2 font-poppins text-base font-semibold text-neutral-800 uppercase text-xs tracking-wider">
-                          {role} ({item.length})
-                        </h3>
-                        {item.map((m) => (
-                          <MemberCard key={m.id} member={m} />
-                        ))}
-                      </div>
-                    ))}
+                    {Object.entries(teamDetail.members_grouped).map(
+                      ([role, item]) => (
+                        <div key={role} className="flex flex-col gap-3">
+                          <h3 className="border-b border-gray-100 pb-2 font-poppins text-base text-xs font-semibold tracking-wider text-neutral-800 uppercase">
+                            {role} ({item.length})
+                          </h3>
+                          {item.map((m) => (
+                            <MemberCard key={m.id} member={m} />
+                          ))}
+                        </div>
+                      )
+                    )}
                   </div>
                 </TabsContent>
 
-                <TabsContent value="berkas" className="mt-0 flex flex-col gap-6 outline-none">
+                <TabsContent
+                  value="berkas"
+                  className="mt-0 flex flex-col gap-6 outline-none"
+                >
                   <div className="flex flex-col gap-3">
-                    <h3 className="font-poppins text-base font-semibold text-neutral-800">Logo Tim</h3>
+                    <h3 className="font-poppins text-base font-semibold text-neutral-800">
+                      Logo Tim
+                    </h3>
                     <div className="flex h-32 w-32 items-center justify-center overflow-hidden rounded-xl border border-gray-200 bg-stone-100 shadow-sm">
                       {teamDetail.logo_path ? (
-                        <img src={`${API_URL}${teamDetail.logo_path}`} alt="Logo Tim" className="h-full w-full object-cover" />
+                        <img
+                          src={`${API_URL}${teamDetail.logo_path}`}
+                          alt="Logo Tim"
+                          className="h-full w-full object-cover"
+                        />
                       ) : (
                         <ImageIcon className="h-8 w-8 text-neutral-400" />
                       )}
@@ -442,8 +532,15 @@ export default function TeamListClient({ initialTeams, token }: TeamListClientPr
               </Tabs>
 
               <div className="mt-8 flex w-full flex-col-reverse items-center gap-3 sm:flex-row">
-                <Link href={`/peserta/dashboard/team/edit/${teamDetail.id}`} className="w-full sm:hidden">
-                  <Button type="button" variant="outline" className="h-12 w-full rounded-full border-blue-200 bg-blue-50 font-poppins text-base font-semibold text-blue-600">
+                <Link
+                  href={`/peserta/dashboard/team/edit/${teamDetail.id}`}
+                  className="w-full sm:hidden"
+                >
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="h-12 w-full rounded-full border-blue-200 bg-blue-50 font-poppins text-base font-semibold text-blue-600"
+                  >
                     <Pencil className="mr-2 h-4 w-4" /> Edit Tim
                   </Button>
                 </Link>
@@ -467,23 +564,43 @@ export default function TeamListClient({ initialTeams, token }: TeamListClientPr
       {/* DELETE MODAL */}
       <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
         <DialogContent className="w-full max-w-md gap-0 rounded-3xl p-0 sm:rounded-[40px]">
-          <form onSubmit={handleDeleteSubmit} className="flex flex-col gap-8 p-6 sm:p-10">
+          <form
+            onSubmit={handleDeleteSubmit}
+            className="flex flex-col gap-8 p-6 sm:p-10"
+          >
             <div className="flex flex-col items-center gap-4 text-center">
               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
                 <Trash2 className="h-8 w-8 text-red-500" />
               </div>
-              <DialogTitle className="font-montserrat text-2xl font-bold text-neutral-800">Hapus Tim</DialogTitle>
+              <DialogTitle className="font-montserrat text-2xl font-bold text-neutral-800">
+                Hapus Tim
+              </DialogTitle>
               <DialogDescription className="font-poppins text-sm text-neutral-600">
-                Apakah kamu yakin ingin menghapus tim ini?<br />
+                Apakah kamu yakin ingin menghapus tim ini?
+                <br />
                 Tindakan ini tidak dapat dibatalkan.
               </DialogDescription>
             </div>
             <div className="flex flex-col-reverse gap-3 sm:flex-row">
               <DialogClose asChild>
-                <Button type="button" variant="outline" className="h-12 flex-1 rounded-full font-poppins text-base font-semibold text-neutral-500">Batal</Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="h-12 flex-1 rounded-full font-poppins text-base font-semibold text-neutral-500"
+                >
+                  Batal
+                </Button>
               </DialogClose>
-              <Button type="submit" disabled={isSubmitting} className="h-12 flex-1 rounded-full bg-red-500 font-poppins text-base font-bold text-white hover:bg-red-600 disabled:opacity-50">
-                {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin" /> : "Ya, Hapus Tim"}
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="h-12 flex-1 rounded-full bg-red-500 font-poppins text-base font-bold text-white hover:bg-red-600 disabled:opacity-50"
+              >
+                {isSubmitting ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  "Ya, Hapus Tim"
+                )}
               </Button>
             </div>
           </form>

@@ -196,6 +196,23 @@ export const profileService = {
     return res.json()
   },
 
+  async updatePesertaPassword(data: any, token: string) {
+    const res = await fetch(`${API_URL}/api/v1/peserta/profile/security`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": API_KEY || "",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    })
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}))
+      throw new Error(err.message || "Failed to update password")
+    }
+    return res.json()
+  },
+
   async getEOProfile(token: string) {
     const res = await fetch(`${API_URL}/api/v1/eo/profile`, {
       method: "GET",

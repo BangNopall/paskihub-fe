@@ -5,9 +5,9 @@ export const TeamMemberSchema = z.object({
   fullName: z.string().min(1, "Nama lengkap wajib diisi"),
   role: z.string().min(1, "Jabatan wajib diisi"),
   idCard: z.any().optional(), // For File object in client
-  photo: z.any().optional(),   // For File object in client
+  photo: z.any().optional(), // For File object in client
   idCardUrl: z.string().optional(), // For existing URLs during edit
-  photoUrl: z.string().optional(),   // For existing URLs during edit
+  photoUrl: z.string().optional(), // For existing URLs during edit
 })
 
 // Team Payload Schema for Form (Multi-part handled in action)
@@ -32,7 +32,9 @@ export const ParticipantTeamMemberResSchema = z.object({
   photo_path: z.string().nullable(),
 })
 
-export type ParticipantTeamMemberRes = z.infer<typeof ParticipantTeamMemberResSchema>
+export type ParticipantTeamMemberRes = z.infer<
+  typeof ParticipantTeamMemberResSchema
+>
 
 export const ParticipantTeamResSchema = z.object({
   id: z.string().uuid(),
@@ -52,7 +54,10 @@ export const TeamDetailResSchema = z.object({
   pelatih: z.string(),
   institution_type: z.string(),
   rec_letter_path: z.string().nullable(),
-  members_grouped: z.record(z.string(), z.array(ParticipantTeamMemberResSchema)),
+  members_grouped: z.record(
+    z.string(),
+    z.array(ParticipantTeamMemberResSchema)
+  ),
 })
 
 export type TeamDetailRes = z.infer<typeof TeamDetailResSchema>

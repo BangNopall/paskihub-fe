@@ -6,6 +6,21 @@ export default withAuth(
     const { pathname } = req.nextUrl
     const token = req.nextauth.token
 
+    // Handle session expired
+    if (token?.error === "SessionExpired") {
+      const loginUrl = new URL("/auth/login", req.url)
+      loginUrl.searchParams.set("error", "SessionExpired")
+      const response = NextResponse.redirect(loginUrl)
+
+      // Clear NextAuth cookies
+      response.cookies.delete("next-auth.session-token")
+      response.cookies.delete("__Secure-next-auth.session-token")
+      response.cookies.delete("next-auth.callback-url")
+      response.cookies.delete("next-auth.csrf-token")
+
+      return response
+    }
+
     const isAuthPage =
       pathname.startsWith("/auth/login") ||
       pathname === "/auth/register" ||

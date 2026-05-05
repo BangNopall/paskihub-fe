@@ -3,6 +3,7 @@ import { z } from "zod"
 export const EOTeamListResSchema = z.object({
   registration_id: z.string().uuid(),
   team_id: z.string().uuid(),
+  event_level_id: z.string().uuid().optional(), // Add this
   logo_path: z.string().nullable(),
   team_name: z.string(),
   institution: z.string(),
@@ -25,6 +26,7 @@ export const EOTeamMemberResSchema = z.object({
 export const EOTeamDetailResSchema = z.object({
   registration_id: z.string().uuid(),
   team_id: z.string().uuid(),
+  event_level_id: z.string().uuid().optional(), // Add this
   team_name: z.string(),
   logo_path: z.string().nullable(),
   pelatih: z.string(),

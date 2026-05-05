@@ -19,6 +19,10 @@ export const ScoreSubCategorySchema = z.object({
     .record(z.string(), z.array(z.string()))
     .nullish()
     .transform((v) => v || {}),
+  grade_numbers: z
+    .record(z.string(), z.array(z.number()))
+    .nullish()
+    .transform((v) => v || {}),
 })
 
 export type ScoreSubCategory = z.infer<typeof ScoreSubCategorySchema>
@@ -67,3 +71,19 @@ export const CreateSubCategorySchema = z.object({
   max_score: z.number().min(0),
   grades: z.record(z.string(), z.array(z.string())),
 })
+
+export const ScoreInputSchema = z.object({
+  sub_category_id: z.string().uuid(),
+  score_value: z.number().min(0),
+})
+
+export const FinalizeAssessmentRequestSchema = z.object({
+  regis_id: z.string().uuid(),
+  judges_id: z.string().uuid(),
+  scores: z.array(ScoreInputSchema),
+  violation_type_ids: z.array(z.string().uuid()),
+})
+
+export type FinalizeAssessmentRequest = z.infer<
+  typeof FinalizeAssessmentRequestSchema
+>
