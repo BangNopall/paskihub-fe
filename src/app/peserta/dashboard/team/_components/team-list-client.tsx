@@ -41,7 +41,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ParticipantTeamRes, TeamDetailRes } from "@/schemas/team.schema"
+import {
+  ParticipantTeamRes,
+  TeamDetailRes,
+  ParticipantTeamMemberRes,
+} from "@/schemas/team.schema"
 import { deleteTeamAction } from "@/actions/team.actions"
 import { toast } from "sonner"
 import { teamService } from "@/services/team.service"
@@ -94,7 +98,7 @@ function StatusBadge({ status }: { status: string }) {
   }
 }
 
-function MemberCard({ member }: { member: any }) {
+function MemberCard({ member }: { member: ParticipantTeamMemberRes }) {
   const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3010"
   const photoUrl = member.photo_path ? `${API_URL}${member.photo_path}` : null
   const idCardUrl = member.id_card_path ? `${API_URL}${member.id_card_path}` : null
@@ -367,94 +371,94 @@ export default function TeamListClient({ initialTeams, token }: TeamListClientPr
             </div>
           ) : teamDetail ? (
             <div className="flex flex-col p-6 sm:px-10 sm:pt-6 sm:pb-10">
-                <Tabs defaultValue="umum" className="w-full">
-                  <TabsList className="mb-6 flex h-12 w-full rounded-full bg-neutral-100 p-1.5">
-                    <TabsTrigger value="umum" className="flex-1 rounded-full font-poppins text-sm font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm">Info Umum</TabsTrigger>
-                    <TabsTrigger value="anggota" className="flex-1 rounded-full font-poppins text-sm font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm">Anggota</TabsTrigger>
-                    <TabsTrigger value="berkas" className="flex-1 rounded-full font-poppins text-sm font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm">Berkas</TabsTrigger>
-                  </TabsList>
+              <Tabs defaultValue="umum" className="w-full">
+                <TabsList className="mb-6 flex h-12 w-full rounded-full bg-neutral-100 p-1.5">
+                  <TabsTrigger value="umum" className="flex-1 rounded-full font-poppins text-sm font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm">Info Umum</TabsTrigger>
+                  <TabsTrigger value="anggota" className="flex-1 rounded-full font-poppins text-sm font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm">Anggota</TabsTrigger>
+                  <TabsTrigger value="berkas" className="flex-1 rounded-full font-poppins text-sm font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm">Berkas</TabsTrigger>
+                </TabsList>
 
-                  <TabsContent value="umum" className="mt-0 flex flex-col gap-4 outline-none">
-                    <div className="flex flex-col gap-3 rounded-2xl bg-gray-50 p-5">
-                      <h3 className="font-poppins text-base font-semibold text-neutral-800">Informasi Tim</h3>
-                      <div className="flex flex-col gap-2 font-poppins text-sm">
-                        <div className="flex items-center gap-2">
-                          <span className="text-neutral-500">Nama Tim:</span>
-                          <span className="font-semibold text-neutral-800">{teamDetail.name}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-neutral-500">Pelatih:</span>
-                          <span className="font-semibold text-neutral-800">{teamDetail.pelatih}</span>
-                        </div>
+                <TabsContent value="umum" className="mt-0 flex flex-col gap-4 outline-none">
+                  <div className="flex flex-col gap-3 rounded-2xl bg-gray-50 p-5">
+                    <h3 className="font-poppins text-base font-semibold text-neutral-800">Informasi Tim</h3>
+                    <div className="flex flex-col gap-2 font-poppins text-sm">
+                      <div className="flex items-center gap-2">
+                        <span className="text-neutral-500">Nama Tim:</span>
+                        <span className="font-semibold text-neutral-800">{teamDetail.name}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-neutral-500">Pelatih:</span>
+                        <span className="font-semibold text-neutral-800">{teamDetail.pelatih}</span>
                       </div>
                     </div>
+                  </div>
 
-                    {teamDetail.rec_letter_path && (
-                      <div className="flex items-center gap-4 rounded-2xl border border-blue-200 bg-indigo-50/50 p-4">
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-500">
-                          <FileText className="h-5 w-5" />
-                        </div>
-                        <div className="flex flex-1 flex-col">
-                          <span className="font-poppins text-sm font-semibold text-blue-600">Surat Rekomendasi</span>
-                          <a href={`${API_URL}${teamDetail.rec_letter_path}`} target="_blank" rel="noreferrer" className="font-poppins text-xs text-blue-500 hover:underline">Lihat Dokumen</a>
-                        </div>
-                        <a href={`${API_URL}${teamDetail.rec_letter_path}`} download className="shrink-0">
-                          <Button variant="outline" size="icon" className="h-8 w-8 rounded-lg border-blue-200 text-blue-600 hover:bg-blue-100">
-                            <Download className="h-4 w-4" />
-                          </Button>
-                        </a>
+                  {teamDetail.rec_letter_path && (
+                    <div className="flex items-center gap-4 rounded-2xl border border-blue-200 bg-indigo-50/50 p-4">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-500">
+                        <FileText className="h-5 w-5" />
                       </div>
-                    )}
-                  </TabsContent>
-
-                  <TabsContent value="anggota" className="mt-0 outline-none">
-                    <div className="grid grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-2">
-                      {Object.entries(teamDetail.members_grouped).map(([role, item]) => (
-                        <div key={role} className="flex flex-col gap-3">
-                          <h3 className="border-b border-gray-100 pb-2 font-poppins text-base font-semibold text-neutral-800 uppercase text-xs tracking-wider">
-                            {role} ({item.length})
-                          </h3>
-                          {item.map((m) => (
-                            <MemberCard key={m.id} member={m} />
-                          ))}
-                        </div>
-                      ))}
-                    </div>
-                  </TabsContent>
-
-                  <TabsContent value="berkas" className="mt-0 flex flex-col gap-6 outline-none">
-                    <div className="flex flex-col gap-3">
-                      <h3 className="font-poppins text-base font-semibold text-neutral-800">Logo Tim</h3>
-                      <div className="flex h-32 w-32 items-center justify-center overflow-hidden rounded-xl border border-gray-200 bg-stone-100 shadow-sm">
-                        {teamDetail.logo_path ? (
-                          <img src={`${API_URL}${teamDetail.logo_path}`} alt="Logo Tim" className="h-full w-full object-cover" />
-                        ) : (
-                          <ImageIcon className="h-8 w-8 text-neutral-400" />
-                        )}
+                      <div className="flex flex-1 flex-col">
+                        <span className="font-poppins text-sm font-semibold text-blue-600">Surat Rekomendasi</span>
+                        <a href={`${API_URL}${teamDetail.rec_letter_path}`} target="_blank" rel="noreferrer" className="font-poppins text-xs text-blue-500 hover:underline">Lihat Dokumen</a>
                       </div>
+                      <a href={`${API_URL}${teamDetail.rec_letter_path}`} download className="shrink-0">
+                        <Button variant="outline" size="icon" className="h-8 w-8 rounded-lg border-blue-200 text-blue-600 hover:bg-blue-100">
+                          <Download className="h-4 w-4" />
+                        </Button>
+                      </a>
                     </div>
-                  </TabsContent>
-                </Tabs>
+                  )}
+                </TabsContent>
 
-                <div className="mt-8 flex w-full flex-col-reverse items-center gap-3 sm:flex-row">
-                  <Link href={`/peserta/dashboard/team/edit/${teamDetail.id}`} className="w-full sm:hidden">
-                    <Button type="button" variant="outline" className="h-12 w-full rounded-full border-blue-200 bg-blue-50 font-poppins text-base font-semibold text-blue-600">
-                      <Pencil className="mr-2 h-4 w-4" /> Edit Tim
-                    </Button>
-                  </Link>
-                  <Button
-                    type="button"
-                    onClick={() => {
-                      setSelectedTeamId(teamDetail.id)
-                      setIsDeleteModalOpen(true)
-                    }}
-                    variant="destructive"
-                    className="ml-auto h-12 w-full rounded-full font-poppins text-base font-bold shadow-sm sm:w-1/2"
-                  >
-                    <Trash2 className="mr-2 h-4 w-4" /> Hapus Tim
+                <TabsContent value="anggota" className="mt-0 outline-none">
+                  <div className="grid grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-2">
+                    {Object.entries(teamDetail.members_grouped).map(([role, item]) => (
+                      <div key={role} className="flex flex-col gap-3">
+                        <h3 className="border-b border-gray-100 pb-2 font-poppins text-base font-semibold text-neutral-800 uppercase text-xs tracking-wider">
+                          {role} ({item.length})
+                        </h3>
+                        {item.map((m) => (
+                          <MemberCard key={m.id} member={m} />
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="berkas" className="mt-0 flex flex-col gap-6 outline-none">
+                  <div className="flex flex-col gap-3">
+                    <h3 className="font-poppins text-base font-semibold text-neutral-800">Logo Tim</h3>
+                    <div className="flex h-32 w-32 items-center justify-center overflow-hidden rounded-xl border border-gray-200 bg-stone-100 shadow-sm">
+                      {teamDetail.logo_path ? (
+                        <img src={`${API_URL}${teamDetail.logo_path}`} alt="Logo Tim" className="h-full w-full object-cover" />
+                      ) : (
+                        <ImageIcon className="h-8 w-8 text-neutral-400" />
+                      )}
+                    </div>
+                  </div>
+                </TabsContent>
+              </Tabs>
+
+              <div className="mt-8 flex w-full flex-col-reverse items-center gap-3 sm:flex-row">
+                <Link href={`/peserta/dashboard/team/edit/${teamDetail.id}`} className="w-full sm:hidden">
+                  <Button type="button" variant="outline" className="h-12 w-full rounded-full border-blue-200 bg-blue-50 font-poppins text-base font-semibold text-blue-600">
+                    <Pencil className="mr-2 h-4 w-4" /> Edit Tim
                   </Button>
-                </div>
+                </Link>
+                <Button
+                  type="button"
+                  onClick={() => {
+                    setSelectedTeamId(teamDetail.id)
+                    setIsDeleteModalOpen(true)
+                  }}
+                  variant="destructive"
+                  className="ml-auto h-12 w-full rounded-full font-poppins text-base font-bold shadow-sm sm:w-1/2"
+                >
+                  <Trash2 className="mr-2 h-4 w-4" /> Hapus Tim
+                </Button>
               </div>
+            </div>
           ) : null}
         </DialogContent>
       </Dialog>
