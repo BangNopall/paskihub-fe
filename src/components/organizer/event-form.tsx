@@ -100,30 +100,37 @@ interface EventFormProps {
 const getRecommendedStatus = (data: EventData): string => {
   const now = new Date()
 
-  // Safely parse dates
-  const openDate = data.open_date ? new Date(data.open_date) : null
-  const closeDate = data.close_date ? new Date(data.close_date) : null
-  const compeDate = data.compe_date ? new Date(data.compe_date) : null
+  // Helper to safely parse date strings and avoid Unix Epoch (1970) or Go Zero Value (0001)
+  const isValidDateStr = (dateStr: string | null | undefined) => {
+    if (!dateStr || dateStr === "null" || dateStr === "") return false
+    const d = new Date(dateStr)
+    return !isNaN(d.getTime()) && d.getFullYear() > 2000
+  }
+
+  const openDate = isValidDateStr(data.open_date)
+    ? new Date(data.open_date)
+    : null
+  const closeDate = isValidDateStr(data.close_date)
+    ? new Date(data.close_date)
+    : null
+  const compeDate = isValidDateStr(data.compe_date)
+    ? new Date(data.compe_date)
+    : null
 
   // ARCHIVED: 14 days after compe_date
-  if (compeDate && !isNaN(compeDate.getTime())) {
+  if (compeDate) {
     const archiveDate = new Date(compeDate)
     archiveDate.setDate(archiveDate.getDate() + 14)
     if (now >= archiveDate) return "ARCHIVED"
   }
 
   // CLOSED: after close_date
-  if (closeDate && !isNaN(closeDate.getTime())) {
+  if (closeDate) {
     if (now >= closeDate) return "CLOSED"
   }
 
   // OPEN: between open_date and close_date
-  if (
-    openDate &&
-    !isNaN(openDate.getTime()) &&
-    closeDate &&
-    !isNaN(closeDate.getTime())
-  ) {
+  if (openDate && closeDate) {
     if (now >= openDate && now < closeDate) return "OPEN"
   }
 
@@ -131,18 +138,28 @@ const getRecommendedStatus = (data: EventData): string => {
 }
 
 const isArchived = (data: EventData): boolean => {
-  // Hanya kunci jika status eksplisit ARCHIVED atau benar-benar melewati batas 14 hari
+  // Hanya kunci jika status eksplisit ARCHIVED
   if (data.status === "ARCHIVED") return true
 
-  const compeDate = data.compe_date ? new Date(data.compe_date) : null
-  if (compeDate && !isNaN(compeDate.getTime())) {
-    const now = new Date()
-    const archiveDate = new Date(compeDate)
-    archiveDate.setDate(archiveDate.getDate() + 14)
-    return now >= archiveDate
+  // Untuk otomatis ARCHIVED, pastikan tanggal valid dan sudah lewat 14 hari
+  if (
+    !data.compe_date ||
+    data.compe_date === "null" ||
+    data.compe_date === ""
+  ) {
+    return false
   }
 
-  return false
+  const compeDate = new Date(data.compe_date)
+  if (isNaN(compeDate.getTime()) || compeDate.getFullYear() < 2000) {
+    return false
+  }
+
+  const now = new Date()
+  const archiveDate = new Date(compeDate)
+  archiveDate.setDate(archiveDate.getDate() + 14)
+
+  return now >= archiveDate
 }
 
 // ==========================================
