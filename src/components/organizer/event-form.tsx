@@ -302,7 +302,7 @@ function StatCard({ label, value, isEditing, onChange, description }: any) {
 }
 
 // ==========================================
-// 3. MAIN FORM COMPONENT
+// 4. MAIN FORM COMPONENT
 // ==========================================
 
 export default function OrganizerEventForm({ initialData }: EventFormProps) {
