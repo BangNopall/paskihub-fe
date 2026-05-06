@@ -99,23 +99,50 @@ interface EventFormProps {
 
 const getRecommendedStatus = (data: EventData): string => {
   const now = new Date()
-  const openDate = new Date(data.open_date)
-  const closeDate = new Date(data.close_date)
-  const compeDate = new Date(data.compe_date)
+
+  // Safely parse dates
+  const openDate = data.open_date ? new Date(data.open_date) : null
+  const closeDate = data.close_date ? new Date(data.close_date) : null
+  const compeDate = data.compe_date ? new Date(data.compe_date) : null
 
   // ARCHIVED: 14 days after compe_date
-  const archiveDate = new Date(compeDate)
-  archiveDate.setDate(archiveDate.getDate() + 14)
+  if (compeDate && !isNaN(compeDate.getTime())) {
+    const archiveDate = new Date(compeDate)
+    archiveDate.setDate(archiveDate.getDate() + 14)
+    if (now >= archiveDate) return "ARCHIVED"
+  }
 
-  if (now >= archiveDate) return "ARCHIVED"
-  if (now >= closeDate) return "CLOSED"
-  if (now >= openDate) return "OPEN"
+  // CLOSED: after close_date
+  if (closeDate && !isNaN(closeDate.getTime())) {
+    if (now >= closeDate) return "CLOSED"
+  }
+
+  // OPEN: between open_date and close_date
+  if (
+    openDate &&
+    !isNaN(openDate.getTime()) &&
+    closeDate &&
+    !isNaN(closeDate.getTime())
+  ) {
+    if (now >= openDate && now < closeDate) return "OPEN"
+  }
+
   return "DRAFT"
 }
 
 const isArchived = (data: EventData): boolean => {
-  // An event is archived if its status is ARCHIVED OR if the dates say it should be ARCHIVED
-  return data.status === "ARCHIVED" || getRecommendedStatus(data) === "ARCHIVED"
+  // Hanya kunci jika status eksplisit ARCHIVED atau benar-benar melewati batas 14 hari
+  if (data.status === "ARCHIVED") return true
+
+  const compeDate = data.compe_date ? new Date(data.compe_date) : null
+  if (compeDate && !isNaN(compeDate.getTime())) {
+    const now = new Date()
+    const archiveDate = new Date(compeDate)
+    archiveDate.setDate(archiveDate.getDate() + 14)
+    return now >= archiveDate
+  }
+
+  return false
 }
 
 // ==========================================
