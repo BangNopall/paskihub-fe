@@ -59,6 +59,7 @@ export const UserResponseSchema = z.object({
   email_is_verified: z.boolean(),
   is_banned: z.boolean().optional().default(false),
   created_at: z.string().optional(),
+  last_login_at: z.string().optional(),
   role: z.string().optional().default("PESERTA"),
   name: z.string().optional().default("-"), 
   status: z.enum(["Active", "Pending", "Banned"]).optional().default("Active"),

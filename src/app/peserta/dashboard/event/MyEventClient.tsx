@@ -209,7 +209,7 @@ export default function MyEventClient({ initialOpenEvents, initialActiveEvents, 
 
     setIsSubmitting(true)
 
-    const levelId = selectedEventToRegister.levels[0]?.id
+    const levelId = selectedEventToRegister.levels?.[0]?.id
 
     if (!levelId) {
       alert("Event ini tidak memiliki level kompetisi")
@@ -354,7 +354,7 @@ export default function MyEventClient({ initialOpenEvents, initialActiveEvents, 
                       <div className="flex items-center gap-3">
                         <Banknote className="h-4 w-4 shrink-0 text-neutral-700" />
                         <span className="font-poppins text-sm font-semibold text-neutral-800">
-                          {formatRupiah(parseInt(event.levels[0]?.regis_fee || "0"))}
+                          {formatRupiah(parseInt(event.levels?.[0]?.regis_fee || "0"))}
                         </span>
                       </div>
                     </div>
@@ -548,7 +548,7 @@ export default function MyEventClient({ initialOpenEvents, initialActiveEvents, 
                     <div className="flex flex-col gap-1 pt-2">
                       <span className="font-poppins text-sm text-neutral-500">Biaya Event:</span>
                       <span className="font-poppins text-lg font-bold text-blue-500">
-                        {formatRupiah(parseInt(selectedEventToRegister.levels[0]?.regis_fee || "0"))}
+                        {formatRupiah(parseInt(selectedEventToRegister.levels?.[0]?.regis_fee || "0"))}
                       </span>
                     </div>
                   </div>
@@ -584,7 +584,7 @@ export default function MyEventClient({ initialOpenEvents, initialActiveEvents, 
                         <div className="flex flex-col gap-1">
                           <span className="font-poppins text-sm font-medium text-neutral-800">Bayar Lunas</span>
                           <span className="font-poppins text-sm font-normal text-neutral-500">
-                            Bayar penuh: <span className="font-semibold text-neutral-700">{formatRupiah(parseInt(selectedEventToRegister.levels[0]?.regis_fee || "0"))}</span>
+                            Bayar penuh: <span className="font-semibold text-neutral-700">{formatRupiah(parseInt(selectedEventToRegister.levels?.[0]?.regis_fee || "0"))}</span>
                           </span>
                         </div>
                       </Label>
@@ -593,7 +593,7 @@ export default function MyEventClient({ initialOpenEvents, initialActiveEvents, 
                         <div className="flex flex-col gap-1">
                           <span className="font-poppins text-sm font-medium text-neutral-800">Bayar DP (Down Payment)</span>
                           <span className="font-poppins text-sm font-normal text-neutral-500">
-                            Bayar DP: <span className="font-semibold text-neutral-700">{formatRupiah(parseInt(selectedEventToRegister.levels[0]?.dp_fee || "0"))}</span>
+                            Bayar DP: <span className="font-semibold text-neutral-700">{formatRupiah(parseInt(selectedEventToRegister.levels?.[0]?.dp_fee || "0"))}</span>
                           </span>
                         </div>
                       </Label>

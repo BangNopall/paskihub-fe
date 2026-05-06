@@ -1,5 +1,5 @@
 import { AdminUserListSchema, UserResponse, AdminCreateInput } from "@/schemas/admin.schema"
-import { getServerSession } from "next-auth"
+import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 
 const API_URL = process.env.API_BASE_URL || "http://localhost:3010"
