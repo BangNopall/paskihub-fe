@@ -11,6 +11,7 @@ import {
   Plus,
   Trash2,
   Loader2,
+  AlertCircle,
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -33,7 +34,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { LEVEL_OPTIONS, getLevelLabel } from "@/lib/constants"
+import {
+  LEVEL_OPTIONS,
+  getLevelLabel,
+  EVENT_STATUS_OPTIONS,
+  getStatusStyle,
+  getStatusLabel,
+} from "@/lib/constants"
 import { toast } from "sonner"
 import { format, parse } from "date-fns"
 import { id } from "date-fns/locale"
@@ -146,6 +153,95 @@ function InfoSection({
         {title}
       </h3>
       <div className="w-full">{children}</div>
+    </div>
+  )
+}
+
+function StatusSection({
+  status,
+  recommended,
+  isEditing,
+  onStatusChange,
+  onSync,
+}: {
+  status: string
+  recommended: string
+  isEditing: boolean
+  onStatusChange: (val: string) => void
+  onSync: () => void
+}) {
+  const style = getStatusStyle(status)
+  const isDiff = status !== recommended && recommended !== "ARCHIVED"
+
+  return (
+    <div className="flex flex-col gap-4 rounded-2xl border border-sky-100 bg-white p-5 shadow-sm md:p-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-1">
+          <h3 className="font-poppins text-lg font-medium text-slate-900">
+            Status Event
+          </h3>
+          <p className="text-sm text-neutral-500">
+            Kelola status publikasi event Anda.
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <div
+            className={cn(
+              "rounded-full border px-4 py-1.5 text-sm font-semibold transition-all",
+              style
+            )}
+          >
+            {getStatusLabel(status)}
+          </div>
+          {isEditing && status !== "ARCHIVED" && (
+            <Select value={status} onValueChange={onStatusChange}>
+              <SelectTrigger className="w-32 bg-white focus-visible:ring-sky-200">
+                <SelectValue placeholder="Ubah Status" />
+              </SelectTrigger>
+              <SelectContent>
+                {EVENT_STATUS_OPTIONS.filter((opt) => opt.value !== "ARCHIVED").map(
+                  (opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </SelectItem>
+                  )
+                )}
+              </SelectContent>
+            </Select>
+          )}
+        </div>
+      </div>
+
+      {isDiff && isEditing && (
+        <div className="mt-2 flex items-center justify-between rounded-xl border border-amber-100 bg-amber-50 p-4">
+          <div className="flex items-center gap-3 text-amber-700">
+            <AlertCircle className="h-5 w-5" />
+            <span className="text-sm font-medium">
+              Rekomendasi sistem:{" "}
+              <strong className="font-bold">{getStatusLabel(recommended)}</strong>{" "}
+              berdasarkan jadwal yang diatur.
+            </span>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onSync}
+            className="border-amber-200 bg-white text-amber-700 hover:bg-amber-100"
+          >
+            Gunakan Rekomendasi
+          </Button>
+        </div>
+      )}
+
+      {status === "ARCHIVED" && (
+        <div className="mt-2 flex items-center gap-3 rounded-xl border border-gray-100 bg-gray-50 p-4 text-gray-600">
+          <AlertCircle className="h-5 w-5" />
+          <span className="text-sm font-medium">
+            Event ini telah diarsipkan secara otomatis oleh sistem (14 hari
+            setelah pelaksanaan).
+          </span>
+        </div>
+      )}
     </div>
   )
 }
@@ -522,6 +618,8 @@ export default function OrganizerEventForm({ initialData }: EventFormProps) {
     setPosterFile(null)
   }
 
+  const archived = isArchived(formData)
+
   return (
     <div className="flex flex-col gap-6 rounded-[24px] border border-sky-50 bg-gradient-to-b from-white/60 to-white/50 p-4 shadow-sm md:p-6">
       {/* HEADER ACTIONS */}
@@ -553,16 +651,29 @@ export default function OrganizerEventForm({ initialData }: EventFormProps) {
               </Button>
             </>
           ) : (
-            <Button
-              variant="outline"
-              onClick={() => setIsEditing(true)}
-              className="rounded-full border-blue-500 px-6 font-poppins font-semibold text-blue-500 hover:bg-blue-50"
-            >
-              <Pencil className="mr-2 h-4 w-4" /> Edit Event
-            </Button>
+            !archived && (
+              <Button
+                variant="outline"
+                onClick={() => setIsEditing(true)}
+                className="rounded-full border-blue-500 px-6 font-poppins font-semibold text-blue-500 hover:bg-blue-50"
+              >
+                <Pencil className="mr-2 h-4 w-4" /> Edit Event
+              </Button>
+            )
           )}
         </div>
       </div>
+
+      {/* Status Event */}
+      <StatusSection
+        status={formData.status}
+        recommended={getRecommendedStatus(formData)}
+        isEditing={isEditing}
+        onStatusChange={(val) => setFormData({ ...formData, status: val })}
+        onSync={() =>
+          setFormData({ ...formData, status: getRecommendedStatus(formData) })
+        }
+      />
 
       {/* Identitas Event */}
       <InfoSection title="Identitas Event">
