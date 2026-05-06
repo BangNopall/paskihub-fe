@@ -1,9 +1,7 @@
 "use client"
 
 import React, { useState, useRef } from "react"
-import Link from "next/link"
 import {
-  ArrowLeft,
   Pencil,
   Save,
   X,
@@ -42,7 +40,7 @@ import {
   getStatusLabel,
 } from "@/lib/constants"
 import { toast } from "sonner"
-import { format, parse } from "date-fns"
+import { format } from "date-fns"
 import { id } from "date-fns/locale"
 import {
   updateEventAction,
@@ -299,8 +297,8 @@ function EditableField({
           timePart = parts[1] ? parts[1].split(/[+Z]/)[0] : "00:00:00"
           formattedDisplay = valStr
         }
-      } catch (e) {
-        formattedDisplay = valStr
+      } catch (error) {
+        console.error("Error parsing date:", error)
       }
     }
 
@@ -444,7 +442,9 @@ export default function OrganizerEventForm({ initialData }: EventFormProps) {
             datePart = parts[0] || ""
             timePart = parts[1] ? parts[1].split(/[+Z]/)[0] : "00:00:00"
           }
-        } catch (e) {}
+        } catch (error) {
+          console.error("Error parsing date:", error)
+        }
       }
 
       if (!datePart) datePart = format(new Date(), "yyyy-MM-dd")
