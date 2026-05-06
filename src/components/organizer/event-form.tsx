@@ -89,7 +89,32 @@ interface EventFormProps {
 }
 
 // ==========================================
-// 2. UI HELPER COMPONENTS
+// 2. STATUS CALCULATION LOGIC
+// ==========================================
+
+const getRecommendedStatus = (data: EventData): string => {
+  const now = new Date()
+  const openDate = new Date(data.open_date)
+  const closeDate = new Date(data.close_date)
+  const compeDate = new Date(data.compe_date)
+
+  // ARCHIVED: 14 days after compe_date
+  const archiveDate = new Date(compeDate)
+  archiveDate.setDate(archiveDate.getDate() + 14)
+
+  if (now >= archiveDate) return "ARCHIVED"
+  if (now >= closeDate) return "CLOSED"
+  if (now >= openDate) return "OPEN"
+  return "DRAFT"
+}
+
+const isArchived = (data: EventData): boolean => {
+  // An event is archived if its status is ARCHIVED OR if the dates say it should be ARCHIVED
+  return data.status === "ARCHIVED" || getRecommendedStatus(data) === "ARCHIVED"
+}
+
+// ==========================================
+// 3. UI HELPER COMPONENTS
 // ==========================================
 
 function formatRupiah(amount: string | number) {
