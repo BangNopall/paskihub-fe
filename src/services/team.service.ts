@@ -67,12 +67,23 @@ export const teamService = {
       body: formData,
     })
 
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      throw new Error(err.message || "Failed to create team")
+    // Read body once — Response stream can only be consumed a single time
+    const text = await res.text()
+    let json: any = {}
+    try {
+      json = JSON.parse(text)
+    } catch {
+      // Backend returned non-JSON (e.g. "Request Entity Too Large")
+      if (!res.ok) {
+        throw new Error(text || `Request failed with status ${res.status}`)
+      }
     }
 
-    return res.json()
+    if (!res.ok) {
+      throw new Error(json.message || "Failed to create team")
+    }
+
+    return json
   },
 
   async updateTeam(id: string, formData: FormData, token: string) {
@@ -85,12 +96,21 @@ export const teamService = {
       body: formData,
     })
 
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      throw new Error(err.message || "Failed to update team")
+    const text = await res.text()
+    let json: any = {}
+    try {
+      json = JSON.parse(text)
+    } catch {
+      if (!res.ok) {
+        throw new Error(text || `Request failed with status ${res.status}`)
+      }
     }
 
-    return res.json()
+    if (!res.ok) {
+      throw new Error(json.message || "Failed to update team")
+    }
+
+    return json
   },
 
   async deleteTeam(id: string, token: string) {
@@ -102,11 +122,20 @@ export const teamService = {
       },
     })
 
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      throw new Error(err.message || "Failed to delete team")
+    const text = await res.text()
+    let json: any = {}
+    try {
+      json = JSON.parse(text)
+    } catch {
+      if (!res.ok) {
+        throw new Error(text || `Request failed with status ${res.status}`)
+      }
     }
 
-    return res.json()
+    if (!res.ok) {
+      throw new Error(json.message || "Failed to delete team")
+    }
+
+    return json
   },
 }

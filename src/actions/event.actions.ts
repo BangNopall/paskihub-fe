@@ -9,6 +9,7 @@ export async function updateEventAction(id: string, data: any) {
   try {
     const session: any = await getServerSession(authOptions)
     if (!session?.accessToken) throw new Error("Unauthorized")
+
     await profileService.updateEvent(id, data, session.accessToken)
     revalidatePath("/organizer/dashboard/event")
     return { success: true, message: "Event berhasil diperbarui." }

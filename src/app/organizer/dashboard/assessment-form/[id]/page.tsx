@@ -9,7 +9,7 @@ import { profileService } from "@/services/profile.service"
 import { eoTeamService } from "@/services/eo-team.service"
 import { assessmentService } from "@/services/assessment.service"
 import { AssessmentForm } from "@/components/organizer/assessment-form"
-import { startAssessmentAction } from "@/actions/eo-team.actions"
+
 import { Button } from "@/components/ui/button"
 
 export default async function AssessmentFormDetailPage({
@@ -71,9 +71,7 @@ export default async function AssessmentFormDetailPage({
       ),
     ])
 
-    // Trigger "Sedang Dinilai" status if currently PENDING
-    // Note: StartAssessment BE logic only updates if status is PENDING
-    await startAssessmentAction(eventId, registrationId)
+    await eoTeamService.startAssessment(session.accessToken, eventId, registrationId)
 
     return (
       <div className="flex flex-1 flex-col">

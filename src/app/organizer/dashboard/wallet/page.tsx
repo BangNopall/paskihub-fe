@@ -58,12 +58,9 @@ export default async function WalletPage() {
     )
   }
 
-  // console.log(walletData, transactions, settings)
-
-  const coinBalance = walletData.coin_balance || 0
+  const coinBalance = walletData.saldo_koin || 0
   const coinRate = settings.coin_rate || 0
 
-  // Mapping Bank Info
   const bankInfo = {
     bankName: settings.bank_info?.bank_name || null,
     accountNumber: settings.bank_info?.account_number || null,

@@ -246,55 +246,62 @@ export function TeamAssessmentList({ teams }: TeamAssessmentListProps) {
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredTeams.map((team, index) => (
-                  <TableRow
-                    key={team.registration_id}
-                    className="border-sky-100 bg-transparent hover:bg-white/50"
-                  >
-                    <TableCell className="py-4 text-center font-poppins text-sm font-medium text-neutral-700">
-                      {index + 1}
-                    </TableCell>
-                    <TableCell className="py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-zinc-200">
-                          {team.logo_path ? (
-                            <img
-                              src={team.logo_path}
-                              alt="Logo"
-                              className="h-full w-full object-cover"
-                            />
-                          ) : (
-                            <ImageIcon className="h-5 w-5 text-neutral-400" />
-                          )}
+                filteredTeams.map((team, index) => {
+                  const logo_path = team.logo_path
+                    ? team.logo_path.startsWith("http")
+                      ? team.logo_path
+                      : process.env.NEXT_PUBLIC_API_URL + team.logo_path
+                    : null
+                  return (
+                    <TableRow
+                      key={team.registration_id}
+                      className="border-sky-100 bg-transparent hover:bg-white/50"
+                    >
+                      <TableCell className="py-4 text-center font-poppins text-sm font-medium text-neutral-700">
+                        {index + 1}
+                      </TableCell>
+                      <TableCell className="py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-zinc-200">
+                            {logo_path ? (
+                              <img
+                                src={logo_path}
+                                alt="Logo"
+                                className="h-full w-full object-cover"
+                              />
+                            ) : (
+                              <ImageIcon className="h-5 w-5 text-neutral-400" />
+                            )}
+                          </div>
+                          <div className="flex flex-col">
+                            <span className="font-poppins text-sm font-semibold text-neutral-800">
+                              {team.team_name}
+                            </span>
+                            <span className="font-poppins text-xs text-neutral-500">
+                              {team.institution}
+                            </span>
+                          </div>
                         </div>
-                        <div className="flex flex-col">
-                          <span className="font-poppins text-sm font-semibold text-neutral-800">
-                            {team.team_name}
-                          </span>
-                          <span className="font-poppins text-xs text-neutral-500">
-                            {team.institution}
-                          </span>
+                      </TableCell>
+                      <TableCell className="py-4 text-center font-poppins text-sm font-medium text-neutral-700">
+                        {team.institution_type}
+                      </TableCell>
+                      <TableCell className="py-4">
+                        <div className="flex justify-center">
+                          <StatusBadge status={team.assessment_status} />
                         </div>
-                      </div>
-                    </TableCell>
-                    <TableCell className="py-4 text-center font-poppins text-sm font-medium text-neutral-700">
-                      {team.institution_type}
-                    </TableCell>
-                    <TableCell className="py-4">
-                      <div className="flex justify-center">
-                        <StatusBadge status={team.assessment_status} />
-                      </div>
-                    </TableCell>
-                    <TableCell className="py-4">
-                      <div className="flex justify-center">
-                        <ActionButton
-                          registrationId={team.registration_id}
-                          status={team.assessment_status}
-                        />
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
+                      </TableCell>
+                      <TableCell className="py-4">
+                        <div className="flex justify-center">
+                          <ActionButton
+                            registrationId={team.registration_id}
+                            status={team.assessment_status}
+                          />
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )
+                })
               )}
             </TableBody>
           </Table>

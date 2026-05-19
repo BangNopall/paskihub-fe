@@ -3,6 +3,13 @@
 import React, { useState } from "react"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
+import { Info } from "lucide-react"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import {
   Table,
   TableBody,
@@ -25,7 +32,13 @@ interface WalletTransactionTableProps {
   transactions: any[]
 }
 
-function TransactionBadge({ status }: { status: string }) {
+function TransactionBadge({
+  status,
+  rejectionReason,
+}: {
+  status: string
+  rejectionReason?: string | null
+}) {
   const normalizedStatus = status.toLowerCase()
   switch (normalizedStatus) {
     case "pending":
@@ -51,12 +64,34 @@ function TransactionBadge({ status }: { status: string }) {
     case "rejected":
     case "failed":
       return (
-        <Badge
-          variant="outline"
-          className="w-24 justify-center border-red-300 bg-red-50 px-3 py-1 font-poppins text-xs font-normal text-red-400"
-        >
-          {status}
-        </Badge>
+        <div className="flex items-center justify-center gap-1.5">
+          <Badge
+            variant="outline"
+            className="w-24 justify-center border-red-300 bg-red-50 px-3 py-1 font-poppins text-xs font-normal text-red-400"
+          >
+            {status}
+          </Badge>
+          {normalizedStatus === "rejected" && rejectionReason && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  type="button"
+                  className="text-red-400 outline-none transition-colors hover:text-red-600 focus:outline-none"
+                >
+                  <Info className="h-4 w-4" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-[250px] border border-red-100 bg-white p-3 shadow-lg">
+                <p className="mb-1 font-poppins text-xs font-medium text-red-600">
+                  Alasan Penolakan:
+                </p>
+                <p className="text-left font-poppins text-xs text-neutral-600">
+                  {rejectionReason}
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          )}
+        </div>
       )
     default:
       return (
@@ -83,142 +118,151 @@ export function WalletTransactionTable({
   )
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="overflow-hidden rounded-2xl border border-sky-100 bg-white/70 shadow-sm">
-        <div className="overflow-x-auto">
-          <Table className="min-w-[700px]">
-            <TableHeader className="bg-blue-50/50">
-              <TableRow className="border-sky-100 hover:bg-transparent">
-                <TableHead className="w-16 py-4 text-center font-poppins text-sm font-normal text-neutral-700">
-                  No
-                </TableHead>
-                <TableHead className="py-4 text-center font-poppins text-sm font-normal text-neutral-700">
-                  Jenis Transaksi
-                </TableHead>
-                <TableHead className="py-4 text-center font-poppins text-sm font-normal text-neutral-700">
-                  Tanggal
-                </TableHead>
-                <TableHead className="py-4 text-center font-poppins text-sm font-normal text-neutral-700">
-                  Jumlah Koin
-                </TableHead>
-                <TableHead className="py-4 text-center font-poppins text-sm font-normal text-neutral-700">
-                  Status
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {transactions.length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={5}
-                    className="py-8 text-center text-neutral-500"
-                  >
-                    Belum ada riwayat transaksi.
-                  </TableCell>
+    <TooltipProvider delayDuration={100}>
+      <div className="flex flex-col gap-4">
+        <div className="overflow-hidden rounded-2xl border border-sky-100 bg-white/70 shadow-sm">
+          <div className="overflow-x-auto">
+            <Table className="min-w-[700px]">
+              <TableHeader className="bg-blue-50/50">
+                <TableRow className="border-sky-100 hover:bg-transparent">
+                  <TableHead className="w-16 py-4 text-center font-poppins text-sm font-normal text-neutral-700">
+                    No
+                  </TableHead>
+                  <TableHead className="py-4 text-center font-poppins text-sm font-normal text-neutral-700">
+                    Jenis Transaksi
+                  </TableHead>
+                  <TableHead className="py-4 text-center font-poppins text-sm font-normal text-neutral-700">
+                    Tanggal
+                  </TableHead>
+                  <TableHead className="py-4 text-center font-poppins text-sm font-normal text-neutral-700">
+                    Jumlah Koin
+                  </TableHead>
+                  <TableHead className="py-4 text-center font-poppins text-sm font-normal text-neutral-700">
+                    Status
+                  </TableHead>
                 </TableRow>
-              ) : (
-                paginatedTransactions.map((tx: any, index: number) => {
-                  const actualIndex =
-                    (currentPage - 1) * itemsPerPage + index + 1
-                  return (
-                    <TableRow
-                      key={tx.id}
-                      className="border-sky-100 hover:bg-white/50"
+              </TableHeader>
+              <TableBody>
+                {transactions.length === 0 ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={5}
+                      className="py-8 text-center text-neutral-500"
                     >
-                      <TableCell className="py-4 text-center">
-                        {actualIndex}
-                      </TableCell>
-                      <TableCell className="py-4 text-center">
-                        {tx.type || tx.transaction_type}
-                      </TableCell>
-                      <TableCell className="py-4 text-center">
-                        {tx.created_at
-                          ? new Date(tx.created_at).toLocaleDateString(
-                              "id-ID",
-                              { day: "numeric", month: "long", year: "numeric" }
-                            )
-                          : "-"}
-                      </TableCell>
-                      <TableCell
-                        className={cn(
-                          "py-4 text-center font-semibold",
-                          tx.amount > 0 ? "text-green-500" : "text-red-500"
-                        )}
+                      Belum ada riwayat transaksi.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  paginatedTransactions.map((tx: any, index: number) => {
+                    const actualIndex =
+                      (currentPage - 1) * itemsPerPage + index + 1
+                    return (
+                      <TableRow
+                        key={tx.id}
+                        className="border-sky-100 hover:bg-white/50"
                       >
-                        {tx.amount > 0
-                          ? `+ ${tx.amount}`
-                          : `- ${Math.abs(tx.amount)}`}
-                      </TableCell>
-                      <TableCell className="py-4 text-center">
-                        <TransactionBadge status={tx.status} />
-                      </TableCell>
-                    </TableRow>
-                  )
-                })
-              )}
-            </TableBody>
-          </Table>
+                        <TableCell className="py-4 text-center">
+                          {actualIndex}
+                        </TableCell>
+                        <TableCell className="py-4 text-center">
+                          {tx.type || tx.transaction_type}
+                        </TableCell>
+                        <TableCell className="py-4 text-center">
+                          {tx.created_at
+                            ? new Date(tx.created_at).toLocaleDateString(
+                                "id-ID",
+                                {
+                                  day: "numeric",
+                                  month: "long",
+                                  year: "numeric",
+                                }
+                              )
+                            : "-"}
+                        </TableCell>
+                        <TableCell
+                          className={cn(
+                            "py-4 text-center font-semibold",
+                            tx.amount_koin > 0 ? "text-green-500" : "text-red-500"
+                          )}
+                        >
+                          {tx.amount_koin > 0
+                            ? `+ ${tx.amount_koin}`
+                            : `- ${Math.abs(tx.amount_koin)}`}
+                        </TableCell>
+                        <TableCell className="py-4 text-center">
+                          <TransactionBadge
+                            status={tx.status}
+                            rejectionReason={tx.rejection_reason}
+                          />
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </div>
-      </div>
 
-      {totalPages > 1 && (
-        <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-          <p className="font-poppins text-sm text-neutral-500">
-            Menampilkan{" "}
-            {Math.min(
-              itemsPerPage,
-              transactions.length - (currentPage - 1) * itemsPerPage
-            )}{" "}
-            dari {transactions.length} transaksi
-          </p>
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault()
-                    if (currentPage > 1) setCurrentPage(currentPage - 1)
-                  }}
-                  className={cn(
-                    currentPage === 1 && "pointer-events-none opacity-50"
-                  )}
-                />
-              </PaginationItem>
-
-              {Array.from({ length: totalPages }).map((_, i) => (
-                <PaginationItem key={i}>
-                  <PaginationLink
+        {totalPages > 1 && (
+          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+            <p className="font-poppins text-sm text-neutral-500">
+              Menampilkan{" "}
+              {Math.min(
+                itemsPerPage,
+                transactions.length - (currentPage - 1) * itemsPerPage
+              )}{" "}
+              dari {transactions.length} transaksi
+            </p>
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
                     href="#"
-                    isActive={currentPage === i + 1}
                     onClick={(e) => {
                       e.preventDefault()
-                      setCurrentPage(i + 1)
+                      if (currentPage > 1) setCurrentPage(currentPage - 1)
                     }}
-                  >
-                    {i + 1}
-                  </PaginationLink>
+                    className={cn(
+                      currentPage === 1 && "pointer-events-none opacity-50"
+                    )}
+                  />
                 </PaginationItem>
-              ))}
 
-              <PaginationItem>
-                <PaginationNext
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault()
-                    if (currentPage < totalPages)
-                      setCurrentPage(currentPage + 1)
-                  }}
-                  className={cn(
-                    currentPage === totalPages &&
-                      "pointer-events-none opacity-50"
-                  )}
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        </div>
-      )}
-    </div>
+                {Array.from({ length: totalPages }).map((_, i) => (
+                  <PaginationItem key={i}>
+                    <PaginationLink
+                      href="#"
+                      isActive={currentPage === i + 1}
+                      onClick={(e) => {
+                        e.preventDefault()
+                        setCurrentPage(i + 1)
+                      }}
+                    >
+                      {i + 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+
+                <PaginationItem>
+                  <PaginationNext
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      if (currentPage < totalPages)
+                        setCurrentPage(currentPage + 1)
+                    }}
+                    className={cn(
+                      currentPage === totalPages &&
+                        "pointer-events-none opacity-50"
+                    )}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        )}
+      </div>
+    </TooltipProvider>
   )
 }

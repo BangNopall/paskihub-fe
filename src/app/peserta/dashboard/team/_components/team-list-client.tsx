@@ -47,9 +47,8 @@ import {
   TeamDetailRes,
   ParticipantTeamMemberRes,
 } from "@/schemas/team.schema"
-import { deleteTeamAction } from "@/actions/team.actions"
+import { deleteTeamAction, getTeamDetailAction } from "@/actions/team.actions"
 import { toast } from "sonner"
-import { teamService } from "@/services/team.service"
 
 // ==========================================
 // 3. UI HELPER COMPONENTS
@@ -177,8 +176,12 @@ export default function TeamListClient({
   const fetchDetail = async (id: string) => {
     setIsLoadingDetail(true)
     try {
-      const detail = await teamService.getTeamDetail(id, token)
-      setTeamDetail(detail)
+      const res = await getTeamDetailAction(id)
+      if (res.success && res.data) {
+        setTeamDetail(res.data)
+      } else {
+        toast.error(res.error || "Gagal memuat detail tim")
+      }
     } catch (error) {
       toast.error("Gagal memuat detail tim")
     } finally {
@@ -246,7 +249,11 @@ export default function TeamListClient({
             >
               <div className="flex items-center">
                 <Filter className="mr-2 h-4 w-4" />{" "}
-                {filterStatus === "Semua" ? "Semua Status" : filterStatus}
+                {filterStatus === "Semua"
+                  ? "Semua Status"
+                  : statusFilter.find(
+                      (opt) => opt.value === filterStatus
+                    )?.label}
               </div>
               <ChevronDown className="ml-2 h-4 w-4" />
             </Button>

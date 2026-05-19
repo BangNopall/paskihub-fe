@@ -64,7 +64,7 @@ export default async function OrganizerEventDetailPage() {
   const initialData: EventData = {
     id: event.id,
     user_id: session.user.id,
-    status: "DRAFT",
+    status: event.status || "DRAFT",
     name: event.name || null,
     organizer: event.organizer || null,
     description: event.description || null,

@@ -43,6 +43,7 @@ export const ParticipantTeamResSchema = z.object({
   pelatih: z.string(),
   institution_type: z.string(),
   payment_status: z.string(),
+  members_count: z.number().optional().default(0),
 })
 
 export type ParticipantTeamRes = z.infer<typeof ParticipantTeamResSchema>

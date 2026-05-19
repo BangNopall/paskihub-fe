@@ -26,16 +26,13 @@ export default async function OrganizerTeamListPage() {
   // 2. Fetch team list, stats, and system settings in parallel
   let teams: EOTeamListRes[] = []
   let apiStats = null
-  let systemSettings = null
   try {
-    const [teamsRes, statsRes, settingsRes] = await Promise.all([
+    const [teamsRes, statsRes] = await Promise.all([
       eoTeamService.getTeamList(session.accessToken, eventId),
       eoTeamService.getTeamStats(session.accessToken, eventId),
-      systemSettingService.getSettings(session.accessToken),
     ])
     teams = teamsRes
     apiStats = statsRes
-    systemSettings = settingsRes
   } catch (error) {
     console.error("Error fetching teams, stats, or settings:", error)
   }
@@ -59,8 +56,6 @@ export default async function OrganizerTeamListPage() {
         dp: 0,
       }
 
-  const approvalFee = systemSettings?.approval_fee || 0
-
   return (
     <div className="flex flex-1 flex-col">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 p-4 md:gap-8 md:p-6 lg:p-8">
@@ -75,8 +70,6 @@ export default async function OrganizerTeamListPage() {
           initialTeams={teams}
           stats={stats}
           eventId={eventId}
-          approvalFee={approvalFee}
-          token={session.accessToken}
         />
       </div>
     </div>

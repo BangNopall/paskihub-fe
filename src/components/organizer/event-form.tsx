@@ -297,6 +297,7 @@ function EditableField({
   type = "text",
   className,
   placeholder,
+  required = false,
 }: {
   label: string
   value: string | number
@@ -308,6 +309,7 @@ function EditableField({
   type?: "text" | "textarea" | "number" | "email" | "date" | "datetime"
   className?: string
   placeholder?: string
+  required?: boolean
 }) {
   // Handle display for non-editing mode
   const displayValue = (val: any) => {
@@ -350,6 +352,7 @@ function EditableField({
       <div className={cn("flex flex-col gap-2", className)}>
         <Label className="font-poppins text-sm font-normal text-neutral-500">
           {label}
+          {required && isEditing && <span className="ml-1 text-red-500">*</span>}
         </Label>
         {isEditing ? (
           <div className="flex gap-2">
@@ -380,6 +383,7 @@ function EditableField({
     <div className={cn("flex flex-col gap-2", className)}>
       <Label className="font-poppins text-sm font-normal text-neutral-500">
         {label}
+        {required && isEditing && <span className="ml-1 text-red-500">*</span>}
       </Label>
       {isEditing ? (
         type === "textarea" ? (
@@ -407,7 +411,14 @@ function EditableField({
   )
 }
 
-function StatCard({ label, value, isEditing, onChange, description }: any) {
+function StatCard({
+  label,
+  value,
+  isEditing,
+  onChange,
+  description,
+  required = false,
+}: any) {
   const displayValue = (val: any) => {
     if (val === undefined || val === null || val === "" || val === 0) return "-"
     return val
@@ -429,6 +440,7 @@ function StatCard({ label, value, isEditing, onChange, description }: any) {
       )}
       <span className="mt-1 text-center font-poppins text-sm font-normal text-neutral-700">
         {label}
+        {required && isEditing && <span className="ml-1 text-red-500">*</span>}
       </span>
       {description && (
         <span className="text-center font-poppins text-xs font-normal text-neutral-400">
@@ -566,7 +578,84 @@ export default function OrganizerEventForm({ initialData }: EventFormProps) {
   }
 
   // --- HANDLERS ACTION ---
+  const validateForm = (): { isValid: boolean; errors: string[] } => {
+    const errors: string[] = []
+
+    if (!formData.name?.trim()) errors.push("Nama Event")
+    if (!formData.organizer?.trim()) errors.push("Penyelenggara")
+    if (!formData.description?.trim()) errors.push("Deskripsi Event")
+
+    // Dates validation
+    if (!formData.open_date || formData.open_date.includes("null"))
+      errors.push("Pendaftaran Dibuka")
+    if (!formData.close_date || formData.close_date.includes("null"))
+      errors.push("Pendaftaran Ditutup")
+    if (!formData.compe_date || formData.compe_date.includes("null"))
+      errors.push("Pelaksanaan Lomba")
+
+    if (!formData.location?.trim()) errors.push("Lokasi")
+
+    if (!formData.min_team_members || Number(formData.min_team_members) <= 0)
+      errors.push("Min. Anggota")
+    if (!formData.max_team_members || Number(formData.max_team_members) <= 0)
+      errors.push("Max. Anggota")
+    if (Number(formData.min_team_members) > Number(formData.max_team_members)) {
+      errors.push("Max Anggota harus lebih besar dari Min Anggota")
+    }
+
+    if (!formData.no_wa_pj?.trim()) errors.push("WhatsApp Panitia")
+    if (!formData.wa_group?.trim()) errors.push("Grup WhatsApp Peserta")
+    if (!formData.name_pj?.trim()) errors.push("Penanggung Jawab")
+
+    if (!formData.bank_name?.trim()) errors.push("Nama Bank")
+    if (!formData.bank_number?.trim()) errors.push("Nomor Rekening")
+
+    // Media
+    if (!logoPreview && !logoFile) errors.push("Logo Event")
+    if (!posterPreview && !posterFile) errors.push("Poster Event")
+
+    // Levels
+    const activeLevels = formData.levels.filter(
+      (l) => !deletedLevelIds.includes(l.id)
+    )
+    if (activeLevels.length === 0) {
+      errors.push("Minimal 1 Kategori Jenjang Lomba")
+    } else {
+      activeLevels.forEach((level, idx) => {
+        if (!level.name) errors.push(`Nama Jenjang pada baris ${idx + 1}`)
+        if (
+          level.regis_fee === undefined ||
+          level.regis_fee === null ||
+          String(level.regis_fee).trim() === ""
+        )
+          errors.push(`Biaya Pendaftaran pada jenjang ${level.name || idx + 1}`)
+        if (
+          level.dp_fee === undefined ||
+          level.dp_fee === null ||
+          String(level.dp_fee).trim() === ""
+        )
+          errors.push(`DP pada jenjang ${level.name || idx + 1}`)
+      })
+    }
+
+    return { isValid: errors.length === 0, errors }
+  }
+
   const handleSave = async () => {
+    // === NEW VALIDATION LOGIC ===
+    if (formData.status !== "DRAFT") {
+      const validation = validateForm()
+      if (!validation.isValid) {
+        toast.error(
+          `Form belum lengkap untuk publikasi. Lengkapi: ${validation.errors.join(
+            ", "
+          )}`
+        )
+        return
+      }
+    }
+    // ============================
+
     setIsSubmitting(true)
     try {
       // 1. Update Event Info
@@ -640,7 +729,7 @@ export default function OrganizerEventForm({ initialData }: EventFormProps) {
       setIsEditing(false)
       setTimeout(() => {
         window.location.reload()
-      }, 2000)
+      }, 500)
     } catch (error: any) {
       console.log(error)
       console.error("Gagal menyimpan data:", error)
@@ -727,12 +816,14 @@ export default function OrganizerEventForm({ initialData }: EventFormProps) {
             value={formData.name}
             isEditing={isEditing}
             onChange={handleChange("name")}
+            required
           />
           <EditableField
             label="Penyelenggara"
             value={formData.organizer}
             isEditing={isEditing}
             onChange={handleChange("organizer")}
+            required
           />
           <EditableField
             label="Deskripsi Event"
@@ -741,6 +832,7 @@ export default function OrganizerEventForm({ initialData }: EventFormProps) {
             isEditing={isEditing}
             onChange={handleChange("description")}
             className="md:col-span-2 lg:col-span-3"
+            required
           />
         </div>
       </InfoSection>
@@ -755,6 +847,7 @@ export default function OrganizerEventForm({ initialData }: EventFormProps) {
             isEditing={isEditing}
             onChange={handleDateTimeChange("open_date", "date")}
             onTimeChange={handleDateTimeChange("open_date", "time")}
+            required
           />
           <EditableField
             type="datetime"
@@ -763,6 +856,7 @@ export default function OrganizerEventForm({ initialData }: EventFormProps) {
             isEditing={isEditing}
             onChange={handleDateTimeChange("close_date", "date")}
             onTimeChange={handleDateTimeChange("close_date", "time")}
+            required
           />
           <EditableField
             type="datetime"
@@ -771,6 +865,7 @@ export default function OrganizerEventForm({ initialData }: EventFormProps) {
             isEditing={isEditing}
             onChange={handleDateTimeChange("compe_date", "date")}
             onTimeChange={handleDateTimeChange("compe_date", "time")}
+            required
           />
           <EditableField
             label="Lokasi"
@@ -778,6 +873,7 @@ export default function OrganizerEventForm({ initialData }: EventFormProps) {
             isEditing={isEditing}
             onChange={handleChange("location")}
             className="sm:col-span-3"
+            required
           />
         </div>
       </InfoSection>
@@ -791,6 +887,7 @@ export default function OrganizerEventForm({ initialData }: EventFormProps) {
             isEditing={isEditing}
             onChange={handleChange("min_team_members")}
             description="Minimal anggota per tim"
+            required
           />
           <StatCard
             label="Max. Anggota per Tim"
@@ -798,6 +895,7 @@ export default function OrganizerEventForm({ initialData }: EventFormProps) {
             isEditing={isEditing}
             onChange={handleChange("max_team_members")}
             description="Maksimal anggota per tim"
+            required
           />
         </div>
       </InfoSection>
@@ -810,12 +908,14 @@ export default function OrganizerEventForm({ initialData }: EventFormProps) {
             value={formData.no_wa_pj}
             isEditing={isEditing}
             onChange={handleChange("no_wa_pj")}
+            required
           />
           <EditableField
             label="Grup WhatsApp Peserta"
             value={formData.wa_group}
             isEditing={isEditing}
             onChange={handleChange("wa_group")}
+            required
           />
           <EditableField
             label="Penanggung Jawab"
@@ -823,6 +923,7 @@ export default function OrganizerEventForm({ initialData }: EventFormProps) {
             isEditing={isEditing}
             onChange={handleChange("name_pj")}
             className="md:col-span-2"
+            required
           />
         </div>
       </InfoSection>
@@ -835,6 +936,7 @@ export default function OrganizerEventForm({ initialData }: EventFormProps) {
             value={formData.bank_name}
             isEditing={isEditing}
             onChange={handleChange("bank_name")}
+            required
           />
           <EditableField
             label="Nomor Rekening"
@@ -842,6 +944,7 @@ export default function OrganizerEventForm({ initialData }: EventFormProps) {
             value={formData.bank_number}
             isEditing={isEditing}
             onChange={handleChange("bank_number")}
+            required
           />
           <EditableField
             label="Atas Nama"
@@ -859,7 +962,7 @@ export default function OrganizerEventForm({ initialData }: EventFormProps) {
           {/* UPLOAD LOGO */}
           <div className="flex flex-col gap-2">
             <span className="font-poppins text-sm font-normal text-neutral-500">
-              Logo Event
+              Logo Event {isEditing && <span className="text-red-500">*</span>}
             </span>
             <div className="flex flex-col items-start gap-2">
               <input
@@ -903,7 +1006,7 @@ export default function OrganizerEventForm({ initialData }: EventFormProps) {
           {/* UPLOAD POSTER */}
           <div className="flex flex-col gap-2">
             <span className="font-poppins text-sm font-normal text-neutral-500">
-              Poster Event
+              Poster Event {isEditing && <span className="text-red-500">*</span>}
             </span>
             <div className="flex flex-col items-start gap-2">
               <input
@@ -950,7 +1053,8 @@ export default function OrganizerEventForm({ initialData }: EventFormProps) {
       <div className="mt-4 flex flex-col gap-4 rounded-2xl border border-sky-100 bg-gradient-to-b from-white/70 to-white/60 p-5 shadow-sm md:p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <h3 className="font-poppins text-lg font-medium text-slate-900">
-            Kategori Jenjang Lomba
+            Kategori Jenjang Lomba{" "}
+            {isEditing && <span className="text-red-500">*</span>}
           </h3>
           {isEditing && (
             <Button
@@ -971,13 +1075,16 @@ export default function OrganizerEventForm({ initialData }: EventFormProps) {
                     No
                   </TableHead>
                   <TableHead className="font-poppins text-sm font-normal text-neutral-700">
-                    Nama Jenjang
+                    Nama Jenjang{" "}
+                    {isEditing && <span className="text-red-500">*</span>}
                   </TableHead>
                   <TableHead className="text-center font-poppins text-sm font-normal text-neutral-700">
-                    Biaya Pendaftaran
+                    Biaya Pendaftaran{" "}
+                    {isEditing && <span className="text-red-500">*</span>}
                   </TableHead>
                   <TableHead className="text-center font-poppins text-sm font-normal text-neutral-700">
-                    Down Payment (DP)
+                    Down Payment (DP){" "}
+                    {isEditing && <span className="text-red-500">*</span>}
                   </TableHead>
                   {isEditing && (
                     <TableHead className="text-center font-poppins text-sm font-normal text-neutral-700">

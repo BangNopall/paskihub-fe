@@ -1,4 +1,5 @@
 const API_URL = process.env.API_BASE_URL || "http://localhost:3010"
+const API_KEY = process.env.API_KEY
 import {
   EOTeamListResSchema,
   EOTeamDetailResSchema,
@@ -27,7 +28,7 @@ class EOTeamService {
     const res = await fetch(url.toString(), {
       headers: {
         Authorization: `Bearer ${token}`,
-        "x-api-key": process.env.API_KEY!,
+        "x-api-key": API_KEY || '',
       },
       next: { revalidate: 0 }, // Ensure fresh data
     })
@@ -50,7 +51,7 @@ class EOTeamService {
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          "x-api-key": process.env.API_KEY!,
+          "x-api-key": API_KEY || '',
         },
       }
     )
@@ -69,7 +70,7 @@ class EOTeamService {
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          "x-api-key": process.env.API_KEY!,
+          "x-api-key": API_KEY || '',
         },
         next: { revalidate: 0 },
       }
@@ -94,7 +95,7 @@ class EOTeamService {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
-          "x-api-key": process.env.API_KEY!,
+          "x-api-key": API_KEY || '',
         },
       }
     )

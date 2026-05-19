@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState, useTransition } from "react"
+import * as VisuallyHidden from "@radix-ui/react-visually-hidden"
 import Link from "next/link"
 import {
   Search,
@@ -33,17 +34,18 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
 import { toast } from "sonner"
 import { EOTeamListRes, EOTeamDetailRes } from "@/schemas/eo-team.schema"
 import {
+  getTeamDetailAction,
   approveTeamAction,
   rejectTeamAction,
   kickTeamAction,
 } from "@/actions/eo-team.actions"
-import { eoTeamService } from "@/services/eo-team.service"
 import {
   Pagination,
   PaginationContent,
@@ -107,12 +109,23 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 function MemberCard({ member }: { member: any }) {
+  const photo_path = member.photo_path
+    ? member.photo_path.startsWith("http")
+      ? member.photo_path
+      : process.env.NEXT_PUBLIC_API_URL + member.photo_path
+    : null
+  const id_card_path = member.id_card_path
+    ? member.id_card_path.startsWith("http")
+      ? member.id_card_path
+      : process.env.NEXT_PUBLIC_API_URL + member.id_card_path
+    : null
+
   return (
     <div className="flex w-full items-start gap-4 rounded-xl border border-gray-100 bg-white px-4 py-4 shadow-sm transition-colors hover:border-sky-200">
       <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-white bg-stone-200 shadow-sm">
-        {member.photo_path ? (
+        {photo_path ? (
           <img
-            src={member.photo_path}
+            src={photo_path}
             alt={member.full_name}
             className="h-full w-full object-cover"
           />
@@ -128,9 +141,9 @@ function MemberCard({ member }: { member: any }) {
           {member.role}
         </span>
 
-        {member.id_card_path && (
+        {id_card_path && (
           <a
-            href={member.id_card_path}
+            href={id_card_path}
             target="_blank"
             rel="noreferrer"
             className="mt-1 flex w-fit items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-1 font-poppins text-xs font-medium text-blue-600 transition-colors hover:bg-blue-100"
@@ -151,14 +164,10 @@ export default function TeamListClient({
   initialTeams,
   stats,
   eventId,
-  approvalFee,
-  token,
 }: {
   initialTeams: EOTeamListRes[]
   stats: TeamStats
   eventId: string
-  approvalFee: number
-  token: string
 }) {
   const [isPending, startTransition] = useTransition()
 
@@ -185,12 +194,7 @@ export default function TeamListClient({
     setIsDetailModalOpen(true)
     setIsLoadingDetail(true)
     try {
-      if (!token) return
-      const detail = await eoTeamService.getTeamDetail(
-        token,
-        eventId,
-        team.registration_id
-      )
+      const detail = await getTeamDetailAction(eventId, team.registration_id)
       setTeamDetail(detail)
     } catch (error) {
       toast.error("Gagal memuat detail tim")
@@ -276,6 +280,23 @@ export default function TeamListClient({
   React.useEffect(() => {
     setCurrentPage(1)
   }, [searchQuery, activeCategory])
+
+  const logo_path = teamDetail?.logo_path
+    ? teamDetail.logo_path.startsWith("http")
+      ? teamDetail.logo_path
+      : process.env.NEXT_PUBLIC_API_URL + teamDetail.logo_path
+    : null
+
+  const payment_proof_path = teamDetail?.payment_proof_path
+    ? teamDetail.payment_proof_path.startsWith("http")
+      ? teamDetail.payment_proof_path
+      : process.env.NEXT_PUBLIC_API_URL + teamDetail.payment_proof_path
+    : null
+  const rec_letter_path = teamDetail?.rec_letter_path
+    ? teamDetail.rec_letter_path.startsWith("http")
+      ? teamDetail.rec_letter_path
+      : process.env.NEXT_PUBLIC_API_URL + teamDetail.rec_letter_path
+    : null
 
   return (
     <div className="flex flex-col gap-8">
@@ -403,132 +424,139 @@ export default function TeamListClient({
                     </TableCell>
                   </TableRow>
                 ) : (
-                  paginatedTeams.map((team, index) => (
-                    <TableRow
-                      key={team.registration_id}
-                      className="border-sky-100 bg-transparent hover:bg-white/50"
-                    >
-                      <TableCell className="py-4 text-center font-poppins text-sm font-medium text-neutral-700">
-                        {(currentPage - 1) * ITEMS_PER_PAGE + index + 1}
-                      </TableCell>
-                      <TableCell className="py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-zinc-200">
-                            {team.logo_path ? (
-                              <img
-                                src={team.logo_path}
-                                alt="Logo"
-                                className="h-full w-full object-cover"
-                              />
-                            ) : (
-                              <ImageIcon className="h-5 w-5 text-neutral-400" />
-                            )}
-                          </div>
-                          <div className="flex flex-col">
-                            <span className="font-poppins text-sm font-semibold text-neutral-800">
-                              {team.team_name}
-                            </span>
-                            <div className="mt-1 flex items-center gap-1.5">
-                              <Badge className="w-fit border-gray-300 bg-sky-50 px-2 py-0 font-poppins text-[10px] font-medium text-slate-500 hover:bg-sky-50">
-                                {getLevelLabel(team.institution_type)}
-                              </Badge>
-                              <Badge
-                                className={cn(
-                                  "w-fit px-2 py-0 font-poppins text-[10px] font-medium",
-                                  team.assessment_status === "COMPLETED"
-                                    ? "border-emerald-200 bg-emerald-50 text-emerald-600"
-                                    : "border-orange-200 bg-orange-50 text-orange-600"
-                                )}
-                              >
-                                {team.assessment_status === "COMPLETED"
-                                  ? "Selesai Dinilai"
-                                  : "Belum Dinilai"}
-                              </Badge>
+                  paginatedTeams.map((team, index) => {
+                    const logo_path = team.logo_path
+                      ? team.logo_path.startsWith("http")
+                        ? team.logo_path
+                        : process.env.NEXT_PUBLIC_API_URL + team.logo_path
+                      : null
+                    return (
+                      <TableRow
+                        key={team.registration_id}
+                        className="border-sky-100 bg-transparent hover:bg-white/50"
+                      >
+                        <TableCell className="py-4 text-center font-poppins text-sm font-medium text-neutral-700">
+                          {(currentPage - 1) * ITEMS_PER_PAGE + index + 1}
+                        </TableCell>
+                        <TableCell className="py-4">
+                          <div className="flex items-center gap-3">
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-zinc-200">
+                              {logo_path ? (
+                                <img
+                                  src={logo_path}
+                                  alt="Logo"
+                                  className="h-full w-full object-cover"
+                                />
+                              ) : (
+                                <ImageIcon className="h-5 w-5 text-neutral-400" />
+                              )}
                             </div>
-                          </div>{" "}
-                        </div>
-                      </TableCell>
-                      <TableCell className="py-4 font-poppins text-sm text-neutral-600">
-                        {team.institution}
-                      </TableCell>
-                      <TableCell className="py-4">
-                        <div className="flex justify-center">
-                          <StatusBadge status={team.payment_status} />
-                        </div>
-                      </TableCell>
-                      <TableCell className="py-4">
-                        <div className="flex justify-center">
-                          <Badge
-                            variant="outline"
-                            className={cn(
-                              "w-24 justify-center py-1 font-poppins text-xs font-normal",
-                              team.payment_status === "FULL_PAID"
-                                ? "border-emerald-400 bg-emerald-50 text-green-600"
+                            <div className="flex flex-col">
+                              <span className="font-poppins text-sm font-semibold text-neutral-800">
+                                {team.team_name}
+                              </span>
+                              <div className="mt-1 flex items-center gap-1.5">
+                                <Badge className="w-fit border-gray-300 bg-sky-50 px-2 py-0 font-poppins text-[10px] font-medium text-slate-500 hover:bg-sky-50">
+                                  {getLevelLabel(team.institution_type)}
+                                </Badge>
+                                <Badge
+                                  className={cn(
+                                    "w-fit px-2 py-0 font-poppins text-[10px] font-medium",
+                                    team.assessment_status === "COMPLETED"
+                                      ? "border-emerald-200 bg-emerald-50 text-emerald-600"
+                                      : "border-orange-200 bg-orange-50 text-orange-600"
+                                  )}
+                                >
+                                  {team.assessment_status === "COMPLETED"
+                                    ? "Selesai Dinilai"
+                                    : "Belum Dinilai"}
+                                </Badge>
+                              </div>
+                            </div>{" "}
+                          </div>
+                        </TableCell>
+                        <TableCell className="py-4 font-poppins text-sm text-neutral-600">
+                          {team.institution}
+                        </TableCell>
+                        <TableCell className="py-4">
+                          <div className="flex justify-center">
+                            <StatusBadge status={team.payment_status} />
+                          </div>
+                        </TableCell>
+                        <TableCell className="py-4">
+                          <div className="flex justify-center">
+                            <Badge
+                              variant="outline"
+                              className={cn(
+                                "w-24 justify-center py-1 font-poppins text-xs font-normal",
+                                team.payment_status === "FULL_PAID"
+                                  ? "border-emerald-400 bg-emerald-50 text-green-600"
+                                  : team.payment_status === "DP_PAID"
+                                    ? "border-amber-400 bg-amber-50 text-amber-600"
+                                    : "border-gray-300 bg-gray-50 text-gray-500"
+                              )}
+                            >
+                              {team.payment_status === "FULL_PAID"
+                                ? "Lunas"
                                 : team.payment_status === "DP_PAID"
-                                  ? "border-amber-400 bg-amber-50 text-amber-600"
-                                  : "border-gray-300 bg-gray-50 text-gray-500"
-                            )}
-                          >
-                            {team.payment_status === "FULL_PAID"
-                              ? "Lunas"
-                              : team.payment_status === "DP_PAID"
-                                ? "DP"
-                                : "N/A"}
-                          </Badge>
-                        </div>
-                      </TableCell>
-                      <TableCell className="py-4">
-                        <div className="flex items-center justify-center gap-2">
-                          <Button
-                            size="sm"
-                            onClick={() => handleFetchDetail(team)}
-                            className="h-8 bg-blue-400 font-poppins text-xs font-semibold text-white hover:bg-blue-500"
-                          >
-                            Detail
-                          </Button>
-
-                          {team.payment_status === "WAITING" && (
-                            <>
-                              <Button
-                                size="sm"
-                                onClick={() => {
-                                  setSelectedTeam(team)
-                                  setIsApproveModalOpen(true)
-                                }}
-                                className="h-8 bg-green-400 font-poppins text-xs font-semibold text-white hover:bg-green-500"
-                              >
-                                Approve
-                              </Button>
-                              <Button
-                                size="sm"
-                                onClick={() => {
-                                  setSelectedTeam(team)
-                                  setIsRejectModalOpen(true)
-                                }}
-                                className="h-8 bg-rose-400 font-poppins text-xs font-semibold text-white hover:bg-rose-500"
-                              >
-                                Reject
-                              </Button>
-                            </>
-                          )}
-
-                          {(team.payment_status === "DP_PAID" ||
-                            team.payment_status === "FULL_PAID") && (
+                                  ? "DP"
+                                  : "N/A"}
+                            </Badge>
+                          </div>
+                        </TableCell>
+                        <TableCell className="py-4">
+                          <div className="flex items-center justify-center gap-2">
                             <Button
                               size="sm"
-                              onClick={() => {
-                                setSelectedTeam(team)
-                                setIsKickModalOpen(true)
-                              }}
-                              className="h-8 bg-red-400 font-poppins text-xs font-semibold text-white hover:bg-red-500"
+                              onClick={() => handleFetchDetail(team)}
+                              className="h-8 bg-blue-400 font-poppins text-xs font-semibold text-white hover:bg-blue-500"
                             >
-                              Kick
+                              Detail
                             </Button>
-                          )}
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))
+
+                            {team.payment_status === "WAITING" && (
+                              <>
+                                <Button
+                                  size="sm"
+                                  onClick={() => {
+                                    setSelectedTeam(team)
+                                    setIsApproveModalOpen(true)
+                                  }}
+                                  className="h-8 bg-green-400 font-poppins text-xs font-semibold text-white hover:bg-green-500"
+                                >
+                                  Approve
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  onClick={() => {
+                                    setSelectedTeam(team)
+                                    setIsRejectModalOpen(true)
+                                  }}
+                                  className="h-8 bg-rose-400 font-poppins text-xs font-semibold text-white hover:bg-rose-500"
+                                >
+                                  Reject
+                                </Button>
+                              </>
+                            )}
+
+                            {(team.payment_status === "DP_PAID" ||
+                              team.payment_status === "FULL_PAID") && (
+                              <Button
+                                size="sm"
+                                onClick={() => {
+                                  setSelectedTeam(team)
+                                  setIsKickModalOpen(true)
+                                }}
+                                className="h-8 bg-red-400 font-poppins text-xs font-semibold text-white hover:bg-red-500"
+                              >
+                                Kick
+                              </Button>
+                            )}
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })
                 )}
               </TableBody>
             </Table>
@@ -632,6 +660,9 @@ export default function TeamListClient({
         <DialogContent className="max-h-[90vh] w-full gap-0 overflow-y-auto rounded-3xl bg-white p-0 sm:min-w-xl sm:rounded-[40px]">
           {isLoadingDetail ? (
             <div className="flex h-64 items-center justify-center">
+              <VisuallyHidden.Root>
+                <DialogTitle>Memuat Detail Tim</DialogTitle>
+              </VisuallyHidden.Root>
               <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
             </div>
           ) : (
@@ -640,9 +671,9 @@ export default function TeamListClient({
                 <DialogHeader className="flex flex-row items-start justify-between space-y-0 border-b border-neutral-200 p-6 pb-4 sm:px-10 sm:pt-8">
                   <div className="flex items-center gap-4 sm:gap-6">
                     <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full border-4 border-stone-200 bg-neutral-100 sm:h-16 sm:w-16">
-                      {teamDetail.logo_path ? (
+                      {logo_path ? (
                         <img
-                          src={teamDetail.logo_path}
+                          src={logo_path}
                           alt="Logo"
                           className="h-full w-full object-cover"
                         />
@@ -746,14 +777,14 @@ export default function TeamListClient({
                         </div>
                       </div>
 
-                      {teamDetail.payment_proof_path && (
+                      {payment_proof_path && (
                         <div className="flex flex-col gap-3 rounded-2xl border border-sky-100 bg-sky-50/50 p-5">
                           <h3 className="font-poppins text-base font-semibold text-neutral-800">
                             Bukti Pembayaran
                           </h3>
                           <div className="mt-1 flex flex-col gap-3">
                             <Link
-                              href={teamDetail.payment_proof_path}
+                              href={payment_proof_path}
                               target="_blank"
                               rel="noreferrer"
                               className="group flex w-full flex-col items-center justify-center gap-3 rounded-2xl border border-stone-300 bg-sky-50 p-8 transition-colors hover:border-blue-300 hover:bg-blue-50"
@@ -791,7 +822,7 @@ export default function TeamListClient({
                         <h3 className="font-poppins text-base font-semibold text-neutral-800">
                           Dokumen Pendaftaran Tim
                         </h3>
-                        {teamDetail.rec_letter_path && (
+                        {rec_letter_path && (
                           <div className="flex flex-col justify-between gap-4 rounded-xl border border-blue-200 bg-indigo-50/50 p-4 shadow-sm sm:flex-row sm:items-center">
                             <div className="flex items-center gap-3">
                               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-blue-600">
@@ -804,7 +835,7 @@ export default function TeamListClient({
                               </div>
                             </div>
                             <a
-                              href={teamDetail.rec_letter_path}
+                              href={rec_letter_path}
                               target="_blank"
                               rel="noreferrer"
                             >
@@ -837,9 +868,9 @@ export default function TeamListClient({
                 <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
                   <Check className="h-8 w-8 text-green-500" />
                 </div>
-                <h2 className="font-montserrat text-2xl font-bold text-neutral-800">
+                <DialogTitle className="font-montserrat text-2xl font-bold text-neutral-800">
                   Approve Tim
-                </h2>
+                </DialogTitle>
                 <p className="font-poppins text-sm text-neutral-600">
                   Pilih status pembayaran untuk menyetujui tim <br />{" "}
                   <span className="font-semibold text-green-600">
@@ -884,9 +915,9 @@ export default function TeamListClient({
           {selectedTeam && (
             <form onSubmit={handleRejectSubmit} className="flex flex-col">
               <div className="flex flex-col items-center gap-2 border-b border-neutral-200/50 p-6 pb-4 text-center sm:px-10 sm:pt-10">
-                <h2 className="font-montserrat text-2xl font-bold text-neutral-800">
+                <DialogTitle className="font-montserrat text-2xl font-bold text-neutral-800">
                   Tolak Tim
-                </h2>
+                </DialogTitle>
                 <p className="font-poppins text-sm text-neutral-400">
                   Berikan alasan penolakan tim{" "}
                   <span className="font-medium text-neutral-700">
@@ -947,9 +978,9 @@ export default function TeamListClient({
                 <div className="flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
                   <Trash2 className="h-8 w-8 text-red-500" />
                 </div>
-                <h2 className="font-montserrat text-2xl font-bold text-neutral-800">
+                <DialogTitle className="font-montserrat text-2xl font-bold text-neutral-800">
                   Kick Tim
-                </h2>
+                </DialogTitle>
                 <p className="font-poppins text-sm text-neutral-600">
                   Apakah Anda yakin kick (hapus secara permanen) peserta ini
                   dari event? <br />

@@ -266,6 +266,7 @@ export default function NewTeamPage() {
         toast.success("Tim berhasil dibuat")
         router.push("/peserta/dashboard/team")
       } else {
+        console.log(res)
         toast.error(res.error || "Gagal membuat tim")
       }
     } catch (error) {

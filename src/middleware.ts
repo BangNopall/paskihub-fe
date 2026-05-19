@@ -58,13 +58,17 @@ export default withAuth(
       // 3. Handle Dashboard/Protected Route Access
       if (
         pathname.startsWith("/organizer") ||
-        pathname.startsWith("/peserta")
+        pathname.startsWith("/peserta") ||
+        pathname.startsWith("/admin")
       ) {
         // Prevent cross-role access
         if (role === "ORGANIZER" && !pathname.startsWith("/organizer")) {
           return redirectToDashboard()
         }
         if (role === "PESERTA" && !pathname.startsWith("/peserta")) {
+          return redirectToDashboard()
+        }
+        if (role === "ADMIN" && !pathname.startsWith("/admin")) {
           return redirectToDashboard()
         }
       }

@@ -88,7 +88,7 @@ export const authOptions: any = {
         session.accessToken = token.accessToken
         session.error = token.error
       }
-      // console.log(token)
+      console.log(token)
       return session
     },
   },

@@ -7,7 +7,7 @@ import {
 
 class SystemSettingService {
   async getSettings(token: string): Promise<SystemSettingRes> {
-    const res = await fetch(`${API_URL}/api/v1/settings/public`, {
+    const res = await fetch(`${API_URL}/api/v1/settings`, {
       headers: {
         Authorization: `Bearer ${token}`,
         "x-api-key": process.env.API_KEY!,

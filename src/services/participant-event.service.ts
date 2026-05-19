@@ -19,8 +19,8 @@ export const participantEventService = {
       },
       cache: "no-store",
     })
-    if (!res.ok) return []
     const json = await res.json()
+    if (!res.ok) return []
     return z.array(OpenEventSchema).parse(json.data || [])
   },
 
@@ -68,5 +68,47 @@ export const participantEventService = {
       throw new Error(err.message || "Gagal upload pelunasan")
     }
     return res.json()
+  },
+
+  async getRegistrationDetail(regisId: string, token: string) {
+    const res = await fetch(`${API_URL}/api/v1/peserta/events/registrations/${regisId}`, {
+      method: "GET",
+      headers: {
+        "x-api-key": API_KEY || "",
+        Authorization: `Bearer ${token}`,
+      },
+      cache: "no-store",
+    })
+    if (!res.ok) return null
+    const json = await res.json()
+    return json.data
+  },
+
+  async getAssessmentRecap(regisId: string, token: string) {
+    const res = await fetch(`${API_URL}/api/v1/peserta/assessment/recap/${regisId}`, {
+      method: "GET",
+      headers: {
+        "x-api-key": API_KEY || "",
+        Authorization: `Bearer ${token}`,
+      },
+      cache: "no-store",
+    })
+    if (!res.ok) return null
+    const json = await res.json()
+    return json.data
+  },
+
+  async getScoreboard(eventLevelId: string, token: string) {
+    const res = await fetch(`${API_URL}/api/v1/peserta/rekap/scoreboard/${eventLevelId}`, {
+      method: "GET",
+      headers: {
+        "x-api-key": API_KEY || "",
+        Authorization: `Bearer ${token}`,
+      },
+      cache: "no-store",
+    })
+    if (!res.ok) return null
+    const json = await res.json()
+    return json.data
   }
 }

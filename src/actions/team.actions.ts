@@ -97,3 +97,15 @@ export async function deleteTeamAction(id: string) {
     return { success: false, error: error.message }
   }
 }
+
+export async function getTeamDetailAction(id: string) {
+  const token = await getAuthToken()
+  if (!token) throw new Error("Unauthorized")
+
+  try {
+    const res = await teamService.getTeamDetail(id, token)
+    return { success: true, data: res }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}

@@ -16,7 +16,37 @@ export const profileService = {
     })
     if (!res.ok) return []
     const data = await res.json()
-    return data.data || []
+    let events = data.data || []
+
+    // FALLBACK: If events are empty, this might be a staff account.
+    // We try to fetch the EO profile which returns the main organizer's info.
+    if (events.length === 0) {
+      try {
+        const profileRes = await this.getEOProfile(token)
+        const mainEoId = profileRes?.data?.id || profileRes?.data?.user_id
+
+        if (mainEoId && mainEoId !== userId) {
+          const staffRes = await fetch(`${API_URL}/api/v1/events/user/${mainEoId}`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "x-api-key": API_KEY || "",
+              Authorization: `Bearer ${token}`,
+            },
+            cache: "no-store",
+          })
+          if (staffRes.ok) {
+            const staffData = await staffRes.json()
+            events = staffData.data || []
+          }
+        }
+      } catch (e) {
+        // Fallback silently if it's not a staff account or profile is unavailable
+        console.warn("Staff event fallback check failed:", e)
+      }
+    }
+
+    return events
   },
 
   async updateEvent(id: string, data: any, token: string) {

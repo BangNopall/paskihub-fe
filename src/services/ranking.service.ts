@@ -108,6 +108,8 @@ export const rankingService = {
       }
     )
 
+    console.log(await res.json())
+
     if (!res.ok) {
       const err = await res.json().catch(() => ({}))
       throw new Error(err.message || "Failed to delete award")

@@ -1,4 +1,10 @@
-import { AdminUserListSchema, UserResponse, AdminCreateInput } from "@/schemas/admin.schema"
+import {
+  AdminUserListSchema,
+  UserResponse,
+  AdminCreateInput,
+  AdminTransactionListResponse,
+  AdminTransactionListResponseSchema,
+} from "@/schemas/admin.schema"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 
@@ -237,14 +243,17 @@ export const adminService = {
     const token = session?.accessToken
     if (!token) throw new Error("Unauthorized")
 
-    const res = await fetch(`${API_URL}/api/v1/admin/admins/${adminId}/reset-password`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": API_KEY || "",
-        Authorization: `Bearer ${token}`,
-      },
-    })
+    const res = await fetch(
+      `${API_URL}/api/v1/admin/admins/${adminId}/reset-password`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": API_KEY || "",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
 
     if (!res.ok) {
       const err = await res.json()
@@ -259,15 +268,20 @@ export const adminService = {
     const token = session?.accessToken
     if (!token) throw new Error("Unauthorized")
 
-    const res = await fetch(`${API_URL}/api/v1/admin/events/${eventId}/status`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": API_KEY || "",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ status }),
-    })
+    console.log(eventId)
+
+    const res = await fetch(
+      `${API_URL}/api/v1/admin/events/${eventId}/status`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": API_KEY || "",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status }),
+      }
+    )
 
     if (!res.ok) {
       const err = await res.json()
@@ -276,8 +290,101 @@ export const adminService = {
     return { success: true }
   },
 
-  // ... existing user management methods if needed
+  async fetchTransactions(
+    status?: string,
+    page: number = 1,
+    limit: number = 10
+  ): Promise<AdminTransactionListResponse> {
+    const session: any = await getServerSession(authOptions)
+    const token = session?.accessToken
+    if (!token) throw new Error("Unauthorized")
+
+    const url = new URL(`${API_URL}/api/v1/wallets/admin/transactions`)
+    if (status && status !== "all") url.searchParams.append("status", status)
+    url.searchParams.append("page", page.toString())
+    url.searchParams.append("limit", limit.toString())
+
+    const res = await fetch(url.toString(), {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": API_KEY || "",
+        Authorization: `Bearer ${token}`,
+      },
+      cache: "no-store",
+    })
+
+    if (!res.ok) {
+      const err = await res.json()
+      throw new Error(err.error?.details || "Gagal mengambil data transaksi")
+    }
+
+    const json = await res.json()
+    const rawData = json.data || json
+    const parsed = AdminTransactionListResponseSchema.safeParse(rawData)
+    if (!parsed.success) {
+      console.error("Zod parse error:", parsed.error)
+      return { transactions: [], total: 0, page, limit }
+    }
+
+    return {
+      ...parsed.data,
+      transactions: parsed.data.transactions ?? [],
+    }
+  },
+
+  async approveTransaction(transactionId: string) {
+    const session: any = await getServerSession(authOptions)
+    const token = session?.accessToken
+    if (!token) throw new Error("Unauthorized")
+
+    const res = await fetch(
+      `${API_URL}/api/v1/wallets/admin/transactions/${transactionId}/approve`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": API_KEY || "",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+
+    if (!res.ok) {
+      const err = await res.json()
+      throw new Error(err.error?.details || "Gagal menyetujui transaksi")
+    }
+
+    return { success: true }
+  },
+
+  async rejectTransaction(transactionId: string, rejection_reason: string) {
+    const session: any = await getServerSession(authOptions)
+    const token = session?.accessToken
+    if (!token) throw new Error("Unauthorized")
+
+    const res = await fetch(
+      `${API_URL}/api/v1/wallets/admin/transactions/${transactionId}/reject`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": API_KEY || "",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ rejection_reason }),
+      }
+    )
+
+    if (!res.ok) {
+      const err = await res.json()
+      throw new Error(err.error?.details || "Gagal menolak transaksi")
+    }
+
+    return { success: true }
+  },
+
   async fetchAdminUsers(): Promise<UserResponse[]> {
     return this.fetchUsers()
-  }
+  },
 }
