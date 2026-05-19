@@ -4,10 +4,21 @@ import { loginResponseSchema } from "@/schemas/auth.schema"
 const API_URL = process.env.API_BASE_URL || "http://localhost:3010"
 const API_KEY = process.env.API_KEY
 
+export function getOrganizerUserId(session: {
+  user?: { id?: string; organizerId?: string; parentId?: string }
+}) {
+  return (
+    session.user?.organizerId ||
+    session.user?.parentId ||
+    session.user?.id ||
+    ""
+  )
+}
+
 function parseJwt(token: string) {
   try {
     return JSON.parse(Buffer.from(token.split(".")[1], "base64").toString())
-  } catch (e) {
+  } catch {
     return null
   }
 }
@@ -48,11 +59,12 @@ export const authOptions: any = {
             id: parsed.data.id || "",
             email: parsed.data.email || credentials.email,
             role: parsed.data.role || "",
+            parentId: parsed.data.parent_id || undefined,
+            organizerId: parsed.data.parent_id || parsed.data.id || "",
             accessToken: parsed.data.token,
             accessTokenExpires: decoded?.exp ? decoded.exp * 1000 : 0,
           }
-        } catch (error: any) {
-          console.error("Auth error:", error)
+        } catch {
           return null
         }
       },
@@ -64,6 +76,8 @@ export const authOptions: any = {
         token.id = user.id
         token.role = user.role
         token.email = user.email
+        token.parentId = user.parentId
+        token.organizerId = user.organizerId || user.id
         token.accessToken = user.accessToken
         token.accessTokenExpires = user.accessTokenExpires
       }
@@ -85,10 +99,11 @@ export const authOptions: any = {
         session.user.id = token.id
         session.user.role = token.role
         session.user.email = token.email
+        session.user.parentId = token.parentId
+        session.user.organizerId = token.organizerId || token.id
         session.accessToken = token.accessToken
         session.error = token.error
       }
-      console.log(token)
       return session
     },
   },

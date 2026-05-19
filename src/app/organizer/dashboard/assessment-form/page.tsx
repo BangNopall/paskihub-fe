@@ -1,6 +1,6 @@
 import React from "react"
 import { getServerSession } from "next-auth/next"
-import { authOptions } from "@/lib/auth"
+import { authOptions, getOrganizerUserId } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { profileService } from "@/services/profile.service"
 import { eoTeamService } from "@/services/eo-team.service"
@@ -13,7 +13,7 @@ export default async function AssessmentFormListPage() {
 
   const events = await profileService.getEventsByUserId(
     session.accessToken,
-    session.user.id
+    getOrganizerUserId(session)
   )
 
   if (!events || events.length === 0) {

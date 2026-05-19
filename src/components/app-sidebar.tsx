@@ -28,7 +28,6 @@ export function AppSidebar({
   user: {
     name: string
     email: string
-    avatar: string
   }
 }) {
   return (

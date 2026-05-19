@@ -61,6 +61,17 @@ function formatRupiah(amount: number) {
   }).format(amount)
 }
 
+function formatEventDateRange(openDate?: string, closeDate?: string) {
+  if (!openDate || !closeDate) {
+    return "-"
+  }
+
+  return `${format(new Date(openDate), "d MMMM yyyy")} s/d ${format(
+    new Date(closeDate),
+    "d MMMM yyyy"
+  )}`
+}
+
 function StatusBadge({ status }: { status: EventStatus }) {
   const isOpen = status === "OPEN"
   return (
@@ -76,14 +87,14 @@ function StatusBadge({ status }: { status: EventStatus }) {
   )
 }
 
-function PaymentBadge({ 
-  status, 
-  isKick, 
-  rejectionReason 
-}: { 
-  status: string, 
-  isKick?: boolean, 
-  rejectionReason?: string | null 
+function PaymentBadge({
+  status,
+  isKick,
+  rejectionReason,
+}: {
+  status: string
+  isKick?: boolean
+  rejectionReason?: string | null
 }) {
   if (isKick || status === "KICKED") {
     return (
@@ -93,8 +104,9 @@ function PaymentBadge({
             Dikeluarkan
           </span>
         </div>
-        <span className="max-w-[180px] text-center font-poppins text-[10px] text-red-500 line-clamp-2">
-          Anda telah dikeluarkan dari event ini. Silakan daftar kembali jika diperlukan.
+        <span className="line-clamp-2 max-w-[180px] text-center font-poppins text-[10px] text-red-500">
+          Anda telah dikeluarkan dari event ini. Silakan daftar kembali jika
+          diperlukan.
         </span>
       </div>
     )
@@ -130,7 +142,7 @@ function PaymentBadge({
         </span>
       </div>
       {status === "REJECTED" && rejectionReason && (
-        <span className="max-w-[180px] text-center font-poppins text-[10px] text-red-500 line-clamp-2 italic">
+        <span className="line-clamp-2 max-w-[180px] text-center font-poppins text-[10px] text-red-500 italic">
           "{rejectionReason}"
         </span>
       )}
@@ -260,12 +272,14 @@ export default function MyEventClient({
 
     // 1. Check if team is already registered for this event (and not kicked)
     const existingRegistration = initialActiveEvents.find(
-      (ae) => 
-        ae.event_name === selectedEventToRegister.name && 
-        ae.team_name === myTeams.find(t => t.id === selectedTeamId)?.name &&
-        !ae.is_kick && 
+      (ae) =>
+        ae.event_name === selectedEventToRegister.name &&
+        ae.team_name === myTeams.find((t) => t.id === selectedTeamId)?.name &&
+        !ae.is_kick &&
         ae.payment_status !== "KICKED" &&
-        (ae.payment_status === "WAITING" || ae.payment_status === "DP_PAID" || ae.payment_status === "FULL_PAID")
+        (ae.payment_status === "WAITING" ||
+          ae.payment_status === "DP_PAID" ||
+          ae.payment_status === "FULL_PAID")
     )
 
     if (existingRegistration) {
@@ -275,12 +289,17 @@ export default function MyEventClient({
     }
 
     // 2. Validate member count
-    const selectedTeam = myTeams.find(t => t.id === selectedTeamId)
+    const selectedTeam = myTeams.find((t) => t.id === selectedTeamId)
     if (selectedTeam) {
       const minMembers = selectedEventToRegister.min_team_members || 0
       const maxMembers = selectedEventToRegister.max_team_members || 999
-      if (selectedTeam.members_count < minMembers || selectedTeam.members_count > maxMembers) {
-        alert(`Jumlah anggota tim (${selectedTeam.members_count}) tidak sesuai dengan syarat event (${minMembers}-${maxMembers} anggota).`)
+      if (
+        selectedTeam.members_count < minMembers ||
+        selectedTeam.members_count > maxMembers
+      ) {
+        alert(
+          `Jumlah anggota tim (${selectedTeam.members_count}) tidak sesuai dengan syarat event (${minMembers}-${maxMembers} anggota).`
+        )
         setIsSubmitting(false)
         return
       }
@@ -456,7 +475,10 @@ export default function MyEventClient({
                         <div className="flex items-center gap-3">
                           <Calendar className="h-4 w-4 shrink-0 text-neutral-500" />
                           <span className="font-poppins text-sm text-neutral-600">
-                            {format(new Date(event.open_date), "d MMMM yyyy")} s/d {format(new Date(event.close_date), "d MMMM yyyy")}
+                            {formatEventDateRange(
+                              event.open_date,
+                              event.close_date
+                            )}
                           </span>
                         </div>
                         <div className="flex items-center gap-3">
@@ -557,8 +579,8 @@ export default function MyEventClient({
                               </TableCell>
                               <TableCell className="p-4">
                                 <div className="flex justify-center">
-                                  <PaymentBadge 
-                                    status={event.payment_status} 
+                                  <PaymentBadge
+                                    status={event.payment_status}
                                     isKick={event.is_kick}
                                     rejectionReason={event.rejection_reason}
                                   />
@@ -567,38 +589,54 @@ export default function MyEventClient({
                               <TableCell className="p-4">
                                 <div className="flex justify-center gap-2">
                                   {(event.payment_status === "FULL_PAID" ||
-                                    event.payment_status === "DP_PAID") && !event.is_kick && (
-                                    <Button
-                                      onClick={() =>
-                                        handleDashboardAction(
-                                          event.registration_id
-                                        )
-                                      }
-                                      className="h-9 rounded-lg bg-blue-500 px-4 text-xs font-semibold text-white hover:bg-blue-600"
-                                    >
-                                      Overview
-                                    </Button>
-                                  )}
-                                  {(event.payment_status === "REJECTED" || event.payment_status === "KICKED" || event.is_kick) && (
+                                    event.payment_status === "DP_PAID") &&
+                                    !event.is_kick && (
+                                      <Button
+                                        onClick={() =>
+                                          handleDashboardAction(
+                                            event.registration_id
+                                          )
+                                        }
+                                        className="h-9 rounded-lg bg-blue-500 px-4 text-xs font-semibold text-white hover:bg-blue-600"
+                                      >
+                                        Overview
+                                      </Button>
+                                    )}
+                                  {(event.payment_status === "REJECTED" ||
+                                    event.payment_status === "KICKED" ||
+                                    event.is_kick) && (
                                     <Button
                                       onClick={() => {
-                                        if (event.is_kick || event.payment_status === "KICKED") {
-                                          const matchedEvent = initialOpenEvents.find(e => e.name === event.event_name)
-                                          if (matchedEvent) handleOpenRegistrationModal(matchedEvent)
+                                        if (
+                                          event.is_kick ||
+                                          event.payment_status === "KICKED"
+                                        ) {
+                                          const matchedEvent =
+                                            initialOpenEvents.find(
+                                              (e) => e.name === event.event_name
+                                            )
+                                          if (matchedEvent)
+                                            handleOpenRegistrationModal(
+                                              matchedEvent
+                                            )
                                         } else {
                                           handleReupload(event)
                                         }
                                       }}
                                       className="h-9 rounded-lg bg-red-500 px-4 text-xs font-semibold text-white hover:bg-red-600"
                                     >
-                                      {event.is_kick || event.payment_status === "KICKED" ? "Daftar Ulang" : "Upload Ulang"}
+                                      {event.is_kick ||
+                                      event.payment_status === "KICKED"
+                                        ? "Daftar Ulang"
+                                        : "Upload Ulang"}
                                     </Button>
                                   )}
-                                  {event.payment_status === "WAITING" && !event.is_kick && (
-                                    <span className="font-poppins text-sm font-bold text-neutral-400">
-                                      -
-                                    </span>
-                                  )}
+                                  {event.payment_status === "WAITING" &&
+                                    !event.is_kick && (
+                                      <span className="font-poppins text-sm font-bold text-neutral-400">
+                                        -
+                                      </span>
+                                    )}
                                 </div>
                               </TableCell>
                             </TableRow>
@@ -648,45 +686,58 @@ export default function MyEventClient({
                         </div>
                       </div>
                       <div className="flex flex-col gap-3">
-                        <PaymentBadge 
-                          status={event.payment_status} 
+                        <PaymentBadge
+                          status={event.payment_status}
                           isKick={event.is_kick}
                           rejectionReason={event.rejection_reason}
                         />
                         <div className="pt-2">
                           {(event.payment_status === "FULL_PAID" ||
-                            event.payment_status === "DP_PAID") && !event.is_kick && (
-                            <Button
-                              onClick={() =>
-                                handleDashboardAction(event.registration_id)
-                              }
-                              className="h-10 w-full rounded-lg bg-blue-500 text-sm font-semibold text-white hover:bg-blue-600"
-                            >
-                              Dashboard Event
-                            </Button>
-                          )}
-                          {(event.payment_status === "REJECTED" || event.payment_status === "KICKED" || event.is_kick) && (
+                            event.payment_status === "DP_PAID") &&
+                            !event.is_kick && (
+                              <Button
+                                onClick={() =>
+                                  handleDashboardAction(event.registration_id)
+                                }
+                                className="h-10 w-full rounded-lg bg-blue-500 text-sm font-semibold text-white hover:bg-blue-600"
+                              >
+                                Dashboard Event
+                              </Button>
+                            )}
+                          {(event.payment_status === "REJECTED" ||
+                            event.payment_status === "KICKED" ||
+                            event.is_kick) && (
                             <Button
                               onClick={() => {
-                                if (event.is_kick || event.payment_status === "KICKED") {
-                                  const matchedEvent = initialOpenEvents.find(e => e.name === event.event_name)
-                                  if (matchedEvent) handleOpenRegistrationModal(matchedEvent)
+                                if (
+                                  event.is_kick ||
+                                  event.payment_status === "KICKED"
+                                ) {
+                                  const matchedEvent = initialOpenEvents.find(
+                                    (e) => e.name === event.event_name
+                                  )
+                                  if (matchedEvent)
+                                    handleOpenRegistrationModal(matchedEvent)
                                 } else {
                                   handleReupload(event)
                                 }
                               }}
                               className="h-10 w-full rounded-lg bg-red-500 text-sm font-semibold text-white hover:bg-red-600"
                             >
-                              {event.is_kick || event.payment_status === "KICKED" ? "Daftar Ulang (Pendaftaran Baru)" : "Upload Ulang Bukti"}
+                              {event.is_kick ||
+                              event.payment_status === "KICKED"
+                                ? "Daftar Ulang (Pendaftaran Baru)"
+                                : "Upload Ulang Bukti"}
                             </Button>
                           )}
-                          {event.payment_status === "WAITING" && !event.is_kick && (
-                            <div className="flex h-10 w-full items-center justify-center rounded-lg bg-neutral-100">
-                              <span className="font-poppins text-xs font-medium text-neutral-500">
-                                Menunggu Tindakan Admin
-                              </span>
-                            </div>
-                          )}
+                          {event.payment_status === "WAITING" &&
+                            !event.is_kick && (
+                              <div className="flex h-10 w-full items-center justify-center rounded-lg bg-neutral-100">
+                                <span className="font-poppins text-xs font-medium text-neutral-500">
+                                  Menunggu Tindakan Admin
+                                </span>
+                              </div>
+                            )}
                         </div>
                       </div>
                     </div>
@@ -701,7 +752,7 @@ export default function MyEventClient({
           open={isRegistrationModalOpen}
           onOpenChange={setIsRegistrationModalOpen}
         >
-          <DialogContent className="max-h-[90vh] w-full max-w-2xl gap-0 overflow-y-auto rounded-xl p-0 sm:rounded-3xl border-none">
+          <DialogContent className="max-h-[90vh] w-full max-w-2xl gap-0 overflow-y-auto rounded-xl border-none p-0 sm:rounded-3xl">
             <DialogTitle className="sr-only">
               {selectedEventToRegister?.name ?? "Pendaftaran Event"}
             </DialogTitle>
@@ -720,11 +771,11 @@ export default function MyEventClient({
                     </div>
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                  <div className="absolute bottom-6 left-6 right-6 sm:bottom-10 sm:left-10">
+                  <div className="absolute right-6 bottom-6 left-6 sm:bottom-10 sm:left-10">
                     <h3 className="font-montserrat text-xl font-bold text-white sm:text-2xl">
                       {selectedEventToRegister.name}
                     </h3>
-                    <p className="font-poppins text-sm text-sky-100 line-clamp-1">
+                    <p className="line-clamp-1 font-poppins text-sm text-sky-100">
                       {selectedEventToRegister.organizer}
                     </p>
                   </div>
@@ -734,15 +785,27 @@ export default function MyEventClient({
                   <div className="flex flex-col gap-4 rounded-2xl border border-sky-100 bg-sky-50/50 p-5 sm:p-6">
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
                       <div className="flex flex-col gap-1.5">
-                        <Label className="flex items-center gap-2 font-poppins text-xs font-semibold text-neutral-500 uppercase tracking-wider">
+                        <Label className="flex items-center gap-2 font-poppins text-xs font-semibold tracking-wider text-neutral-500 uppercase">
                           <Calendar className="h-3.5 w-3.5" /> Tanggal
                         </Label>
                         <span className="font-poppins text-sm font-medium text-neutral-800">
-                          {format(new Date(selectedEventToRegister.open_date || new Date()), "d MMMM yyyy")} - {format(new Date(selectedEventToRegister.close_date || new Date()), "d MMMM yyyy")}
+                          {format(
+                            new Date(
+                              selectedEventToRegister.open_date || new Date()
+                            ),
+                            "d MMMM yyyy"
+                          )}{" "}
+                          -{" "}
+                          {format(
+                            new Date(
+                              selectedEventToRegister.close_date || new Date()
+                            ),
+                            "d MMMM yyyy"
+                          )}
                         </span>
                       </div>
                       <div className="flex flex-col gap-1.5">
-                        <Label className="flex items-center gap-2 font-poppins text-xs font-semibold text-neutral-500 uppercase tracking-wider">
+                        <Label className="flex items-center gap-2 font-poppins text-xs font-semibold tracking-wider text-neutral-500 uppercase">
                           <MapPin className="h-3.5 w-3.5" /> Lokasi
                         </Label>
                         <span className="font-poppins text-sm font-medium text-neutral-800">
@@ -755,12 +818,13 @@ export default function MyEventClient({
 
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
                       <div className="flex flex-col gap-1.5">
-                        <Label className="flex items-center gap-2 font-poppins text-xs font-semibold text-neutral-500 uppercase tracking-wider">
+                        <Label className="flex items-center gap-2 font-poppins text-xs font-semibold tracking-wider text-neutral-500 uppercase">
                           <Banknote className="h-3.5 w-3.5" /> Pembayaran
                         </Label>
                         <div className="flex flex-col">
                           <span className="font-poppins text-sm font-bold text-blue-600">
-                            {selectedEventToRegister.bank_name || "-"}: {selectedEventToRegister.bank_number || "-"}
+                            {selectedEventToRegister.bank_name || "-"}:{" "}
+                            {selectedEventToRegister.bank_number || "-"}
                           </span>
                           <span className="font-poppins text-[10px] text-neutral-400">
                             A/N: {selectedEventToRegister.organizer}
@@ -768,14 +832,14 @@ export default function MyEventClient({
                         </div>
                       </div>
                       <div className="flex flex-col gap-1.5">
-                        <Label className="flex items-center gap-2 font-poppins text-xs font-semibold text-neutral-500 uppercase tracking-wider">
+                        <Label className="flex items-center gap-2 font-poppins text-xs font-semibold tracking-wider text-neutral-500 uppercase">
                           <AlertCircle className="h-3.5 w-3.5" /> Kontak (PJ)
                         </Label>
                         <div className="flex flex-col">
                           <span className="font-poppins text-sm font-medium text-neutral-800">
                             {selectedEventToRegister.name_pj || "-"}
                           </span>
-                          <span className="font-poppins text-xs text-blue-500 font-semibold">
+                          <span className="font-poppins text-xs font-semibold text-blue-500">
                             {selectedEventToRegister.no_wa_pj || "-"}
                           </span>
                         </div>
@@ -788,45 +852,70 @@ export default function MyEventClient({
                       <Label className="font-poppins text-sm font-semibold text-neutral-800">
                         Pilih Tim <span className="text-red-500">*</span>
                       </Label>
-                      <span className="font-poppins text-[10px] font-medium text-neutral-400 bg-neutral-100 px-2 py-0.5 rounded-full">
-                        Syarat: {selectedEventToRegister.min_team_members}-{selectedEventToRegister.max_team_members} Anggota
+                      <span className="rounded-full bg-neutral-100 px-2 py-0.5 font-poppins text-[10px] font-medium text-neutral-400">
+                        Syarat: {selectedEventToRegister.min_team_members}-
+                        {selectedEventToRegister.max_team_members} Anggota
                       </span>
                     </div>
                     <Select
                       value={selectedTeamId}
                       onValueChange={setSelectedTeamId}
                     >
-                      <SelectTrigger className="h-12 w-full rounded-xl border-neutral-200 bg-white px-4 font-poppins text-sm text-neutral-700 shadow-sm focus:ring-blue-100 transition-all">
+                      <SelectTrigger className="h-12 w-full rounded-xl border-neutral-200 bg-white px-4 font-poppins text-sm text-neutral-700 shadow-sm transition-all focus:ring-blue-100">
                         <SelectValue placeholder="Pilih tim untuk event ini" />
                       </SelectTrigger>
                       <SelectContent className="rounded-xl border-sky-100 shadow-lg">
                         {myTeams.map((team) => {
                           const isAlreadyInEvent = initialActiveEvents.some(
-                            (ae) => 
-                              ae.event_name === selectedEventToRegister.name && 
+                            (ae) =>
+                              ae.event_name === selectedEventToRegister.name &&
                               ae.team_name === team.name &&
                               !ae.is_kick &&
                               ae.payment_status !== "KICKED" &&
-                              (ae.payment_status === "WAITING" || ae.payment_status === "DP_PAID" || ae.payment_status === "FULL_PAID")
+                              (ae.payment_status === "WAITING" ||
+                                ae.payment_status === "DP_PAID" ||
+                                ae.payment_status === "FULL_PAID")
                           )
 
-                          const minMembers = selectedEventToRegister.min_team_members || 0
-                          const maxMembers = selectedEventToRegister.max_team_members || 999
-                          const isInvalidSize = team.members_count < minMembers || team.members_count > maxMembers
+                          const minMembers =
+                            selectedEventToRegister.min_team_members || 0
+                          const maxMembers =
+                            selectedEventToRegister.max_team_members || 999
+                          const isInvalidSize =
+                            team.members_count < minMembers ||
+                            team.members_count > maxMembers
 
                           return (
-                            <SelectItem 
-                              key={team.id} 
-                              value={team.id} 
+                            <SelectItem
+                              key={team.id}
+                              value={team.id}
                               disabled={isAlreadyInEvent}
-                              className="font-poppins text-sm py-3 focus:bg-sky-50"
+                              className="py-3 font-poppins text-sm focus:bg-sky-50"
                             >
                               <div className="flex flex-col">
-                                <span className={isAlreadyInEvent ? "text-neutral-400" : isInvalidSize ? "text-red-500" : ""}>
-                                  {team.name} {isAlreadyInEvent ? "(Sudah Terdaftar)" : isInvalidSize ? "(Anggota Tidak Sesuai)" : ""}
+                                <span
+                                  className={
+                                    isAlreadyInEvent
+                                      ? "text-neutral-400"
+                                      : isInvalidSize
+                                        ? "text-red-500"
+                                        : ""
+                                  }
+                                >
+                                  {team.name}{" "}
+                                  {isAlreadyInEvent
+                                    ? "(Sudah Terdaftar)"
+                                    : isInvalidSize
+                                      ? "(Anggota Tidak Sesuai)"
+                                      : ""}
                                 </span>
-                                <span className={`text-[10px] ${isInvalidSize ? "text-red-400" : "text-neutral-400"}`}>
-                                  Anggota: {team.members_count} orang {isInvalidSize ? `(Butuh ${minMembers}-${maxMembers})` : ""}
+                                <span
+                                  className={`text-[10px] ${isInvalidSize ? "text-red-400" : "text-neutral-400"}`}
+                                >
+                                  Anggota: {team.members_count} orang{" "}
+                                  {isInvalidSize
+                                    ? `(Butuh ${minMembers}-${maxMembers})`
+                                    : ""}
                                 </span>
                               </div>
                             </SelectItem>
@@ -834,24 +923,31 @@ export default function MyEventClient({
                         })}
                       </SelectContent>
                     </Select>
-                    
-                    {selectedTeamId && (() => {
-                      const team = myTeams.find(t => t.id === selectedTeamId)
-                      const min = selectedEventToRegister.min_team_members || 0
-                      const max = selectedEventToRegister.max_team_members || 999
-                      const count = team?.members_count || 0
-                      if (count < min || count > max) {
-                        return (
-                          <div className="flex items-center gap-2 rounded-lg bg-red-50 p-3 text-red-600">
-                            <AlertCircle className="h-4 w-4 shrink-0" />
-                            <p className="font-poppins text-xs font-medium">
-                              Tim ini tidak bisa didaftarkan karena jumlah anggota ({count}) tidak memenuhi syarat ({min}-{max}).
-                            </p>
-                          </div>
+
+                    {selectedTeamId &&
+                      (() => {
+                        const team = myTeams.find(
+                          (t) => t.id === selectedTeamId
                         )
-                      }
-                      return null
-                    })()}
+                        const min =
+                          selectedEventToRegister.min_team_members || 0
+                        const max =
+                          selectedEventToRegister.max_team_members || 999
+                        const count = team?.members_count || 0
+                        if (count < min || count > max) {
+                          return (
+                            <div className="flex items-center gap-2 rounded-lg bg-red-50 p-3 text-red-600">
+                              <AlertCircle className="h-4 w-4 shrink-0" />
+                              <p className="font-poppins text-xs font-medium">
+                                Tim ini tidak bisa didaftarkan karena jumlah
+                                anggota ({count}) tidak memenuhi syarat ({min}-
+                                {max}).
+                              </p>
+                            </div>
+                          )
+                        }
+                        return null
+                      })()}
 
                     <p className="mt-1 font-poppins text-xs text-neutral-400">
                       Jika belum buat tim atau ingin daftar dengan tim baru,{" "}
@@ -866,7 +962,8 @@ export default function MyEventClient({
 
                   <div className="flex flex-col gap-3">
                     <Label className="font-poppins text-sm font-semibold text-neutral-800">
-                      Pilih Jenis Pembayaran <span className="text-red-500">*</span>
+                      Pilih Jenis Pembayaran{" "}
+                      <span className="text-red-500">*</span>
                     </Label>
                     <RadioGroup
                       value={paymentType}
@@ -935,7 +1032,7 @@ export default function MyEventClient({
                     />
                     <div
                       onClick={() => fileInputRef.current?.click()}
-                      className={`group flex cursor-pointer flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed transition-all p-6 ${paymentProof ? "border-green-300 bg-green-50/50" : "border-neutral-200 bg-neutral-50/50 hover:border-blue-300 hover:bg-blue-50/30"}`}
+                      className={`group flex cursor-pointer flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed p-6 transition-all ${paymentProof ? "border-green-300 bg-green-50/50" : "border-neutral-200 bg-neutral-50/50 hover:border-blue-300 hover:bg-blue-50/30"}`}
                     >
                       {paymentProof ? (
                         <>
@@ -946,7 +1043,7 @@ export default function MyEventClient({
                             <p className="max-w-[240px] truncate font-poppins text-sm font-semibold text-neutral-800">
                               {paymentProof.name}
                             </p>
-                            <p className="font-poppins text-[10px] text-green-600 font-medium">
+                            <p className="font-poppins text-[10px] font-medium text-green-600">
                               Klik untuk mengganti file
                             </p>
                           </div>
@@ -976,13 +1073,17 @@ export default function MyEventClient({
                     <Button
                       type="submit"
                       disabled={
-                        isSubmitting || 
-                        !selectedTeamId || 
+                        isSubmitting ||
+                        !selectedTeamId ||
                         !paymentProof ||
                         (() => {
-                          const team = myTeams.find(t => t.id === selectedTeamId)
-                          const min = selectedEventToRegister.min_team_members || 0
-                          const max = selectedEventToRegister.max_team_members || 999
+                          const team = myTeams.find(
+                            (t) => t.id === selectedTeamId
+                          )
+                          const min =
+                            selectedEventToRegister.min_team_members || 0
+                          const max =
+                            selectedEventToRegister.max_team_members || 999
                           const count = team?.members_count || 0
                           return count < min || count > max
                         })()

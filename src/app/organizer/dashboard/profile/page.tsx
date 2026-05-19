@@ -24,15 +24,13 @@ export default async function OrganizerProfilePage() {
 
   try {
     // Fetch initial data in parallel
-    const [profileRes, staffRes] = await Promise.all([
+    const [profileRes] = await Promise.all([
       profileService.getEOProfile(session.accessToken),
-      profileService.getEOStaff(session.accessToken),
     ])
 
     return (
       <OrganizerProfileContent
         primaryEmail={profileRes.data.email}
-        initialStaff={staffRes.data || []}
       />
     )
   } catch (error) {

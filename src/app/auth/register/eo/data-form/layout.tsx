@@ -1,6 +1,6 @@
 import { getServerSession } from "next-auth/next"
 import { redirect } from "next/navigation"
-import { authOptions } from "@/lib/auth"
+import { authOptions, getOrganizerUserId } from "@/lib/auth"
 import { profileService } from "@/services/profile.service"
 
 export default async function EODataFormLayout({
@@ -13,7 +13,7 @@ export default async function EODataFormLayout({
 
   const response = await profileService.getEventsByUserId(
     session.accessToken,
-    session.user.id
+    getOrganizerUserId(session)
   )
   const events = response || []
 

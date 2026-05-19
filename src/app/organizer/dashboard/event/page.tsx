@@ -2,7 +2,7 @@ import React from "react"
 import Link from "next/link"
 import { ArrowLeft, AlertCircle } from "lucide-react"
 import { getServerSession } from "next-auth/next"
-import { authOptions } from "@/lib/auth"
+import { authOptions, getOrganizerUserId } from "@/lib/auth"
 import { profileService } from "@/services/profile.service"
 import OrganizerEventForm, {
   EventData,
@@ -26,7 +26,7 @@ export default async function OrganizerEventDetailPage() {
 
   const events = await profileService.getEventsByUserId(
     session.accessToken,
-    session.user.id
+    getOrganizerUserId(session)
   )
   const event = events.length > 0 ? events[0] : null
 
@@ -63,7 +63,7 @@ export default async function OrganizerEventDetailPage() {
   // Map API response to our EventData interface
   const initialData: EventData = {
     id: event.id,
-    user_id: session.user.id,
+    user_id: getOrganizerUserId(session),
     status: event.status || "DRAFT",
     name: event.name || null,
     organizer: event.organizer || null,

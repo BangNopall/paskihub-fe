@@ -42,6 +42,7 @@ export const loginResponseSchema = z.object({
     id: z.string().optional().or(z.literal("")),
     email: z.string().optional().or(z.literal("")),
     role: z.string().optional().or(z.literal("")),
+    parent_id: z.string().optional().nullable().or(z.literal("")),
     token: z.string(),
   }),
 })

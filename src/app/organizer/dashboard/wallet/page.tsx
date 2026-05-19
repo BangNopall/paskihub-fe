@@ -1,7 +1,7 @@
 import React from "react"
 import { Coins, Info, AlertCircle } from "lucide-react"
 import { getServerSession } from "next-auth/next"
-import { authOptions } from "@/lib/auth"
+import { authOptions, getOrganizerUserId } from "@/lib/auth"
 import { redirect } from "next/navigation"
 
 import { walletService } from "@/services/wallet.service"
@@ -32,7 +32,7 @@ export default async function WalletPage() {
   // Ambil event pertama user
   const events = await profileService.getEventsByUserId(
     session.accessToken,
-    session.user.id
+    getOrganizerUserId(session)
   )
   if (!events || events.length === 0) redirect("/auth/register/eo/data-form")
   const eventId = events[0].id

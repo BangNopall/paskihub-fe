@@ -92,6 +92,8 @@ export const AdminCreateSchema = z.object({
   password: z.string().min(8, "Password minimal 8 karakter"),
 })
 
+export type AdminCreateInput = z.infer<typeof AdminCreateSchema>
+
 export const AdminTransactionSchema = z.object({
   id: z.string().uuid(),
   eo_name: z.string(),
@@ -104,13 +106,10 @@ export const AdminTransactionSchema = z.object({
 })
 
 export const AdminTransactionListResponseSchema = z.object({
-  transactions: z
-    .array(AdminTransactionSchema)
-    .nullable()
-    .default([]),
-  total: z.number().nullable().default(0),
-  page: z.number().nullable().default(1),
-  limit: z.number().nullable().default(10),
+  transactions: z.array(AdminTransactionSchema).optional().default([]),
+  total: z.number().optional().default(0),
+  page: z.number().optional().default(1),
+  limit: z.number().optional().default(10),
 })
 
 export type AdminTransaction = z.infer<typeof AdminTransactionSchema>

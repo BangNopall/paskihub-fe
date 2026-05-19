@@ -1,7 +1,7 @@
 import React from "react"
 import Link from "next/link"
 import { getServerSession } from "next-auth/next"
-import { authOptions } from "@/lib/auth"
+import { authOptions, getOrganizerUserId } from "@/lib/auth"
 import { redirect, notFound } from "next/navigation"
 import { ArrowLeft, AlertCircle } from "lucide-react"
 
@@ -48,7 +48,7 @@ export default async function AssessmentFormDetailPage({
 
   const events = await profileService.getEventsByUserId(
     session.accessToken,
-    session.user.id
+    getOrganizerUserId(session)
   )
 
   if (!events || events.length === 0) {

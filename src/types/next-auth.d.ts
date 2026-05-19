@@ -4,6 +4,8 @@ declare module "next-auth" {
       id: string
       email: string
       role: string
+      parentId?: string
+      organizerId?: string
       name?: string
     }
     accessToken: string
@@ -13,6 +15,8 @@ declare module "next-auth" {
     id: string
     email: string
     role: string
+    parentId?: string
+    organizerId?: string
     name?: string
     accessToken: string
     accessTokenExpires: number
@@ -24,6 +28,8 @@ declare module "next-auth/jwt" {
     id: string
     role: string
     email: string
+    parentId?: string
+    organizerId?: string
     accessToken: string
     accessTokenExpires: number
     error?: "SessionExpired"

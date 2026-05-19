@@ -1,5 +1,5 @@
 import { getServerSession } from "next-auth/next"
-import { authOptions } from "@/lib/auth"
+import { authOptions, getOrganizerUserId } from "@/lib/auth"
 import { judgeService } from "@/services/judge.service"
 import { profileService } from "@/services/profile.service"
 import JudgeManagement from "@/components/organizer/judge-management"
@@ -27,7 +27,7 @@ export default async function OrganizerJuryPage() {
     // 1. Resolve EventID for this Organizer
     const events = await profileService.getEventsByUserId(
       session.accessToken,
-      session.user.id
+      getOrganizerUserId(session)
     )
 
     if (!events || events.length === 0) {

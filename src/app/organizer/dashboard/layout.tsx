@@ -14,65 +14,58 @@ import {
   User,
 } from "lucide-react"
 
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
+const sidebarNavItems = [
+  {
+    title: "Beranda",
+    url: "/organizer/dashboard/",
+    icon: <LayoutDashboardIcon />,
   },
-  navMain: [
-    {
-      title: "Beranda",
-      url: "/organizer/dashboard/",
-      icon: <LayoutDashboardIcon />,
-    },
-    {
-      title: "My Event",
-      url: "/organizer/dashboard/event",
-      icon: <ListIcon />,
-    },
-    {
-      title: "Profil",
-      url: "/organizer/dashboard/profile",
-      icon: <User />,
-    },
-    {
-      title: "Wallet",
-      url: "/organizer/dashboard/wallet",
-      icon: <Wallet />,
-    },
-    {
-      title: "Tim",
-      url: "/organizer/dashboard/team",
-      icon: <UsersIcon />,
-    },
-    {
-      title: "Data Juri",
-      url: "/organizer/dashboard/jury",
-      icon: <UsersRound />,
-    },
-    {
-      title: "Sistem Penilaian",
-      url: "/organizer/dashboard/assessment-system",
-      icon: <FolderIcon />,
-    },
-    {
-      title: "Sistem Juara",
-      url: "/organizer/dashboard/ranking-system",
-      icon: <TrophyIcon />,
-    },
-    {
-      title: "Form Penilaian",
-      url: "/organizer/dashboard/assessment-form",
-      icon: <FileText />,
-    },
-    {
-      title: "Rekap Nilai",
-      url: "/organizer/dashboard/score-recap",
-      icon: <FileChartColumnIcon />,
-    },
-  ],
-}
+  {
+    title: "My Event",
+    url: "/organizer/dashboard/event",
+    icon: <ListIcon />,
+  },
+  {
+    title: "Profil",
+    url: "/organizer/dashboard/profile",
+    icon: <User />,
+  },
+  {
+    title: "Wallet",
+    url: "/organizer/dashboard/wallet",
+    icon: <Wallet />,
+  },
+  {
+    title: "Tim",
+    url: "/organizer/dashboard/team",
+    icon: <UsersIcon />,
+  },
+  {
+    title: "Data Juri",
+    url: "/organizer/dashboard/jury",
+    icon: <UsersRound />,
+  },
+  {
+    title: "Sistem Penilaian",
+    url: "/organizer/dashboard/assessment-system",
+    icon: <FolderIcon />,
+  },
+  {
+    title: "Sistem Juara",
+    url: "/organizer/dashboard/ranking-system",
+    icon: <TrophyIcon />,
+  },
+  {
+    title: "Form Penilaian",
+    url: "/organizer/dashboard/assessment-form",
+    icon: <FileText />,
+  },
+  {
+    title: "Rekap Nilai",
+    url: "/organizer/dashboard/score-recap",
+    icon: <FileChartColumnIcon />,
+  },
+]
 
 const navMain = [
   {
@@ -111,7 +104,7 @@ const navMain = [
 
 import { getServerSession } from "next-auth/next"
 import { redirect } from "next/navigation"
-import { authOptions } from "@/lib/auth"
+import { authOptions, getOrganizerUserId } from "@/lib/auth"
 import { profileService } from "@/services/profile.service"
 
 export default async function DashboardOrganizerLayout({
@@ -124,7 +117,7 @@ export default async function DashboardOrganizerLayout({
 
   const response = await profileService.getEventsByUserId(
     session.accessToken,
-    session.user.id
+    getOrganizerUserId(session)
   )
   const events = response || []
 
@@ -157,7 +150,14 @@ export default async function DashboardOrganizerLayout({
         } as React.CSSProperties
       }
     >
-      <AppSidebar variant="inset" items={data.navMain} user={data.user} />
+      <AppSidebar
+        variant="inset"
+        items={sidebarNavItems}
+        user={{
+          name: session.user?.email?.split("@")[0] || "Organizer",
+          email: session.user?.email || "",
+        }}
+      />
       <SidebarInset className="overflow-hidden">
         <SiteHeader navMain={navMain} />
         <div className="h-full w-full bg-[url('/frame.png')] bg-cover bg-no-repeat">

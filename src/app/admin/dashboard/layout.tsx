@@ -11,41 +11,37 @@ import {
   ShieldCheck,
   User,
 } from "lucide-react"
+import { getServerSession } from "next-auth/next"
+import { redirect } from "next/navigation"
+import { authOptions } from "@/lib/auth"
 
-const data = {
-  user: {
-    name: "Super Admin",
-    email: "admin@paskihub.com",
-    avatar: "/avatars/admin.jpg",
+const navMain = [
+  {
+    title: "Overview",
+    url: "/admin/dashboard",
+    icon: <LayoutDashboardIcon />,
   },
-  navMain: [
-    {
-      title: "Overview",
-      url: "/admin/dashboard",
-      icon: <LayoutDashboardIcon />,
-    },
-    {
-      title: "Manajemen User",
-      url: "/admin/dashboard/users",
-      icon: <Users />,
-    },
-    {
-      title: "Kelola Admin",
-      url: "/admin/dashboard/admins",
-      icon: <ShieldCheck />,
-    },
-    {
-      title: "Transaksi Koin",
-      url: "/admin/dashboard/transactions",
-      icon: <CreditCard />,
-    },
-    {
-      title: "Konfigurasi",
-      url: "/admin/dashboard/settings",
-      icon: <Settings />,
-    },
-  ],
-}
+  {
+    title: "Manajemen User",
+    url: "/admin/dashboard/users",
+    icon: <Users />,
+  },
+  {
+    title: "Kelola Admin",
+    url: "/admin/dashboard/admins",
+    icon: <ShieldCheck />,
+  },
+  {
+    title: "Transaksi Koin",
+    url: "/admin/dashboard/transactions",
+    icon: <CreditCard />,
+  },
+  {
+    title: "Konfigurasi",
+    url: "/admin/dashboard/settings",
+    icon: <Settings />,
+  },
+]
 
 // Breadcrumb/Quick Nav for SiteHeader
 const navHeader = [
@@ -67,11 +63,19 @@ const navHeader = [
   },
 ]
 
-export default function SuperAdminLayout({
+export default async function SuperAdminLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const session: any = await getServerSession(authOptions)
+  if (!session) redirect("/auth/login")
+
+  const user = {
+    name: session.user?.email?.split("@")[0] || "Admin",
+    email: session.user?.email || "",
+  }
+
   return (
     <SidebarProvider
       style={
@@ -81,7 +85,7 @@ export default function SuperAdminLayout({
         } as React.CSSProperties
       }
     >
-      <AppSidebar variant="inset" items={data.navMain} user={data.user} />
+      <AppSidebar variant="inset" items={navMain} user={user} />
       <SidebarInset className="overflow-hidden">
         <SiteHeader navMain={navHeader} />
         <div className="h-full w-full bg-[url('/frame.png')] bg-cover bg-no-repeat">

@@ -2,13 +2,13 @@
 
 ## Context
 
-The admin dashboard page at `src/app/admin/dashboard/page.tsx` should render with SSR from a dedicated backend endpoint:
+The admin dashboard page at `src/app/admin/dashboard/page.tsx` renders with SSR from this backend endpoint:
 
 ```http
 GET /api/v1/admin/dashboard
 ```
 
-The current Swagger file does not expose this endpoint. Existing endpoints can provide some raw data, but they do not provide reliable aggregate values for the dashboard without fetching large lists and calculating totals in the frontend.
+The current Swagger file exposes this endpoint with `ApiKeyAuth` and `BearerAuth`.
 
 ## Current Frontend Needs
 
@@ -90,16 +90,16 @@ The current Swagger file does not expose this endpoint. Existing endpoints can p
 - `eo_registrations`: Latest organizer registrations.
 - `status`: Should use the existing transaction enum values: `PENDING`, `APPROVE`, `REJECTED`.
 
-## Existing Swagger Gaps
+## Swagger Status
 
-- No `GET /api/v1/admin/dashboard` endpoint exists.
-- `GET /api/v1/wallets/admin/transactions` provides recent transactions, but it is paginated list data, not dashboard aggregate data.
-- `GET /api/v1/admin/users` can provide organizer and participant lists, but counting dashboard totals from the frontend is not ideal for large datasets.
-- `total_revenue`, stat trends, and accurate total pending top-up count are not available as dedicated dashboard aggregate fields.
+- `GET /api/v1/admin/dashboard` exists and returns `dto.AdminDashboardRes`.
+- `dto.AdminDashboardRes.stats` returns `dto.AdminDashboardStats`.
+- `dto.AdminDashboardRes.recent_transactions` returns `dto.AdminDashboardTransactionRes[]`.
+- `dto.AdminDashboardRes.eo_registrations` returns `dto.AdminDashboardEORegistrationRes[]`.
 
-## Existing Swagger Mismatch To Review
+## Transaction Pagination Status
 
-The current frontend transaction schema expects top-level pagination fields:
+Swagger currently documents admin transaction pagination as:
 
 ```json
 {
@@ -110,16 +110,4 @@ The current frontend transaction schema expects top-level pagination fields:
 }
 ```
 
-Swagger currently documents:
-
-```json
-{
-  "transactions": [],
-  "pagination": {
-    "page": 1,
-    "total_pages": 1
-  }
-}
-```
-
-Please align either the backend response or the frontend schema before relying on transaction pagination totals for admin dashboard statistics.
+The frontend admin transaction schema now matches this shape.

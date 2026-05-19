@@ -39,8 +39,8 @@ export default withAuth(
         return NextResponse.redirect(new URL("/peserta/dashboard", req.url))
       }
 
-      // 1. Handle Auth Pages and Root Path
-      if (isAuthPage || pathname === "/") {
+      // 1. Handle Auth Pages (redirect to dashboard if already logged in)
+      if (isAuthPage) {
         return redirectToDashboard()
       }
 

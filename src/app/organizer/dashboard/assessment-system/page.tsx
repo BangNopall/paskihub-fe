@@ -1,6 +1,6 @@
 import { getServerSession } from "next-auth/next"
 import { redirect } from "next/navigation"
-import { authOptions } from "@/lib/auth"
+import { authOptions, getOrganizerUserId } from "@/lib/auth"
 import { profileService } from "@/services/profile.service"
 import { assessmentService } from "@/services/assessment.service"
 import AssessmentSystemClient from "./client-page"
@@ -21,7 +21,7 @@ export default async function AssessmentSystemPage(props: {
     // 1. Fetch Events for current Organizer
     const events = await profileService.getEventsByUserId(
       session.accessToken,
-      session.user.id
+      getOrganizerUserId(session)
     )
 
     if (!events || events.length === 0) {

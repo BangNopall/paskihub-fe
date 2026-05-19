@@ -1,7 +1,7 @@
 import React from "react"
 import { getServerSession } from "next-auth/next"
 import { redirect } from "next/navigation"
-import { authOptions } from "@/lib/auth"
+import { authOptions, getOrganizerUserId } from "@/lib/auth"
 import { profileService } from "@/services/profile.service"
 import { assessmentService } from "@/services/assessment.service"
 import { rankingService } from "@/services/ranking.service"
@@ -18,7 +18,7 @@ export default async function RankingSystemPage() {
   // 1. Ambil data event aktif (sama seperti layout)
   const events = await profileService.getEventsByUserId(
     session.accessToken,
-    session.user.id
+    getOrganizerUserId(session)
   )
   if (events.length === 0) redirect("/organizer/dashboard")
 

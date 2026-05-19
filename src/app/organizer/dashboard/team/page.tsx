@@ -1,6 +1,6 @@
 import React from "react"
 import { getServerSession } from "next-auth/next"
-import { authOptions } from "@/lib/auth"
+import { authOptions, getOrganizerUserId } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { profileService } from "@/services/profile.service"
 import { eoTeamService } from "@/services/eo-team.service"
@@ -15,7 +15,7 @@ export default async function OrganizerTeamListPage() {
   // 1. Get active event
   const userEvents = await profileService.getEventsByUserId(
     session.accessToken,
-    session.user.id
+    getOrganizerUserId(session)
   )
   if (!userEvents || userEvents.length === 0) {
     redirect("/auth/register/eo/data-form")
@@ -66,11 +66,7 @@ export default async function OrganizerTeamListPage() {
           </h1>
         </div>
 
-        <TeamListClient
-          initialTeams={teams}
-          stats={stats}
-          eventId={eventId}
-        />
+        <TeamListClient initialTeams={teams} stats={stats} eventId={eventId} />
       </div>
     </div>
   )

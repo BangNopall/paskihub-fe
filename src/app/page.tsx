@@ -1,8 +1,12 @@
+import { getServerSession } from "next-auth/next"
+import { authOptions } from "@/lib/auth"
 import Navbar from "@/components/ui/navbar"
 import HomePage from "./(home)/page"
 import Footer from "@/components/ui/footer"
 
-export default function Page() {
+export default async function Page() {
+  const session: any = await getServerSession(authOptions)
+
   const navigationData = [
     {
       title: "Home",
@@ -23,7 +27,7 @@ export default function Page() {
   ]
   return (
     <>
-      <Navbar navigationData={navigationData} />
+      <Navbar navigationData={navigationData} session={session} />
       <HomePage />
       <Footer />
     </>

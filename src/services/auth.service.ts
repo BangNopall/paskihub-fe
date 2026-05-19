@@ -52,6 +52,18 @@ export const authService = {
     return res.json()
   },
 
+  async logout(token: string) {
+    const res = await fetch(`${API_URL}/api/v1/users/logout`, {
+      method: "POST",
+      headers: {
+        "x-api-key": API_KEY || "",
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    if (!res.ok) throw new Error("Gagal logout")
+    return res.json()
+  },
+
   async verifyEmail(email: string, token: string) {
     const res = await fetch(
       `${API_URL}/api/v1/users/verify-email/${email}/${token}`,

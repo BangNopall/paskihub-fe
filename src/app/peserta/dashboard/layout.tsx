@@ -13,13 +13,7 @@ import {
   FileText,
 } from "lucide-react"
 
-const data = {
-  user: {
-    name: "nopal",
-    email: "nopal@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  navMain: [
+const sidebarNavItems = [
     {
       title: "Beranda",
       url: "/peserta/dashboard/",
@@ -40,8 +34,7 @@ const data = {
       url: "/peserta/dashboard/event",
       icon: <TrophyIcon />,
     },
-  ],
-}
+]
 
 const navMain = [
   {
@@ -123,7 +116,14 @@ export default async function DashboardPesertaLayout({
         } as React.CSSProperties
       }
     >
-      <AppSidebar variant="inset" items={data.navMain} user={data.user} />
+      <AppSidebar
+        variant="inset"
+        items={sidebarNavItems}
+        user={{
+          name: session.user?.email?.split("@")[0] || "Peserta",
+          email: session.user?.email || "",
+        }}
+      />
       <SidebarInset className="overflow-hidden">
         <SiteHeader navMain={navMain} />
         <div className="h-full w-full bg-[url('/frame.png')] bg-cover bg-no-repeat">

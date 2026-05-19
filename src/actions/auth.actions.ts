@@ -9,6 +9,8 @@ import {
   resetPasswordSchema,
   ResetPasswordFormData,
 } from "@/schemas/auth.schema"
+import { getServerSession } from "next-auth/next"
+import { authOptions } from "@/lib/auth"
 
 export async function registerAction(
   role: "ORGANIZER" | "PESERTA",
@@ -67,5 +69,18 @@ export async function verifyEmailAction(email: string, token: string) {
     return { success: true, message: "Email berhasil diverifikasi." }
   } catch (error: any) {
     return { success: false, message: error.message || "Verifikasi gagal" }
+  }
+}
+
+export async function logoutAction() {
+  try {
+    const session: any = await getServerSession(authOptions)
+    if (session?.accessToken) {
+      await authService.logout(session.accessToken)
+    }
+    return { success: true }
+  } catch {
+    // Tetap return success agar client-side signOut tetap jalan
+    return { success: true }
   }
 }

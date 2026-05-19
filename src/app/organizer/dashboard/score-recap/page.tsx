@@ -1,7 +1,7 @@
 import React from "react"
 import { AlertCircle } from "lucide-react"
 import { getServerSession } from "next-auth/next"
-import { authOptions } from "@/lib/auth"
+import { authOptions, getOrganizerUserId } from "@/lib/auth"
 import { profileService } from "@/services/profile.service"
 import { rankingService } from "@/services/ranking.service"
 import { rekapService } from "@/services/rekap.service"
@@ -25,7 +25,7 @@ export default async function ScoreRecapPage() {
   // 1. Get Event Data
   const events = await profileService.getEventsByUserId(
     session.accessToken,
-    session.user.id
+    getOrganizerUserId(session)
   )
   const event = events.length > 0 ? events[0] : null
 

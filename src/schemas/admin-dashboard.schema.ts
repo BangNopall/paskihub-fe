@@ -17,7 +17,7 @@ export const adminDashboardTransactionSchema = z.object({
 export const adminDashboardEORegistrationSchema = z.object({
   id: z.string(),
   name: z.string(),
-  email: z.string().email(),
+  email: z.string(),
   registered_at: z.string(),
 })
 
