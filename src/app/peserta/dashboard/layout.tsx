@@ -14,26 +14,26 @@ import {
 } from "lucide-react"
 
 const sidebarNavItems = [
-    {
-      title: "Beranda",
-      url: "/peserta/dashboard/",
-      icon: <LayoutDashboardIcon />,
-    },
-    {
-      title: "Profil",
-      url: "/peserta/dashboard/profile",
-      icon: <ListIcon />,
-    },
-    {
-      title: "My Team",
-      url: "/peserta/dashboard/team",
-      icon: <UsersIcon />,
-    },
-    {
-      title: "Events",
-      url: "/peserta/dashboard/event",
-      icon: <TrophyIcon />,
-    },
+  {
+    title: "Beranda",
+    url: "/peserta/dashboard/",
+    icon: <LayoutDashboardIcon />,
+  },
+  {
+    title: "Profil",
+    url: "/peserta/dashboard/profile",
+    icon: <ListIcon />,
+  },
+  {
+    title: "My Team",
+    url: "/peserta/dashboard/team",
+    icon: <UsersIcon />,
+  },
+  {
+    title: "Events",
+    url: "/peserta/dashboard/event",
+    icon: <TrophyIcon />,
+  },
 ]
 
 const navMain = [

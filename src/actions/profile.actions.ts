@@ -69,4 +69,3 @@ export async function updateEOPasswordAction(data: EOUpdatePasswordData) {
     return { success: false, message: error.message || "Terjadi kesalahan" }
   }
 }
-

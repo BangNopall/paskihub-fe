@@ -78,7 +78,10 @@ export async function updateEventStatusAction(eventId: string, status: string) {
     await adminService.updateEventStatus(eventId, status)
     return { success: true, message: "Status event berhasil diperbarui" }
   } catch (error: any) {
-    return { success: false, message: error.message || "Gagal memperbarui status event" }
+    return {
+      success: false,
+      message: error.message || "Gagal memperbarui status event",
+    }
   }
 }
 
@@ -88,16 +91,25 @@ export async function approveTransactionAction(transactionId: string) {
     revalidatePath("/admin/dashboard/transactions")
     return { success: true }
   } catch (error: any) {
-    return { success: false, message: error.message || "Gagal menyetujui transaksi" }
+    return {
+      success: false,
+      message: error.message || "Gagal menyetujui transaksi",
+    }
   }
 }
 
-export async function rejectTransactionAction(transactionId: string, reason: string) {
+export async function rejectTransactionAction(
+  transactionId: string,
+  reason: string
+) {
   try {
     await adminService.rejectTransaction(transactionId, reason)
     revalidatePath("/admin/dashboard/transactions")
     return { success: true }
   } catch (error: any) {
-    return { success: false, message: error.message || "Gagal menolak transaksi" }
+    return {
+      success: false,
+      message: error.message || "Gagal menolak transaksi",
+    }
   }
 }

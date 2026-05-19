@@ -26,15 +26,18 @@ export const profileService = {
         const mainEoId = profileRes?.data?.id || profileRes?.data?.user_id
 
         if (mainEoId && mainEoId !== userId) {
-          const staffRes = await fetch(`${API_URL}/api/v1/events/user/${mainEoId}`, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              "x-api-key": API_KEY || "",
-              Authorization: `Bearer ${token}`,
-            },
-            cache: "no-store",
-          })
+          const staffRes = await fetch(
+            `${API_URL}/api/v1/events/user/${mainEoId}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                "x-api-key": API_KEY || "",
+                Authorization: `Bearer ${token}`,
+              },
+              cache: "no-store",
+            }
+          )
           if (staffRes.ok) {
             const staffData = await staffRes.json()
             events = staffData.data || []
@@ -274,6 +277,4 @@ export const profileService = {
     }
     return res.json()
   },
-
-
 }

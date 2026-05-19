@@ -150,4 +150,3 @@ When asked to implement a feature or fix:
 - Mention files changed and verification results.
 - If verification cannot be run, say why.
 - Do not over-explain basic React or Next.js concepts unless asked.
-

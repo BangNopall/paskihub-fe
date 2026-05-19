@@ -76,7 +76,7 @@ function TransactionBadge({
               <TooltipTrigger asChild>
                 <button
                   type="button"
-                  className="text-red-400 outline-none transition-colors hover:text-red-600 focus:outline-none"
+                  className="text-red-400 transition-colors outline-none hover:text-red-600 focus:outline-none"
                 >
                   <Info className="h-4 w-4" />
                 </button>
@@ -182,7 +182,9 @@ export function WalletTransactionTable({
                         <TableCell
                           className={cn(
                             "py-4 text-center font-semibold",
-                            tx.amount_koin > 0 ? "text-green-500" : "text-red-500"
+                            tx.amount_koin > 0
+                              ? "text-green-500"
+                              : "text-red-500"
                           )}
                         >
                           {tx.amount_koin > 0

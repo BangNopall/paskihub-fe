@@ -34,8 +34,6 @@ export const eoUpdatePasswordSchema = z
     path: ["confirm_password"],
   })
 
-
-
 export const pesertaUpdatePasswordSchema = z
   .object({
     old_password: z.string().min(8, "Password lama minimal 8 karakter"),

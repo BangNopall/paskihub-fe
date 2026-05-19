@@ -251,9 +251,8 @@ export default function TeamListClient({
                 <Filter className="mr-2 h-4 w-4" />{" "}
                 {filterStatus === "Semua"
                   ? "Semua Status"
-                  : statusFilter.find(
-                      (opt) => opt.value === filterStatus
-                    )?.label}
+                  : statusFilter.find((opt) => opt.value === filterStatus)
+                      ?.label}
               </div>
               <ChevronDown className="ml-2 h-4 w-4" />
             </Button>

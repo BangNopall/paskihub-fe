@@ -13,6 +13,7 @@
 ### Task 1: Update Participant Event DTOs
 
 **Files:**
+
 - Modify: `domain/dto/participant_event_dto.go`
 
 - [ ] **Step 1: Add new fields to `OpenEventResponse` and `ActiveEventResponse`**
@@ -60,11 +61,13 @@ git commit -m "feat: add missing fields to participant event response DTOs"
 ### Task 2: Update Participant Event Service
 
 **Files:**
+
 - Modify: `internal/app/participant_event/service/participant_event_impl.go`
 
 - [ ] **Step 1: Populate new fields in `GetOpenEvents` and `GetActiveEvents`**
 
 In `GetOpenEvents`:
+
 ```go
 		oev := dto.OpenEventResponse{
 			Id:             ev.Id.String(),
@@ -87,6 +90,7 @@ In `GetOpenEvents`:
 ```
 
 In `GetActiveEvents`:
+
 ```go
 	for _, r := range registrations {
 		res = append(res, dto.ActiveEventResponse{
@@ -112,6 +116,7 @@ git commit -m "feat: populate new fields in participant event service"
 ### Task 3: Update Participant Team DTO
 
 **Files:**
+
 - Modify: `domain/dto/participant_team_dto.go`
 
 - [ ] **Step 1: Add `MembersCount` to `ParticipantTeamResponse`**
@@ -138,6 +143,7 @@ git commit -m "feat: add MembersCount to ParticipantTeamResponse DTO"
 ### Task 4: Update Participant Team Service
 
 **Files:**
+
 - Modify: `internal/app/participant_team/service/participant_team_impl.go`
 
 - [ ] **Step 1: Populate `MembersCount` in `GetTeams`**

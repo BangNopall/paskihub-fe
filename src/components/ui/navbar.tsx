@@ -70,10 +70,7 @@ const Navbar = ({
     if (!session) {
       return (
         <Link href="/auth/login">
-          <Button
-            variant="secondary"
-            className="px-7 py-4 leading-6 font-bold"
-          >
+          <Button variant="secondary" className="px-7 py-4 leading-6 font-bold">
             Masuk
           </Button>
         </Link>
@@ -100,10 +97,7 @@ const Navbar = ({
 
     return (
       <Link href={getDashboardUrl()}>
-        <Button
-          variant="secondary"
-          className="px-7 py-4 leading-6 font-bold"
-        >
+        <Button variant="secondary" className="px-7 py-4 leading-6 font-bold">
           Dashboard
         </Button>
       </Link>
@@ -158,5 +152,3 @@ const Navbar = ({
 }
 
 export default Navbar
-
-

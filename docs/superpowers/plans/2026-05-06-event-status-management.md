@@ -4,7 +4,8 @@
 
 **Goal:** Add a dedicated "Status Event" section to `OrganizerEventForm` with manual controls for DRAFT, OPEN, CLOSED, and automatic recommendation logic. ARCHIVED events will be read-only.
 
-**Architecture:** 
+**Architecture:**
+
 - Centralize status options in `constants.ts`.
 - Implement status calculation logic (recommended vs actual) within `OrganizerEventForm`.
 - Add a "Sync" mechanism for automatic status updates based on dates.
@@ -17,24 +18,46 @@
 ### Task 1: Add Status Constants
 
 **Files:**
+
 - Modify: `src/lib/constants.ts`
 
 - [ ] **Step 1: Add EVENT_STATUS_OPTIONS and helper**
 
 ```typescript
 export const EVENT_STATUS_OPTIONS = [
-  { value: "DRAFT", label: "Draft", color: "bg-slate-100 text-slate-600 border-slate-200" },
-  { value: "OPEN", label: "Open", color: "bg-green-100 text-green-600 border-green-200" },
-  { value: "CLOSED", label: "Closed", color: "bg-red-100 text-red-600 border-red-200" },
-  { value: "ARCHIVED", label: "Archived", color: "bg-gray-100 text-gray-500 border-gray-200" },
+  {
+    value: "DRAFT",
+    label: "Draft",
+    color: "bg-slate-100 text-slate-600 border-slate-200",
+  },
+  {
+    value: "OPEN",
+    label: "Open",
+    color: "bg-green-100 text-green-600 border-green-200",
+  },
+  {
+    value: "CLOSED",
+    label: "Closed",
+    color: "bg-red-100 text-red-600 border-red-200",
+  },
+  {
+    value: "ARCHIVED",
+    label: "Archived",
+    color: "bg-gray-100 text-gray-500 border-gray-200",
+  },
 ] as const
 
 export function getStatusStyle(status: string) {
-  return EVENT_STATUS_OPTIONS.find((opt) => opt.value === status)?.color || "bg-slate-100 text-slate-600"
+  return (
+    EVENT_STATUS_OPTIONS.find((opt) => opt.value === status)?.color ||
+    "bg-slate-100 text-slate-600"
+  )
 }
 
 export function getStatusLabel(status: string) {
-  return EVENT_STATUS_OPTIONS.find((opt) => opt.value === status)?.label || status
+  return (
+    EVENT_STATUS_OPTIONS.find((opt) => opt.value === status)?.label || status
+  )
 }
 ```
 
@@ -50,6 +73,7 @@ git commit -m "feat: add event status constants and helpers"
 ### Task 2: Implement Status Calculation Logic
 
 **Files:**
+
 - Modify: `src/components/organizer/event-form.tsx`
 
 - [ ] **Step 1: Add calculation functions**
@@ -62,7 +86,7 @@ const getRecommendedStatus = (data: EventData): string => {
   const openDate = new Date(data.open_date)
   const closeDate = new Date(data.close_date)
   const compeDate = new Date(data.compe_date)
-  
+
   // ARCHIVED: 14 days after compe_date
   const archiveDate = new Date(compeDate)
   archiveDate.setDate(archiveDate.getDate() + 14)
@@ -90,21 +114,22 @@ git commit -m "feat: implement status calculation logic"
 ### Task 3: Add Status Section UI
 
 **Files:**
+
 - Modify: `src/components/organizer/event-form.tsx`
 
 - [ ] **Step 1: Define StatusSection sub-component**
 
 ```typescript
-function StatusSection({ 
-  status, 
-  recommended, 
-  isEditing, 
-  onStatusChange, 
-  onSync 
-}: { 
-  status: string, 
-  recommended: string, 
-  isEditing: boolean, 
+function StatusSection({
+  status,
+  recommended,
+  isEditing,
+  onStatusChange,
+  onSync
+}: {
+  status: string,
+  recommended: string,
+  isEditing: boolean,
   onStatusChange: (val: string) => void,
   onSync: () => void
 }) {
@@ -147,9 +172,9 @@ function StatusSection({
               Rekomendasi sistem: <strong className="font-bold">{getStatusLabel(recommended)}</strong> berdasarkan jadwal yang diatur.
             </span>
           </div>
-          <Button 
-            variant="outline" 
-            size="sm" 
+          <Button
+            variant="outline"
+            size="sm"
             onClick={onSync}
             className="border-amber-200 bg-white text-amber-700 hover:bg-amber-100"
           >
@@ -191,6 +216,7 @@ git commit -m "feat: integrate status section UI and read-only logic"
 ### Task 4: Final Validation and Testing
 
 **Files:**
+
 - Modify: `src/components/organizer/event-form.tsx`
 
 - [ ] **Step 1: Ensure handleSave includes status**

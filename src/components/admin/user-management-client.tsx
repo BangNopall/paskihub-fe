@@ -112,14 +112,15 @@ interface UserManagementClientProps {
 }
 
 function StatusBadge({ status }: { status: string }) {
-  const normalizedStatus = status as UserStatus;
+  const normalizedStatus = status as UserStatus
   const styles: Record<string, string> = {
     Active: "border-green-400 bg-green-50 text-green-600",
     Pending: "border-yellow-400 bg-yellow-50 text-yellow-600",
     Banned: "border-red-400 bg-red-50 text-red-600",
   }
 
-  const safeStyle = styles[normalizedStatus] || "border-gray-400 bg-gray-50 text-gray-600";
+  const safeStyle =
+    styles[normalizedStatus] || "border-gray-400 bg-gray-50 text-gray-600"
 
   return (
     <Badge
@@ -131,7 +132,9 @@ function StatusBadge({ status }: { status: string }) {
   )
 }
 
-export function UserManagementClient({ initialUsers }: UserManagementClientProps) {
+export function UserManagementClient({
+  initialUsers,
+}: UserManagementClientProps) {
   const [users, setUsers] = useState<UserResponse[]>(initialUsers)
   const [searchTerm, setSearchTerm] = useState("")
   const [activeTab, setActiveTab] = useState("all")
@@ -157,8 +160,7 @@ export function UserManagementClient({ initialUsers }: UserManagementClientProps
     const matchesSearch =
       (user.name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesTab =
-      activeTab === "all" || user.role === activeTab
+    const matchesTab = activeTab === "all" || user.role === activeTab
     return matchesSearch && matchesTab
   })
 
@@ -174,10 +176,20 @@ export function UserManagementClient({ initialUsers }: UserManagementClientProps
     const res = await verifyUserAction(actionUser.id)
     if (res.success) {
       toast.success(`Akun ${actionUser.name} berhasil diverifikasi`)
-      setUsers(users.map(u => u.id === actionUser.id ? { ...u, status: "Active", email_is_verified: true } : u))
+      setUsers(
+        users.map((u) =>
+          u.id === actionUser.id
+            ? { ...u, status: "Active", email_is_verified: true }
+            : u
+        )
+      )
       if (selectedUser?.id === actionUser.id) {
-        setSelectedUser({ ...selectedUser, status: "Active", email_is_verified: true });
-        if (detailData) setDetailData({ ...detailData, status: "Active" });
+        setSelectedUser({
+          ...selectedUser,
+          status: "Active",
+          email_is_verified: true,
+        })
+        if (detailData) setDetailData({ ...detailData, status: "Active" })
       }
     } else {
       toast.error(res.message)
@@ -192,10 +204,16 @@ export function UserManagementClient({ initialUsers }: UserManagementClientProps
     const res = await banUserAction(actionUser.id)
     if (res.success) {
       toast.error(`Akses akun ${actionUser.name} telah dinonaktifkan`)
-      setUsers(users.map(u => u.id === actionUser.id ? { ...u, status: "Banned", is_banned: true } : u))
+      setUsers(
+        users.map((u) =>
+          u.id === actionUser.id
+            ? { ...u, status: "Banned", is_banned: true }
+            : u
+        )
+      )
       if (selectedUser?.id === actionUser.id) {
-        setSelectedUser({ ...selectedUser, status: "Banned", is_banned: true });
-        if (detailData) setDetailData({ ...detailData, status: "Banned" });
+        setSelectedUser({ ...selectedUser, status: "Banned", is_banned: true })
+        if (detailData) setDetailData({ ...detailData, status: "Banned" })
       }
     } else {
       toast.error(res.message)
@@ -208,10 +226,14 @@ export function UserManagementClient({ initialUsers }: UserManagementClientProps
     const res = await activateUserAction(user.id)
     if (res.success) {
       toast.success(`Akun ${user.name} telah diaktifkan kembali`)
-      setUsers(users.map(u => u.id === user.id ? { ...u, status: "Active", is_banned: false } : u))
+      setUsers(
+        users.map((u) =>
+          u.id === user.id ? { ...u, status: "Active", is_banned: false } : u
+        )
+      )
       if (selectedUser?.id === user.id) {
-        setSelectedUser({ ...selectedUser, status: "Active", is_banned: false });
-        if (detailData) setDetailData({ ...detailData, status: "Active" });
+        setSelectedUser({ ...selectedUser, status: "Active", is_banned: false })
+        if (detailData) setDetailData({ ...detailData, status: "Active" })
       }
     } else {
       toast.error(res.message)
@@ -233,7 +255,10 @@ export function UserManagementClient({ initialUsers }: UserManagementClientProps
     setIsLoadingDetail(false)
   }
 
-  const handleUpdateEventStatus = async (eventId: string, newStatus: string) => {
+  const handleUpdateEventStatus = async (
+    eventId: string,
+    newStatus: string
+  ) => {
     const res = await updateEventStatusAction(eventId, newStatus)
     if (res.success) {
       toast.success(res.message)
@@ -413,7 +438,7 @@ export function UserManagementClient({ initialUsers }: UserManagementClientProps
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator className="bg-neutral-100" />
                                 {user.status === "Banned" ? (
-                                  <DropdownMenuItem 
+                                  <DropdownMenuItem
                                     className="cursor-pointer rounded-xl font-poppins text-sm text-success-600 focus:text-success-600"
                                     onClick={() => handleActivate(user)}
                                   >
@@ -546,7 +571,11 @@ export function UserManagementClient({ initialUsers }: UserManagementClientProps
                         >
                           {selectedUser.role}
                         </Badge>
-                        <StatusBadge status={detailData ? detailData.status : selectedUser.status} />
+                        <StatusBadge
+                          status={
+                            detailData ? detailData.status : selectedUser.status
+                          }
+                        />
                       </div>
                     </div>
                   </div>
@@ -556,7 +585,7 @@ export function UserManagementClient({ initialUsers }: UserManagementClientProps
               <div className="no-scrollbar flex-1 overflow-y-auto p-6 md:p-8">
                 {isLoadingDetail ? (
                   <div className="flex items-center justify-center py-12">
-                     <Loader2 className="h-8 w-8 animate-spin text-info-600" />
+                    <Loader2 className="h-8 w-8 animate-spin text-info-600" />
                   </div>
                 ) : detailData ? (
                   <Tabs defaultValue="profil" className="w-full">
@@ -614,15 +643,17 @@ export function UserManagementClient({ initialUsers }: UserManagementClientProps
                             />
                             <DetailItem
                               label="Terdaftar Sejak"
-                              value={new Date(detailData.joined_at).toLocaleDateString("id-ID")}
+                              value={new Date(
+                                detailData.joined_at
+                              ).toLocaleDateString("id-ID")}
                             />
                           </div>
                         </div>
 
                         <div className="space-y-4">
                           <h3 className="flex items-center gap-2 font-montserrat font-bold text-slate-900">
-                            <UserCheck className="h-4 w-4 text-info-600" /> Profil
-                            Detail
+                            <UserCheck className="h-4 w-4 text-info-600" />{" "}
+                            Profil Detail
                           </h3>
                           <div className="space-y-4 rounded-2xl border border-neutral-100 bg-neutral-50 p-5">
                             <DetailItem
@@ -652,24 +683,26 @@ export function UserManagementClient({ initialUsers }: UserManagementClientProps
                               Akun Panitia
                             </h3>
                             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                              {detailData.eo_data.panitia.map((p: any, idx: number) => (
-                                <div
-                                  key={idx}
-                                  className="flex items-center gap-3 rounded-xl border border-neutral-100 bg-white p-3 shadow-xs"
-                                >
-                                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-info-50 text-info-600">
-                                    <UserCheck className="h-5 w-5" />
+                              {detailData.eo_data.panitia.map(
+                                (p: any, idx: number) => (
+                                  <div
+                                    key={idx}
+                                    className="flex items-center gap-3 rounded-xl border border-neutral-100 bg-white p-3 shadow-xs"
+                                  >
+                                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-info-50 text-info-600">
+                                      <UserCheck className="h-5 w-5" />
+                                    </div>
+                                    <div>
+                                      <p className="text-sm font-semibold text-neutral-800">
+                                        {p.name}
+                                      </p>
+                                      <p className="text-xs text-neutral-500">
+                                        {p.role}
+                                      </p>
+                                    </div>
                                   </div>
-                                  <div>
-                                    <p className="text-sm font-semibold text-neutral-800">
-                                      {p.name}
-                                    </p>
-                                    <p className="text-xs text-neutral-500">
-                                      {p.role}
-                                    </p>
-                                  </div>
-                                </div>
-                              ))}
+                                )
+                              )}
                             </div>
                           </div>
                         )}
@@ -694,75 +727,128 @@ export function UserManagementClient({ initialUsers }: UserManagementClientProps
                               </div>
                             ) : (
                               <div className="grid grid-cols-1 gap-6">
-                                {detailData.eo_data?.events?.map((e: any, i: number) => (
-                                  <Card key={i} className="overflow-hidden rounded-2xl border-sky-100 bg-white shadow-sm">
-                                    <div className="flex flex-col md:flex-row">
-                                      <div className="flex-1 p-6">
-                                        <div className="mb-4 flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
-                                          <div>
-                                            <h4 className="font-montserrat text-lg font-bold text-slate-900">
-                                              {e.event_name}
-                                            </h4>
-                                            <div className="mt-2 flex flex-wrap gap-3">
-                                              <div className="flex items-center gap-1.5 text-xs text-neutral-500">
-                                                <Calendar className="h-3.5 w-3.5" />
-                                                <span>{new Date(e.compe_date).toLocaleDateString("id-ID", { day: 'numeric', month: 'long', year: 'numeric' })}</span>
-                                              </div>
-                                              <div className="flex items-center gap-1.5 text-xs text-neutral-500">
-                                                <MapPin className="h-3.5 w-3.5" />
-                                                <span>{e.location}</span>
-                                              </div>
-                                            </div>
-                                          </div>
-                                          <div className="w-full sm:w-40">
-                                            <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-wider text-neutral-400">
-                                              Status Event
-                                            </label>
-                                            <Select
-                                              defaultValue={e.status}
-                                              onValueChange={(val) => handleUpdateEventStatus(e.id, val)}
-                                            >
-                                              <SelectTrigger className="h-9 rounded-lg border-neutral-200 bg-neutral-50 text-xs font-semibold">
-                                                <SelectValue placeholder="Pilih Status" />
-                                              </SelectTrigger>
-                                              <SelectContent className="rounded-xl border-neutral-200">
-                                                <SelectItem value="DRAFT" className="text-xs">DRAFT</SelectItem>
-                                                <SelectItem value="OPEN" className="text-xs">OPEN</SelectItem>
-                                                <SelectItem value="CLOSED" className="text-xs">CLOSED</SelectItem>
-                                                <SelectItem value="ARCHIVED" className="text-xs">ARCHIVED</SelectItem>
-                                              </SelectContent>
-                                            </Select>
-                                          </div>
-                                        </div>
-
-                                        <Separator className="my-4 bg-neutral-100" />
-
-                                        <div>
-                                          <p className="mb-3 text-[10px] font-bold uppercase tracking-wider text-neutral-400">
-                                            Kategori & Biaya (Level)
-                                          </p>
-                                          <div className="flex flex-wrap gap-2">
-                                            {e.event_levels?.map((lvl: any, idx: number) => (
-                                              <div
-                                                key={idx}
-                                                className="flex flex-col gap-1 rounded-xl border border-sky-100 bg-sky-50/50 p-3"
-                                              >
-                                                <span className="text-xs font-bold text-sky-800">{lvl.name}</span>
-                                                <div className="flex flex-col gap-0.5">
-                                                  <span className="text-[10px] text-neutral-500">Reg: Rp {lvl.regis_fee.toLocaleString()}</span>
-                                                  <span className="text-[10px] text-neutral-500">DP: Rp {lvl.dp_fee.toLocaleString()}</span>
+                                {detailData.eo_data?.events?.map(
+                                  (e: any, i: number) => (
+                                    <Card
+                                      key={i}
+                                      className="overflow-hidden rounded-2xl border-sky-100 bg-white shadow-sm"
+                                    >
+                                      <div className="flex flex-col md:flex-row">
+                                        <div className="flex-1 p-6">
+                                          <div className="mb-4 flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
+                                            <div>
+                                              <h4 className="font-montserrat text-lg font-bold text-slate-900">
+                                                {e.event_name}
+                                              </h4>
+                                              <div className="mt-2 flex flex-wrap gap-3">
+                                                <div className="flex items-center gap-1.5 text-xs text-neutral-500">
+                                                  <Calendar className="h-3.5 w-3.5" />
+                                                  <span>
+                                                    {new Date(
+                                                      e.compe_date
+                                                    ).toLocaleDateString(
+                                                      "id-ID",
+                                                      {
+                                                        day: "numeric",
+                                                        month: "long",
+                                                        year: "numeric",
+                                                      }
+                                                    )}
+                                                  </span>
+                                                </div>
+                                                <div className="flex items-center gap-1.5 text-xs text-neutral-500">
+                                                  <MapPin className="h-3.5 w-3.5" />
+                                                  <span>{e.location}</span>
                                                 </div>
                                               </div>
-                                            ))}
-                                            {!e.event_levels?.length && (
-                                              <span className="text-xs text-neutral-400 italic">Belum ada level ditentukan</span>
-                                            )}
+                                            </div>
+                                            <div className="w-full sm:w-40">
+                                              <label className="mb-1.5 block text-[10px] font-bold tracking-wider text-neutral-400 uppercase">
+                                                Status Event
+                                              </label>
+                                              <Select
+                                                defaultValue={e.status}
+                                                onValueChange={(val) =>
+                                                  handleUpdateEventStatus(
+                                                    e.id,
+                                                    val
+                                                  )
+                                                }
+                                              >
+                                                <SelectTrigger className="h-9 rounded-lg border-neutral-200 bg-neutral-50 text-xs font-semibold">
+                                                  <SelectValue placeholder="Pilih Status" />
+                                                </SelectTrigger>
+                                                <SelectContent className="rounded-xl border-neutral-200">
+                                                  <SelectItem
+                                                    value="DRAFT"
+                                                    className="text-xs"
+                                                  >
+                                                    DRAFT
+                                                  </SelectItem>
+                                                  <SelectItem
+                                                    value="OPEN"
+                                                    className="text-xs"
+                                                  >
+                                                    OPEN
+                                                  </SelectItem>
+                                                  <SelectItem
+                                                    value="CLOSED"
+                                                    className="text-xs"
+                                                  >
+                                                    CLOSED
+                                                  </SelectItem>
+                                                  <SelectItem
+                                                    value="ARCHIVED"
+                                                    className="text-xs"
+                                                  >
+                                                    ARCHIVED
+                                                  </SelectItem>
+                                                </SelectContent>
+                                              </Select>
+                                            </div>
+                                          </div>
+
+                                          <Separator className="my-4 bg-neutral-100" />
+
+                                          <div>
+                                            <p className="mb-3 text-[10px] font-bold tracking-wider text-neutral-400 uppercase">
+                                              Kategori & Biaya (Level)
+                                            </p>
+                                            <div className="flex flex-wrap gap-2">
+                                              {e.event_levels?.map(
+                                                (lvl: any, idx: number) => (
+                                                  <div
+                                                    key={idx}
+                                                    className="flex flex-col gap-1 rounded-xl border border-sky-100 bg-sky-50/50 p-3"
+                                                  >
+                                                    <span className="text-xs font-bold text-sky-800">
+                                                      {lvl.name}
+                                                    </span>
+                                                    <div className="flex flex-col gap-0.5">
+                                                      <span className="text-[10px] text-neutral-500">
+                                                        Reg: Rp{" "}
+                                                        {lvl.regis_fee.toLocaleString()}
+                                                      </span>
+                                                      <span className="text-[10px] text-neutral-500">
+                                                        DP: Rp{" "}
+                                                        {lvl.dp_fee.toLocaleString()}
+                                                      </span>
+                                                    </div>
+                                                  </div>
+                                                )
+                                              )}
+                                              {!e.event_levels?.length && (
+                                                <span className="text-xs text-neutral-400 italic">
+                                                  Belum ada level ditentukan
+                                                </span>
+                                              )}
+                                            </div>
                                           </div>
                                         </div>
                                       </div>
-                                    </div>
-                                  </Card>
-                                ))}
+                                    </Card>
+                                  )
+                                )}
                               </div>
                             )}
                           </div>
@@ -777,50 +863,78 @@ export function UserManagementClient({ initialUsers }: UserManagementClientProps
                           value="tim"
                           className="space-y-6 outline-hidden"
                         >
-                           <div className="space-y-4">
+                          <div className="space-y-4">
                             <h3 className="font-montserrat font-bold text-slate-900">
                               Daftar Tim & Anggota
                             </h3>
                             {detailData.peserta_data?.teams?.length === 0 ? (
-                               <div className="rounded-3xl border-2 border-dashed border-neutral-100 p-8 text-center">
-                               <p className="text-neutral-400">
-                                 Belum ada tim yang dibuat.
-                               </p>
-                             </div>
+                              <div className="rounded-3xl border-2 border-dashed border-neutral-100 p-8 text-center">
+                                <p className="text-neutral-400">
+                                  Belum ada tim yang dibuat.
+                                </p>
+                              </div>
                             ) : (
                               <div className="grid grid-cols-1 gap-6">
-                                {detailData.peserta_data?.teams?.map((t: any, i: number) => (
-                                  <div key={i} className="overflow-hidden rounded-2xl border border-neutral-100 bg-white shadow-xs">
-                                    <div className="bg-neutral-50/50 p-4">
-                                      <div className="flex items-center justify-between">
-                                        <div>
-                                          <p className="font-montserrat text-base font-bold text-slate-800">{t.team_name}</p>
-                                          <p className="text-xs text-neutral-500">Pelatih: <span className="font-semibold text-neutral-700">{t.coach}</span></p>
-                                        </div>
-                                        <Badge variant="secondary" className="bg-white">{t.members_count} Anggota</Badge>
-                                      </div>
-                                    </div>
-                                    <div className="p-4">
-                                      <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-neutral-400">Daftar Anggota</p>
-                                      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                                        {t.members?.map((m: any, idx: number) => (
-                                          <div key={idx} className="flex items-center gap-2 rounded-lg border border-neutral-50 bg-neutral-50/30 p-2">
-                                            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white text-[10px] font-bold text-info-600 shadow-xs">
-                                              {idx + 1}
-                                            </div>
-                                            <div className="flex flex-col">
-                                              <span className="text-xs font-semibold text-neutral-800">{m.name}</span>
-                                              <span className="text-[10px] text-neutral-500 capitalize">{m.role}</span>
-                                            </div>
+                                {detailData.peserta_data?.teams?.map(
+                                  (t: any, i: number) => (
+                                    <div
+                                      key={i}
+                                      className="overflow-hidden rounded-2xl border border-neutral-100 bg-white shadow-xs"
+                                    >
+                                      <div className="bg-neutral-50/50 p-4">
+                                        <div className="flex items-center justify-between">
+                                          <div>
+                                            <p className="font-montserrat text-base font-bold text-slate-800">
+                                              {t.team_name}
+                                            </p>
+                                            <p className="text-xs text-neutral-500">
+                                              Pelatih:{" "}
+                                              <span className="font-semibold text-neutral-700">
+                                                {t.coach}
+                                              </span>
+                                            </p>
                                           </div>
-                                        ))}
+                                          <Badge
+                                            variant="secondary"
+                                            className="bg-white"
+                                          >
+                                            {t.members_count} Anggota
+                                          </Badge>
+                                        </div>
+                                      </div>
+                                      <div className="p-4">
+                                        <p className="mb-2 text-[10px] font-bold tracking-wider text-neutral-400 uppercase">
+                                          Daftar Anggota
+                                        </p>
+                                        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                                          {t.members?.map(
+                                            (m: any, idx: number) => (
+                                              <div
+                                                key={idx}
+                                                className="flex items-center gap-2 rounded-lg border border-neutral-50 bg-neutral-50/30 p-2"
+                                              >
+                                                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white text-[10px] font-bold text-info-600 shadow-xs">
+                                                  {idx + 1}
+                                                </div>
+                                                <div className="flex flex-col">
+                                                  <span className="text-xs font-semibold text-neutral-800">
+                                                    {m.name}
+                                                  </span>
+                                                  <span className="text-[10px] text-neutral-500 capitalize">
+                                                    {m.role}
+                                                  </span>
+                                                </div>
+                                              </div>
+                                            )
+                                          )}
+                                        </div>
                                       </div>
                                     </div>
-                                  </div>
-                                ))}
+                                  )
+                                )}
                               </div>
                             )}
-                           </div>
+                          </div>
                         </TabsContent>
 
                         <TabsContent
@@ -834,47 +948,72 @@ export function UserManagementClient({ initialUsers }: UserManagementClientProps
                             <Table>
                               <TableHeader className="bg-neutral-50/50">
                                 <TableRow>
-                                  <TableHead className="text-[10px] font-bold uppercase tracking-wider">Event</TableHead>
-                                  <TableHead className="text-[10px] font-bold uppercase tracking-wider">Kategori/Level</TableHead>
-                                  <TableHead className="text-[10px] font-bold uppercase tracking-wider">Pembayaran</TableHead>
-                                  <TableHead className="text-[10px] font-bold uppercase tracking-wider">Penilaian</TableHead>
+                                  <TableHead className="text-[10px] font-bold tracking-wider uppercase">
+                                    Event
+                                  </TableHead>
+                                  <TableHead className="text-[10px] font-bold tracking-wider uppercase">
+                                    Kategori/Level
+                                  </TableHead>
+                                  <TableHead className="text-[10px] font-bold tracking-wider uppercase">
+                                    Pembayaran
+                                  </TableHead>
+                                  <TableHead className="text-[10px] font-bold tracking-wider uppercase">
+                                    Penilaian
+                                  </TableHead>
                                 </TableRow>
                               </TableHeader>
                               <TableBody>
-                                {detailData.peserta_data?.event_history?.length === 0 ? (
+                                {detailData.peserta_data?.event_history
+                                  ?.length === 0 ? (
                                   <TableRow>
-                                    <TableCell colSpan={4} className="h-24 text-center text-sm text-neutral-400">
+                                    <TableCell
+                                      colSpan={4}
+                                      className="h-24 text-center text-sm text-neutral-400"
+                                    >
                                       Belum mengikuti event apapun.
                                     </TableCell>
                                   </TableRow>
                                 ) : (
                                   detailData.peserta_data?.event_history?.map(
                                     (h: any, i: number) => (
-                                      <TableRow key={i} className="hover:bg-neutral-50/30">
+                                      <TableRow
+                                        key={i}
+                                        className="hover:bg-neutral-50/30"
+                                      >
                                         <TableCell className="py-4">
                                           <div className="flex items-center gap-3">
                                             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-info-50 text-info-600">
                                               <Trophy className="h-4 w-4" />
                                             </div>
-                                            <span className="text-sm font-semibold text-neutral-800">{h.event_name}</span>
+                                            <span className="text-sm font-semibold text-neutral-800">
+                                              {h.event_name}
+                                            </span>
                                           </div>
                                         </TableCell>
                                         <TableCell>
-                                          <Badge variant="outline" className="text-[10px] border-sky-100 bg-sky-50 text-sky-700">
+                                          <Badge
+                                            variant="outline"
+                                            className="border-sky-100 bg-sky-50 text-[10px] text-sky-700"
+                                          >
                                             {h.level_name || "-"}
                                           </Badge>
                                         </TableCell>
                                         <TableCell>
-                                          <span className={cn(
-                                            "text-xs font-medium",
-                                            h.payment_status === "PAID" ? "text-success-600" : "text-amber-600"
-                                          )}>
+                                          <span
+                                            className={cn(
+                                              "text-xs font-medium",
+                                              h.payment_status === "PAID"
+                                                ? "text-success-600"
+                                                : "text-amber-600"
+                                            )}
+                                          >
                                             {h.payment_status}
                                           </span>
                                         </TableCell>
                                         <TableCell>
                                           <span className="text-xs text-neutral-500">
-                                            {h.assessment_status || "Belum Dinilai"}
+                                            {h.assessment_status ||
+                                              "Belum Dinilai"}
                                           </span>
                                         </TableCell>
                                       </TableRow>
@@ -969,11 +1108,15 @@ export function UserManagementClient({ initialUsers }: UserManagementClientProps
               Batalkan
             </AlertDialogCancel>
             <Button
-              className="h-12 flex-1 rounded-full bg-info-600 hover:bg-info-700 text-white"
+              className="h-12 flex-1 rounded-full bg-info-600 text-white hover:bg-info-700"
               onClick={handleVerify}
               disabled={isPendingAction}
             >
-              {isPendingAction ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Ya, Verifikasi"}
+              {isPendingAction ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                "Ya, Verifikasi"
+              )}
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -1004,7 +1147,11 @@ export function UserManagementClient({ initialUsers }: UserManagementClientProps
               onClick={handleBan}
               disabled={isPendingAction}
             >
-              {isPendingAction ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Ya, Nonaktifkan"}
+              {isPendingAction ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                "Ya, Nonaktifkan"
+              )}
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>

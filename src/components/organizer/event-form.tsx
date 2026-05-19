@@ -241,13 +241,13 @@ function StatusSection({
                 <SelectValue placeholder="Ubah Status" />
               </SelectTrigger>
               <SelectContent>
-                {EVENT_STATUS_OPTIONS.filter((opt) => opt.value !== "ARCHIVED").map(
-                  (opt) => (
-                    <SelectItem key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </SelectItem>
-                  )
-                )}
+                {EVENT_STATUS_OPTIONS.filter(
+                  (opt) => opt.value !== "ARCHIVED"
+                ).map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           )}
@@ -260,7 +260,9 @@ function StatusSection({
             <AlertCircle className="h-5 w-5" />
             <span className="text-sm font-medium">
               Rekomendasi sistem:{" "}
-              <strong className="font-bold">{getStatusLabel(recommended)}</strong>{" "}
+              <strong className="font-bold">
+                {getStatusLabel(recommended)}
+              </strong>{" "}
               berdasarkan jadwal yang diatur.
             </span>
           </div>
@@ -352,7 +354,9 @@ function EditableField({
       <div className={cn("flex flex-col gap-2", className)}>
         <Label className="font-poppins text-sm font-normal text-neutral-500">
           {label}
-          {required && isEditing && <span className="ml-1 text-red-500">*</span>}
+          {required && isEditing && (
+            <span className="ml-1 text-red-500">*</span>
+          )}
         </Label>
         {isEditing ? (
           <div className="flex gap-2">
@@ -1006,7 +1010,8 @@ export default function OrganizerEventForm({ initialData }: EventFormProps) {
           {/* UPLOAD POSTER */}
           <div className="flex flex-col gap-2">
             <span className="font-poppins text-sm font-normal text-neutral-500">
-              Poster Event {isEditing && <span className="text-red-500">*</span>}
+              Poster Event{" "}
+              {isEditing && <span className="text-red-500">*</span>}
             </span>
             <div className="flex flex-col items-start gap-2">
               <input

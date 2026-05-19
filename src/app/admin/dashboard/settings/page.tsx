@@ -7,10 +7,12 @@ import SystemSettingForm from "@/components/admin/system-setting-form"
 
 export default async function AdminSettingsPage() {
   const session: any = await getServerSession(authOptions)
-  
+
   if (!session?.accessToken) {
     return (
-      <div className={`flex flex-1 items-center justify-center ${Poppins.className}`}>
+      <div
+        className={`flex flex-1 items-center justify-center ${Poppins.className}`}
+      >
         <p className="text-neutral-500">Unauthorized</p>
       </div>
     )
@@ -27,8 +29,12 @@ export default async function AdminSettingsPage() {
 
   if (error || !initialData) {
     return (
-      <div className={`flex flex-1 items-center justify-center ${Poppins.className}`}>
-        <p className="text-red-500">{error || "Terjadi kesalahan saat memuat data"}</p>
+      <div
+        className={`flex flex-1 items-center justify-center ${Poppins.className}`}
+      >
+        <p className="text-red-500">
+          {error || "Terjadi kesalahan saat memuat data"}
+        </p>
       </div>
     )
   }

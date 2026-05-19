@@ -17,11 +17,7 @@ import {
   Maximize2,
 } from "lucide-react"
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-} from "@/components/ui/card"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -54,8 +50,14 @@ import {
 import { Textarea } from "@/components/ui/textarea"
 import { Poppins } from "@/lib/fonts"
 import { toast } from "sonner"
-import { AdminTransaction, AdminTransactionListResponse } from "@/schemas/admin.schema"
-import { approveTransactionAction, rejectTransactionAction } from "@/actions/admin.actions"
+import {
+  AdminTransaction,
+  AdminTransactionListResponse,
+} from "@/schemas/admin.schema"
+import {
+  approveTransactionAction,
+  rejectTransactionAction,
+} from "@/actions/admin.actions"
 import { useRouter, useSearchParams } from "next/navigation"
 
 // ==========================================
@@ -99,7 +101,7 @@ export default function TransactionManagementClient({ initialData }: Props) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
-  
+
   const [selectedTx, setSelectedTx] = useState<AdminTransaction | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
   const [rejectionReason, setRejectionReason] = useState("")
@@ -127,7 +129,7 @@ export default function TransactionManagementClient({ initialData }: Props) {
 
   const handleApprove = async () => {
     if (!selectedTx) return
-    
+
     startTransition(async () => {
       const res = await approveTransactionAction(selectedTx.id)
       if (res.success) {
@@ -141,7 +143,7 @@ export default function TransactionManagementClient({ initialData }: Props) {
 
   const handleRejectSubmit = async () => {
     if (!selectedTx || !rejectionReason) return
-    
+
     startTransition(async () => {
       const res = await rejectTransactionAction(selectedTx.id, rejectionReason)
       if (res.success) {
@@ -156,8 +158,10 @@ export default function TransactionManagementClient({ initialData }: Props) {
   }
 
   const filteredTransactions = initialData.transactions.filter((tx) => {
-    return tx.eo_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-           tx.id.toLowerCase().includes(searchTerm.toLowerCase())
+    return (
+      tx.eo_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      tx.id.toLowerCase().includes(searchTerm.toLowerCase())
+    )
   })
 
   // Stats Logic
@@ -345,9 +349,7 @@ export default function TransactionManagementClient({ initialData }: Props) {
                                         Total Nominal
                                       </span>
                                       <span className="text-2xl font-bold text-slate-900">
-                                        {formatRupiah(
-                                          selectedTx?.amount || 0
-                                        )}
+                                        {formatRupiah(selectedTx?.amount || 0)}
                                       </span>
                                     </div>
                                     <div className="flex flex-col items-end">
@@ -386,7 +388,10 @@ export default function TransactionManagementClient({ initialData }: Props) {
                                           asChild
                                           className="h-8 rounded-full font-bold text-info-600"
                                         >
-                                          <a href={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3010'}/${selectedTx.proof_path}`} target="_blank">
+                                          <a
+                                            href={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3010"}/${selectedTx.proof_path}`}
+                                            target="_blank"
+                                          >
                                             <Download className="mr-2 h-3.5 w-3.5" />{" "}
                                             Download
                                           </a>
@@ -395,8 +400,8 @@ export default function TransactionManagementClient({ initialData }: Props) {
                                     </div>
                                     <div className="group relative flex aspect-[4/3] w-full cursor-zoom-in items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-neutral-200 bg-neutral-100">
                                       {selectedTx?.proof_path ? (
-                                        <img 
-                                          src={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3010'}/${selectedTx.proof_path}`} 
+                                        <img
+                                          src={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3010"}/${selectedTx.proof_path}`}
                                           alt="Bukti Transfer"
                                           className="h-full w-full object-contain"
                                         />
@@ -437,13 +442,11 @@ export default function TransactionManagementClient({ initialData }: Props) {
                                           <Button
                                             variant="outline"
                                             className="h-12 flex-1 rounded-full border-red-200 font-bold text-red-600 hover:bg-red-50 hover:text-red-700"
-                                            onClick={() =>
-                                              setIsRejecting(true)
-                                            }
+                                            onClick={() => setIsRejecting(true)}
                                             disabled={isPending}
                                           >
-                                            <X className="mr-2 h-4 w-4" />{" "}
-                                            Tolak Transaksi
+                                            <X className="mr-2 h-4 w-4" /> Tolak
+                                            Transaksi
                                           </Button>
                                           <Button
                                             className="h-12 flex-1 rounded-full bg-green-600 font-bold text-white shadow-lg hover:bg-green-700"
@@ -474,8 +477,7 @@ export default function TransactionManagementClient({ initialData }: Props) {
                                             className="h-12 flex-1 rounded-full bg-red-600 font-bold text-white shadow-lg hover:bg-red-700"
                                             onClick={handleRejectSubmit}
                                             disabled={
-                                              !rejectionReason ||
-                                              isPending
+                                              !rejectionReason || isPending
                                             }
                                           >
                                             {isPending ? (
@@ -494,7 +496,10 @@ export default function TransactionManagementClient({ initialData }: Props) {
                                       className="h-12 w-full rounded-full"
                                       disabled
                                     >
-                                      Sudah Diproses pada {new Date(selectedTx?.created_at || '').toLocaleDateString("id-ID")}
+                                      Sudah Diproses pada{" "}
+                                      {new Date(
+                                        selectedTx?.created_at || ""
+                                      ).toLocaleDateString("id-ID")}
                                     </Button>
                                   )}
                                 </DialogFooter>
@@ -527,7 +532,9 @@ export default function TransactionManagementClient({ initialData }: Props) {
                       />
                     </PaginationItem>
 
-                    {Array.from({ length: Math.ceil(initialData.total / initialData.limit) }).map((_, i) => (
+                    {Array.from({
+                      length: Math.ceil(initialData.total / initialData.limit),
+                    }).map((_, i) => (
                       <PaginationItem key={i}>
                         <PaginationLink
                           isActive={currentPage === i + 1}
@@ -542,10 +549,16 @@ export default function TransactionManagementClient({ initialData }: Props) {
                     <PaginationItem>
                       <PaginationNext
                         onClick={() =>
-                          handlePageChange(Math.min(Math.ceil(initialData.total / initialData.limit), currentPage + 1))
+                          handlePageChange(
+                            Math.min(
+                              Math.ceil(initialData.total / initialData.limit),
+                              currentPage + 1
+                            )
+                          )
                         }
                         className={
-                          currentPage >= Math.ceil(initialData.total / initialData.limit)
+                          currentPage >=
+                          Math.ceil(initialData.total / initialData.limit)
                             ? "pointer-events-none opacity-50"
                             : "cursor-pointer"
                         }

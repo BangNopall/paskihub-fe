@@ -4,7 +4,8 @@ I'm using the writing-plans skill to create the implementation plan.
 
 **Goal:** Integrate Paskihub API into the participant event pages (`/peserta/dashboard/event/**`) using Server-Side Rendering (SSR) and Server Actions.
 
-**Architecture:** 
+**Architecture:**
+
 - Fetch data in Next.js Server Components (Pages).
 - Use dedicated service layers (`participant-event.service.ts`) with native `fetch`.
 - Use Zod for schema validation.
@@ -17,6 +18,7 @@ I'm using the writing-plans skill to create the implementation plan.
 ### Task 1: Zod Schemas for Participant Events
 
 **Files:**
+
 - Create: `src/schemas/participant-event.schema.ts`
 
 - [x] **Step 1: Define Open Event and Active Event schemas**
@@ -72,16 +74,17 @@ git commit -m "feat: add zod schemas for participant events"
 ### Task 2: Participant Event Service
 
 **Files:**
+
 - Create: `src/services/participant-event.service.ts`
 
 - [x] **Step 1: Implement fetch functions for open and active events**
 
 ```typescript
-import { 
-  OpenEvent, 
-  OpenEventSchema, 
-  ActiveEvent, 
-  ActiveEventSchema 
+import {
+  OpenEvent,
+  OpenEventSchema,
+  ActiveEvent,
+  ActiveEventSchema,
 } from "@/schemas/participant-event.schema"
 import { z } from "zod"
 
@@ -134,20 +137,23 @@ export const participantEventService = {
   },
 
   async pelunasanEvent(regisId: string, formData: FormData, token: string) {
-    const res = await fetch(`${API_URL}/api/v1/peserta/events/register/${regisId}/pelunasan`, {
-      method: "PUT",
-      headers: {
-        "x-api-key": API_KEY || "",
-        Authorization: `Bearer ${token}`,
-      },
-      body: formData,
-    })
+    const res = await fetch(
+      `${API_URL}/api/v1/peserta/events/register/${regisId}/pelunasan`,
+      {
+        method: "PUT",
+        headers: {
+          "x-api-key": API_KEY || "",
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      }
+    )
     if (!res.ok) {
       const err = await res.json().catch(() => ({}))
       throw new Error(err.message || "Gagal upload pelunasan")
     }
     return res.json()
-  }
+  },
 }
 ```
 
@@ -163,6 +169,7 @@ git commit -m "feat: implement participant event service"
 ### Task 3: Participant Event Server Actions
 
 **Files:**
+
 - Create: `src/actions/participant-event.actions.ts`
 
 - [x] **Step 1: Implement register and pelunasan actions**
@@ -188,16 +195,26 @@ export async function registerEventAction(formData: FormData) {
   }
 }
 
-export async function pelunasanEventAction(regisId: string, formData: FormData) {
+export async function pelunasanEventAction(
+  regisId: string,
+  formData: FormData
+) {
   try {
     const session: any = await getServerSession(authOptions)
     if (!session?.accessToken) throw new Error("Unauthorized")
 
-    await participantEventService.pelunasanEvent(regisId, formData, session.accessToken)
+    await participantEventService.pelunasanEvent(
+      regisId,
+      formData,
+      session.accessToken
+    )
     revalidatePath(`/peserta/dashboard/event/${regisId}/overview`)
     return { success: true, message: "Bukti pembayaran berhasil diunggah." }
   } catch (error: any) {
-    return { success: false, message: error.message || "Gagal mengunggah bukti" }
+    return {
+      success: false,
+      message: error.message || "Gagal mengunggah bukti",
+    }
   }
 }
 ```
@@ -214,6 +231,7 @@ git commit -m "feat: add participant event server actions"
 ### Task 4: Integrate `My Event` Page (SSR)
 
 **Files:**
+
 - Modify: `src/app/peserta/dashboard/event/page.tsx`
 
 - [x] **Step 1: Convert to Server Component and fetch data**
@@ -236,8 +254,8 @@ export default async function MyEventPage() {
   ])
 
   return (
-    <MyEventClient 
-      initialOpenEvents={openEvents} 
+    <MyEventClient
+      initialOpenEvents={openEvents}
       initialActiveEvents={activeEvents}
       myTeams={myTeams}
     />
@@ -259,6 +277,7 @@ git commit -m "feat: integrate My Event page with SSR and API"
 ### Task 5: Integrate `Event Overview` Page (SSR)
 
 **Files:**
+
 - Modify: `src/app/peserta/dashboard/event/[id]/overview/page.tsx`
 
 - [x] **Step 1: Fetch registration and recap data via SSR**

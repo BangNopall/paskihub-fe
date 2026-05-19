@@ -28,11 +28,7 @@ export default async function OrganizerProfilePage() {
       profileService.getEOProfile(session.accessToken),
     ])
 
-    return (
-      <OrganizerProfileContent
-        primaryEmail={profileRes.data.email}
-      />
-    )
+    return <OrganizerProfileContent primaryEmail={profileRes.data.email} />
   } catch (error) {
     console.error("Profile page data fetch error:", error)
     return (

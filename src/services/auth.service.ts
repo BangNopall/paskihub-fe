@@ -39,7 +39,6 @@ export const authService = {
   },
 
   async resetPassword(token: string, data: ResetPasswordFormData) {
-    console.log(token)
     const res = await fetch(`${API_URL}/api/v1/users/reset-password/${token}`, {
       method: "PUT",
       headers: {

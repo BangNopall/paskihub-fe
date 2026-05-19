@@ -18,15 +18,25 @@ export async function registerEventAction(formData: FormData) {
   }
 }
 
-export async function pelunasanEventAction(regisId: string, formData: FormData) {
+export async function pelunasanEventAction(
+  regisId: string,
+  formData: FormData
+) {
   try {
     const session: any = await getServerSession(authOptions)
     if (!session?.accessToken) throw new Error("Unauthorized")
 
-    await participantEventService.pelunasanEvent(regisId, formData, session.accessToken)
+    await participantEventService.pelunasanEvent(
+      regisId,
+      formData,
+      session.accessToken
+    )
     revalidatePath(`/peserta/dashboard/event/${regisId}/overview`)
     return { success: true, message: "Bukti pembayaran berhasil diunggah." }
   } catch (error: any) {
-    return { success: false, message: error.message || "Gagal mengunggah bukti" }
+    return {
+      success: false,
+      message: error.message || "Gagal mengunggah bukti",
+    }
   }
 }

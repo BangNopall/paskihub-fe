@@ -22,7 +22,7 @@ export default async function UserManagementPage() {
         <h2 className="font-montserrat text-xl font-bold text-slate-900">
           Gagal Memuat Data User
         </h2>
-        <p className="text-sm text-neutral-500 mt-2">
+        <p className="mt-2 text-sm text-neutral-500">
           Terjadi kesalahan saat mengambil data dari server.
         </p>
       </div>

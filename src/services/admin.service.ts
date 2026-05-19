@@ -268,8 +268,6 @@ export const adminService = {
     const token = session?.accessToken
     if (!token) throw new Error("Unauthorized")
 
-    console.log(eventId)
-
     const res = await fetch(
       `${API_URL}/api/v1/admin/events/${eventId}/status`,
       {

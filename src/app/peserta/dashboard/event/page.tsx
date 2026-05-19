@@ -11,12 +11,12 @@ export default async function MyEventPage() {
   const [openEvents, activeEvents, myTeams] = await Promise.all([
     participantEventService.getOpenEvents(token),
     participantEventService.getActiveEvents(token),
-    teamService.getTeams(token)
+    teamService.getTeams(token),
   ])
 
   return (
-    <MyEventClient 
-      initialOpenEvents={openEvents} 
+    <MyEventClient
+      initialOpenEvents={openEvents}
       initialActiveEvents={activeEvents}
       myTeams={myTeams}
     />

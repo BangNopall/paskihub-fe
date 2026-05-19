@@ -81,13 +81,19 @@ import {
 import { Montserrat, Poppins } from "@/lib/fonts"
 import { toast } from "sonner"
 import { UserResponse } from "@/schemas/admin.schema"
-import { createAdminAction, deleteAdminAction, resetAdminPasswordAction } from "@/actions/admin.actions"
+import {
+  createAdminAction,
+  deleteAdminAction,
+  resetAdminPasswordAction,
+} from "@/actions/admin.actions"
 
 interface AdminManagementClientProps {
   initialAdmins: UserResponse[]
 }
 
-export default function AdminManagementClient({ initialAdmins }: AdminManagementClientProps) {
+export default function AdminManagementClient({
+  initialAdmins,
+}: AdminManagementClientProps) {
   const [isPending, startTransition] = useTransition()
   const [searchTerm, setSearchTerm] = useState("")
 
@@ -126,7 +132,9 @@ export default function AdminManagementClient({ initialAdmins }: AdminManagement
     startTransition(async () => {
       const res = await resetAdminPasswordAction(actionAdmin.id)
       if (res.success) {
-        toast.success(`Instruksi reset password telah dikirim ke ${actionAdmin.email}`)
+        toast.success(
+          `Instruksi reset password telah dikirim ke ${actionAdmin.email}`
+        )
         setIsResetOpen(false)
       } else {
         toast.error(res.error || "Gagal mereset password")
@@ -147,9 +155,8 @@ export default function AdminManagementClient({ initialAdmins }: AdminManagement
     })
   }
 
-  const filteredAdmins = initialAdmins.filter(
-    (admin) =>
-      admin.email.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredAdmins = initialAdmins.filter((admin) =>
+    admin.email.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   // Pagination Logic
@@ -205,7 +212,12 @@ export default function AdminManagementClient({ initialAdmins }: AdminManagement
                         placeholder="email@paskihub.com"
                         className="h-12 rounded-xl border-neutral-200 bg-neutral-50 pl-12 focus-visible:ring-info-500"
                         value={createData.email}
-                        onChange={(e) => setCreateData({ ...createData, email: e.target.value })}
+                        onChange={(e) =>
+                          setCreateData({
+                            ...createData,
+                            email: e.target.value,
+                          })
+                        }
                       />
                     </div>
                   </div>
@@ -220,7 +232,12 @@ export default function AdminManagementClient({ initialAdmins }: AdminManagement
                         placeholder="••••••••"
                         className="h-12 rounded-xl border-neutral-200 bg-neutral-50 pl-12 focus-visible:ring-info-500"
                         value={createData.password}
-                        onChange={(e) => setCreateData({ ...createData, password: e.target.value })}
+                        onChange={(e) =>
+                          setCreateData({
+                            ...createData,
+                            password: e.target.value,
+                          })
+                        }
                       />
                     </div>
                   </div>
@@ -315,7 +332,7 @@ export default function AdminManagementClient({ initialAdmins }: AdminManagement
                               </div>
                               <div className="flex flex-col">
                                 <span className="font-poppins font-semibold text-neutral-800">
-                                  {admin.email.split('@')[0]}
+                                  {admin.email.split("@")[0]}
                                 </span>
                                 <span className="text-xs text-neutral-500">
                                   {admin.email}
@@ -326,19 +343,24 @@ export default function AdminManagementClient({ initialAdmins }: AdminManagement
                           <TableCell className="px-6 py-4">
                             <Badge
                               variant="outline"
-                              className="rounded-full border-none bg-info-50 text-info-600 border-info-100 px-3 py-1 text-xs font-normal"
+                              className="rounded-full border-none border-info-100 bg-info-50 px-3 py-1 text-xs font-normal text-info-600"
                             >
                               {admin.role}
                             </Badge>
                           </TableCell>
                           <TableCell className="px-6 py-4 text-sm text-neutral-500">
-                            {admin.last_login_at ? new Date(admin.last_login_at).toLocaleString("id-ID", {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric",
-                              hour: "2-digit",
-                              minute: "2-digit"
-                            }) : "-"}
+                            {admin.last_login_at
+                              ? new Date(admin.last_login_at).toLocaleString(
+                                  "id-ID",
+                                  {
+                                    day: "2-digit",
+                                    month: "short",
+                                    year: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  }
+                                )
+                              : "-"}
                           </TableCell>
                           <TableCell className="px-6 py-4">
                             <Badge
@@ -347,7 +369,9 @@ export default function AdminManagementClient({ initialAdmins }: AdminManagement
                             >
                               {admin.status === "Active"
                                 ? "Aktif"
-                                : admin.status === "Pending" ? "Menunggu" : "Diblokir"}
+                                : admin.status === "Pending"
+                                  ? "Menunggu"
+                                  : "Diblokir"}
                             </Badge>
                           </TableCell>
                           <TableCell className="px-6 py-4 text-right">
@@ -511,7 +535,10 @@ export default function AdminManagementClient({ initialAdmins }: AdminManagement
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="mt-6 flex flex-row gap-3">
-            <AlertDialogCancel className="mt-0 h-12 flex-1 rounded-full border-neutral-300" disabled={isPending}>
+            <AlertDialogCancel
+              className="mt-0 h-12 flex-1 rounded-full border-neutral-300"
+              disabled={isPending}
+            >
               Batalkan
             </AlertDialogCancel>
             <AlertDialogAction

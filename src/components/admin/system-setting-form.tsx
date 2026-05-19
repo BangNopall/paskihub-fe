@@ -9,13 +9,18 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
 import { updateSystemSettingsAction } from "@/actions/system-setting.actions"
-import { UpdateSystemSettingReqSchema, SystemSettingRes } from "@/schemas/system-setting.schema"
+import {
+  UpdateSystemSettingReqSchema,
+  SystemSettingRes,
+} from "@/schemas/system-setting.schema"
 
 interface SystemSettingFormProps {
   initialData: SystemSettingRes
 }
 
-export default function SystemSettingForm({ initialData }: SystemSettingFormProps) {
+export default function SystemSettingForm({
+  initialData,
+}: SystemSettingFormProps) {
   const [isPending, startTransition] = useTransition()
 
   const [formData, setFormData] = useState({

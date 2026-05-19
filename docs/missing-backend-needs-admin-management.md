@@ -19,22 +19,22 @@ type User struct {
 
 - **Update `UserResponse`:** Include `last_login_at`.
 - **Create `AdminCreateRequest`:**
-    ```go
-    type AdminCreateRequest struct {
-        Email    string `json:"email" validate:"required,email"`
-        Password string `json:"password" validate:"required,min=8"`
-    }
-    ```
+  ```go
+  type AdminCreateRequest struct {
+      Email    string `json:"email" validate:"required,email"`
+      Password string `json:"password" validate:"required,min=8"`
+  }
+  ```
 
 ## 3. New Endpoints (`internal/app/user/controller/user_controller.go`)
 
 The following endpoints are needed under the `/api/v1/admin` group (guarded by `AuthAdmin` middleware):
 
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `POST` | `/api/v1/admin/admins` | Create a new admin staff account. |
-| `DELETE` | `/api/v1/admin/admins/:id` | Permanently remove an admin's access. |
-| `POST` | `/api/v1/admin/admins/:id/reset-password` | Manually reset/trigger a password reset for an admin staff. |
+| Method   | Endpoint                                  | Description                                                 |
+| :------- | :---------------------------------------- | :---------------------------------------------------------- |
+| `POST`   | `/api/v1/admin/admins`                    | Create a new admin staff account.                           |
+| `DELETE` | `/api/v1/admin/admins/:id`                | Permanently remove an admin's access.                       |
+| `POST`   | `/api/v1/admin/admins/:id/reset-password` | Manually reset/trigger a password reset for an admin staff. |
 
 ## 4. Business Logic Updates (`internal/app/user/service/user_service.go`)
 
