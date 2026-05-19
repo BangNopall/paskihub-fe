@@ -26,7 +26,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { EOTeamDetailRes } from "@/schemas/eo-team.schema"
-import { UnifiedAssessment, ViolationType } from "@/schemas/assessment.schema"
+import { UnifiedAssessment } from "@/schemas/assessment.schema"
 import { finalizeAssessmentAction } from "@/actions/assessment.actions"
 
 interface AssessmentFormProps {
@@ -37,6 +37,46 @@ interface AssessmentFormProps {
 }
 
 type GradeType = "Lewat" | "Kurang" | "Cukup" | "Baik" | "Sangat Baik"
+type ScoreGradeType = Exclude<GradeType, "Lewat">
+type SelectedScore =
+  | { grade: "Lewat"; value: "Lewat" }
+  | { grade: ScoreGradeType; value: number }
+
+const SCORE_GRADES: ScoreGradeType[] = [
+  "Kurang",
+  "Cukup",
+  "Baik",
+  "Sangat Baik",
+]
+
+const GRADE_HEADER_CLASS: Record<ScoreGradeType, string> = {
+  Kurang: "bg-red-400 text-white",
+  Cukup: "bg-amber-300 text-neutral-700",
+  Baik: "bg-green-500 text-white",
+  "Sangat Baik": "bg-blue-500 text-white",
+}
+
+function getGradeColumnCounts(categories: UnifiedAssessment["categories"]) {
+  return SCORE_GRADES.reduce<Record<ScoreGradeType, number>>(
+    (acc, grade) => {
+      acc[grade] = categories.reduce((maxCount, category) => {
+        const categoryMax = category.sub_categories.reduce(
+          (subMax, subCategory) =>
+            Math.max(subMax, subCategory.grade_numbers?.[grade]?.length || 0),
+          0
+        )
+        return Math.max(maxCount, categoryMax)
+      }, 0)
+      return acc
+    },
+    {
+      Kurang: 0,
+      Cukup: 0,
+      Baik: 0,
+      "Sangat Baik": 0,
+    }
+  )
+}
 
 function getScoreColors(type: GradeType, isSelected: boolean) {
   if (!isSelected) return "bg-transparent text-neutral-600 hover:bg-neutral-100"
@@ -64,15 +104,23 @@ export function AssessmentForm({
 
   // Form State
   const [selectedJuri, setSelectedJuri] = useState<string>("")
-  const [scores, setScores] = useState<Record<string, number | "Lewat" | null>>(
-    {}
-  )
+  const [scores, setScores] = useState<Record<string, SelectedScore | null>>({})
   const [selectedViolations, setSelectedViolations] = useState<
     Record<string, boolean>
   >({})
 
-  const handleScoreSelect = (subId: string, val: number | "Lewat") => {
-    setScores((prev) => ({ ...prev, [subId]: val }))
+  const handleScoreSelect = (
+    subId: string,
+    grade: GradeType,
+    val: number | "Lewat"
+  ) => {
+    setScores((prev) => ({
+      ...prev,
+      [subId]:
+        grade === "Lewat"
+          ? { grade: "Lewat", value: "Lewat" }
+          : { grade, value: val as number },
+    }))
   }
 
   const handleReset = () => {
@@ -94,13 +142,13 @@ export function AssessmentForm({
       regis_id: team.registration_id,
       judges_id: selectedJuri,
       scores: Object.entries(scores)
-        .filter(([_, val]) => typeof val === "number")
-        .map(([subId, val]) => ({
+        .filter(([, score]) => typeof score?.value === "number")
+        .map(([subId, score]) => ({
           sub_category_id: subId,
-          score_value: val as number,
+          score_value: score?.value as number,
         })),
       violation_type_ids: Object.entries(selectedViolations)
-        .filter(([_, checked]) => checked)
+        .filter((entry) => entry[1])
         .map(([vId]) => vId),
     }
 
@@ -122,7 +170,9 @@ export function AssessmentForm({
   }
 
   const currentTotalScore = Object.values(scores).reduce<number>(
-    (acc, curr) => acc + (typeof curr === "number" ? curr : 0),
+    (acc, curr) => {
+      return acc + (typeof curr?.value === "number" ? curr.value : 0)
+    },
     0
   )
 
@@ -138,6 +188,16 @@ export function AssessmentForm({
   )
 
   const currentFinalScore = currentTotalScore - currentPenalty
+  const gradeColumnCounts = getGradeColumnCounts(unifiedData.categories)
+  const visibleScoreGrades = SCORE_GRADES.filter(
+    (grade) => gradeColumnCounts[grade] > 0
+  )
+  const scoreColumnCount =
+    1 +
+    visibleScoreGrades.reduce(
+      (total, grade) => total + gradeColumnCounts[grade],
+      0
+    )
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-6 md:gap-8">
@@ -224,7 +284,7 @@ export function AssessmentForm({
                     Subkategori
                   </TableHead>
                   <TableHead
-                    colSpan={13}
+                    colSpan={scoreColumnCount}
                     className="border border-stone-300 bg-gray-200 py-3 text-center font-poppins text-base font-semibold text-neutral-700"
                   >
                     Penilaian
@@ -234,145 +294,105 @@ export function AssessmentForm({
                   <TableHead className="h-12 w-20 border border-stone-300 bg-stone-300 text-center font-poppins text-base font-semibold text-neutral-700">
                     Lewat
                   </TableHead>
-                  <TableHead
-                    colSpan={3}
-                    className="h-12 border border-stone-300 bg-red-400 text-center font-poppins text-base font-semibold text-white"
-                  >
-                    Kurang
-                  </TableHead>
-                  <TableHead
-                    colSpan={3}
-                    className="h-12 border border-stone-300 bg-amber-300 text-center font-poppins text-base font-semibold text-neutral-700"
-                  >
-                    Cukup
-                  </TableHead>
-                  <TableHead
-                    colSpan={3}
-                    className="h-12 border border-stone-300 bg-green-500 text-center font-poppins text-base font-semibold text-white"
-                  >
-                    Baik
-                  </TableHead>
-                  <TableHead
-                    colSpan={3}
-                    className="h-12 border border-stone-300 bg-blue-500 text-center font-poppins text-base font-semibold text-white"
-                  >
-                    Sangat Baik
-                  </TableHead>
+                  {visibleScoreGrades.map((grade) => (
+                    <TableHead
+                      key={grade}
+                      colSpan={gradeColumnCounts[grade]}
+                      className={cn(
+                        "h-12 border border-stone-300 text-center font-poppins text-base font-semibold",
+                        GRADE_HEADER_CLASS[grade]
+                      )}
+                    >
+                      {grade}
+                    </TableHead>
+                  ))}
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {unifiedData.categories.map((cat) =>
-                  cat.sub_categories.map((sub, idx) => (
-                    <TableRow
-                      key={sub.id}
-                      className="bg-white hover:bg-neutral-50/50"
-                    >
-                      {idx === 0 && (
-                        <TableCell
-                          rowSpan={cat.sub_categories.length}
-                          className="w-48 border border-stone-300 bg-gray-50 p-4 align-top font-poppins text-sm font-semibold text-neutral-700"
-                        >
-                          {cat.name}
-                        </TableCell>
-                      )}
-                      <TableCell className="w-48 border border-stone-300 p-4 font-poppins text-sm font-medium text-neutral-700">
-                        {sub.name}
-                      </TableCell>
+                  cat.sub_categories.map((sub, idx) => {
+                    const selectedScore = scores[sub.id]
 
-                      {/* Lewat Score Cell */}
-                      <TableCell className="border border-stone-300 p-0">
-                        <button
-                          type="button"
-                          onClick={() => handleScoreSelect(sub.id, "Lewat")}
-                          className={cn(
-                            "min-h-[56px] w-full font-poppins text-sm transition-colors",
-                            getScoreColors("Lewat", scores[sub.id] === "Lewat")
-                          )}
-                        >
-                          Lewat
-                        </button>
-                      </TableCell>
-
-                      {/* Kurang Score Cells */}
-                      {(sub.grade_numbers?.["Kurang"] || []).map((val) => (
-                        <TableCell
-                          key={val}
-                          className="border border-stone-300 p-0"
-                        >
-                          <button
-                            type="button"
-                            onClick={() => handleScoreSelect(sub.id, val)}
-                            className={cn(
-                              "min-h-[56px] w-full font-poppins text-sm transition-colors",
-                              getScoreColors("Kurang", scores[sub.id] === val)
-                            )}
+                    return (
+                      <TableRow
+                        key={sub.id}
+                        className="bg-white hover:bg-neutral-50/50"
+                      >
+                        {idx === 0 && (
+                          <TableCell
+                            rowSpan={cat.sub_categories.length}
+                            className="w-48 border border-stone-300 bg-gray-50 p-4 align-top font-poppins text-sm font-semibold text-neutral-700"
                           >
-                            {val}
-                          </button>
+                            {cat.name}
+                          </TableCell>
+                        )}
+                        <TableCell className="w-48 border border-stone-300 p-4 font-poppins text-sm font-medium text-neutral-700">
+                          {sub.name}
                         </TableCell>
-                      ))}
 
-                      {/* Cukup Score Cells */}
-                      {(sub.grade_numbers?.["Cukup"] || []).map((val) => (
-                        <TableCell
-                          key={val}
-                          className="border border-stone-300 p-0"
-                        >
+                        <TableCell className="border border-stone-300 p-0">
                           <button
                             type="button"
-                            onClick={() => handleScoreSelect(sub.id, val)}
-                            className={cn(
-                              "min-h-[56px] w-full font-poppins text-sm transition-colors",
-                              getScoreColors("Cukup", scores[sub.id] === val)
-                            )}
-                          >
-                            {val}
-                          </button>
-                        </TableCell>
-                      ))}
-
-                      {/* Baik Score Cells */}
-                      {(sub.grade_numbers?.["Baik"] || []).map((val) => (
-                        <TableCell
-                          key={val}
-                          className="border border-stone-300 p-0"
-                        >
-                          <button
-                            type="button"
-                            onClick={() => handleScoreSelect(sub.id, val)}
-                            className={cn(
-                              "min-h-[56px] w-full font-poppins text-sm transition-colors",
-                              getScoreColors("Baik", scores[sub.id] === val)
-                            )}
-                          >
-                            {val}
-                          </button>
-                        </TableCell>
-                      ))}
-
-                      {/* Sangat Baik Score Cells */}
-                      {(sub.grade_numbers?.["Sangat Baik"] || []).map((val) => (
-                        <TableCell
-                          key={val}
-                          className="border border-stone-300 p-0"
-                        >
-                          <button
-                            type="button"
-                            onClick={() => handleScoreSelect(sub.id, val)}
+                            onClick={() =>
+                              handleScoreSelect(sub.id, "Lewat", "Lewat")
+                            }
                             className={cn(
                               "min-h-[56px] w-full font-poppins text-sm transition-colors",
                               getScoreColors(
-                                "Sangat Baik",
-                                scores[sub.id] === val
+                                "Lewat",
+                                selectedScore?.grade === "Lewat"
                               )
                             )}
                           >
-                            {val}
+                            Lewat
                           </button>
                         </TableCell>
-                      ))}
-                    </TableRow>
-                  ))
+
+                        {visibleScoreGrades.map((grade) => {
+                          const values = sub.grade_numbers?.[grade] || []
+                          const emptyCellCount =
+                            gradeColumnCounts[grade] - values.length
+
+                          return (
+                            <React.Fragment key={grade}>
+                              {values.map((val) => (
+                                <TableCell
+                                  key={`${grade}-${val}`}
+                                  className="border border-stone-300 p-0"
+                                >
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      handleScoreSelect(sub.id, grade, val)
+                                    }
+                                    className={cn(
+                                      "min-h-[56px] w-full font-poppins text-sm transition-colors",
+                                      getScoreColors(
+                                        grade,
+                                        selectedScore?.grade === grade &&
+                                          selectedScore.value === val
+                                      )
+                                    )}
+                                  >
+                                    {val}
+                                  </button>
+                                </TableCell>
+                              ))}
+                              {Array.from({ length: emptyCellCount }).map(
+                                (_, emptyIndex) => (
+                                  <TableCell
+                                    key={`${grade}-empty-${emptyIndex}`}
+                                    aria-hidden="true"
+                                    className="border border-stone-300 bg-neutral-50 p-0"
+                                  />
+                                )
+                              )}
+                            </React.Fragment>
+                          )
+                        })}
+                      </TableRow>
+                    )
+                  })
                 )}
               </TableBody>
             </Table>

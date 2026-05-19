@@ -1,13 +1,11 @@
 "use client"
 
-import React, { useState, useEffect, useRef, useTransition } from "react"
+import React, { useEffect, useRef, useState, useTransition } from "react"
+import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import {
   ArrowLeft,
-  Calendar,
-  MapPin,
-  Banknote,
   Eye,
   Users,
   UploadCloud,
@@ -19,7 +17,6 @@ import {
 
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
-import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   Table,
@@ -41,8 +38,17 @@ import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
 
 import { pelunasanEventAction } from "@/actions/participant-event.actions"
+import type {
+  AssessmentRecap,
+  ParticipantScoreboard,
+  ParticipantScoreboardItem,
+  RegistrationDetail,
+} from "@/schemas/participant-event.schema"
 
 export type PaymentStatusType = "Lunas" | "Belum Lunas/DP" | string
+
+const ASSET_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? ""
+const EMPTY_TIME_LEFT = { days: 0, hours: 0, minutes: 0, seconds: 0 }
 
 function formatRupiah(amount: number | string) {
   const numAmount = typeof amount === "string" ? parseInt(amount, 10) : amount
@@ -70,9 +76,35 @@ function GlassCard({
   )
 }
 
+function getAssetUrl(path?: string | null) {
+  if (!path) return null
+  if (path.startsWith("http://") || path.startsWith("https://")) return path
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`
+  return `${ASSET_BASE_URL}${normalizedPath}`
+}
+
+function calculateTimeLeft(targetDate?: string | null) {
+  if (!targetDate) return EMPTY_TIME_LEFT
+
+  const difference = +new Date(targetDate) - +new Date()
+
+  if (difference <= 0) return EMPTY_TIME_LEFT
+
+  return {
+    days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+    hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+    minutes: Math.floor((difference / 1000 / 60) % 60),
+    seconds: Math.floor((difference / 1000) % 60),
+  }
+}
+
 function PaymentBadge({ status }: { status: PaymentStatusType }) {
   const isLunas = status === "FULL_PAID"
-  const label = isLunas ? "Lunas" : status === "DP_PAID" ? "Belum Lunas/DP" : status
+  const label = isLunas
+    ? "Lunas"
+    : status === "DP_PAID"
+      ? "Belum Lunas/DP"
+      : status
   return (
     <div
       className={`flex w-max items-center justify-center rounded-xl border px-3 py-1 ${isLunas ? "border-green-400 bg-emerald-50 text-green-500" : "border-red-300 bg-rose-50 text-red-500"}`}
@@ -82,7 +114,7 @@ function PaymentBadge({ status }: { status: PaymentStatusType }) {
   )
 }
 
-function PodiumItem({ entry }: { entry: any }) {
+function PodiumItem({ entry }: { entry: ParticipantScoreboardItem }) {
   let bgClass = "bg-gray-50 border-gray-200"
   let badgeClass = "bg-stone-300 text-white"
 
@@ -127,21 +159,23 @@ function PodiumItem({ entry }: { entry: any }) {
 
 interface EventOverviewClientProps {
   registrationId: string
-  registrationDetail: any
-  recap: any
-  scoreboard: any
+  registrationDetail: RegistrationDetail | null
+  recap: AssessmentRecap | null
+  scoreboard: ParticipantScoreboard | null
 }
 
-export default function EventOverviewClient({ registrationId, registrationDetail, recap, scoreboard }: EventOverviewClientProps) {
+export default function EventOverviewClient({
+  registrationId,
+  registrationDetail,
+  recap,
+  scoreboard,
+}: EventOverviewClientProps) {
   const router = useRouter()
-  const [isPending, startTransition] = useTransition()
+  const [, startTransition] = useTransition()
 
-  const [timeLeft, setTimeLeft] = useState({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-  })
+  const [timeLeft, setTimeLeft] = useState(() =>
+    calculateTimeLeft(registrationDetail?.event.target_date)
+  )
 
   const [isDPModalOpen, setIsDPModalOpen] = useState(false)
   const [paymentProof, setPaymentProof] = useState<File | null>(null)
@@ -149,34 +183,17 @@ export default function EventOverviewClient({ registrationId, registrationDetail
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const data = registrationDetail
-  
+
   // Calculate percentage
-  let maxScore = 500 // assuming 500 for now, could be dynamic
+  const maxScore = recap?.max_score ?? 500
   let percentage = 0
   if (recap?.final_score) {
     percentage = (recap.final_score / maxScore) * 100
   }
 
   useEffect(() => {
-    const calculateTimeLeft = () => {
-      if (!data?.event?.target_date) return { days: 0, hours: 0, minutes: 0, seconds: 0 }
-      const difference = +new Date(data.event.target_date) - +new Date()
-      let timeLeft = { days: 0, hours: 0, minutes: 0, seconds: 0 }
-
-      if (difference > 0) {
-        timeLeft = {
-          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-          minutes: Math.floor((difference / 1000 / 60) % 60),
-          seconds: Math.floor((difference / 1000) % 60),
-        }
-      }
-      return timeLeft
-    }
-
-    setTimeLeft(calculateTimeLeft())
     const timer = setInterval(() => {
-      setTimeLeft(calculateTimeLeft())
+      setTimeLeft(calculateTimeLeft(data?.event.target_date))
     }, 1000)
 
     return () => clearInterval(timer)
@@ -201,7 +218,7 @@ export default function EventOverviewClient({ registrationId, registrationDetail
 
     const res = await pelunasanEventAction(registrationId, formData)
     setIsSubmittingDP(false)
-    
+
     if (res.success) {
       alert(res.message)
       setIsDPModalOpen(false)
@@ -231,6 +248,10 @@ export default function EventOverviewClient({ registrationId, registrationDetail
     )
   }
 
+  const eventLogoUrl = getAssetUrl(data.event.logo_url ?? data.event.logo_path)
+  const teamLogoUrl = getAssetUrl(data.team.logo_url)
+  const paymentProofUrl = getAssetUrl(data.payment.proof_url)
+
   return (
     <div className="flex flex-1 flex-col">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 p-4 md:gap-8 md:p-6 lg:p-8">
@@ -249,9 +270,16 @@ export default function EventOverviewClient({ registrationId, registrationDetail
         <div className="flex flex-col gap-8">
           <div className="flex flex-col gap-6 rounded-2xl border border-sky-100 bg-sky-50/50 p-5 md:p-8">
             <div className="flex flex-col gap-6 md:flex-row md:items-start md:gap-8">
-              <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-stone-200 md:h-32 md:w-32">
-                {data.event.logoUrl ? (
-                  <img src={data.event.logoUrl.startsWith("/") ? process.env.NEXT_PUBLIC_API_URL + data.event.logoUrl : data.event.logoUrl} className="h-full w-full object-cover" alt="Logo" />
+              <div className="relative flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-stone-200 md:h-32 md:w-32">
+                {eventLogoUrl ? (
+                  <Image
+                    src={eventLogoUrl}
+                    className="h-full w-full object-cover"
+                    alt="Logo"
+                    fill
+                    sizes="(min-width: 768px) 128px, 96px"
+                    unoptimized
+                  />
                 ) : (
                   <ImageIcon className="h-10 w-10 text-neutral-400" />
                 )}
@@ -262,7 +290,7 @@ export default function EventOverviewClient({ registrationId, registrationDetail
                     {data.event.title}
                   </h1>
                   <p className="font-poppins text-sm text-neutral-500 md:text-base">
-                    {data.event.description}
+                    {data.event.description || "-"}
                   </p>
                 </div>
 
@@ -346,16 +374,26 @@ export default function EventOverviewClient({ registrationId, registrationDetail
               </TabsList>
             </div>
 
-            <TabsContent value="overview" className="m-0 flex flex-col gap-6 outline-none">
+            <TabsContent
+              value="overview"
+              className="m-0 flex flex-col gap-6 outline-none"
+            >
               <GlassCard className="flex flex-col gap-6 p-5 md:p-8">
                 <div className="flex flex-col gap-4">
                   <h3 className="font-poppins text-lg font-semibold text-neutral-800">
                     Data Tim Terdaftar
                   </h3>
                   <div className="flex items-center gap-4 rounded-xl border border-sky-100 bg-gradient-to-b from-white/60 to-white/40 p-4">
-                    <div className="h-14 w-14 rounded-lg bg-stone-200">
-                      {data.team.logo_url && (
-                        <img src={data.team.logo_url.startsWith("/") ? process.env.NEXT_PUBLIC_API_URL + data.team.logo_url : data.team.logo_url} className="h-full w-full object-cover rounded-lg" alt="Team Logo" />
+                    <div className="relative h-14 w-14 rounded-lg bg-stone-200">
+                      {teamLogoUrl && (
+                        <Image
+                          src={teamLogoUrl}
+                          className="h-full w-full rounded-lg object-cover"
+                          alt="Team Logo"
+                          fill
+                          sizes="56px"
+                          unoptimized
+                        />
                       )}
                     </div>
                     <div className="flex flex-col">
@@ -411,9 +449,16 @@ export default function EventOverviewClient({ registrationId, registrationDetail
                       <span className="font-poppins text-sm text-neutral-500">
                         Bukti Pembayaran
                       </span>
-                      {data.payment.proof_url && (
-                        <a href={data.payment.proof_url.startsWith("/") ? process.env.NEXT_PUBLIC_API_URL + data.payment.proof_url : data.payment.proof_url} target="_blank" rel="noreferrer">
-                          <Button variant="outline" className="font-inter w-fit gap-2 border-neutral-300 text-neutral-700">
+                      {paymentProofUrl && (
+                        <a
+                          href={paymentProofUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          <Button
+                            variant="outline"
+                            className="font-inter w-fit gap-2 border-neutral-300 text-neutral-700"
+                          >
                             <Eye className="h-4 w-4" /> Lihat Bukti
                           </Button>
                         </a>
@@ -458,9 +503,14 @@ export default function EventOverviewClient({ registrationId, registrationDetail
               </GlassCard>
             </TabsContent>
 
-            <TabsContent value="rekap" className="m-0 flex flex-col gap-6 outline-none">
+            <TabsContent
+              value="rekap"
+              className="m-0 flex flex-col gap-6 outline-none"
+            >
               {!recap ? (
-                <div className="text-center p-8 text-neutral-500">Rekap nilai belum tersedia.</div>
+                <div className="p-8 text-center text-neutral-500">
+                  Rekap nilai belum tersedia.
+                </div>
               ) : (
                 <>
                   <GlassCard className="flex flex-col gap-6 p-6">
@@ -483,7 +533,10 @@ export default function EventOverviewClient({ registrationId, registrationDetail
                       </div>
                     </div>
                     <div className="flex flex-col gap-2">
-                      <Progress value={percentage} className="indicator-blue-500 h-3 bg-gray-200" />
+                      <Progress
+                        value={percentage}
+                        className="indicator-blue-500 h-3 bg-gray-200"
+                      />
                       <span className="font-inter text-center text-sm text-neutral-500 md:text-left">
                         {percentage.toFixed(1)}% dari nilai maksimal
                       </span>
@@ -500,29 +553,46 @@ export default function EventOverviewClient({ registrationId, registrationDetail
                       <Table>
                         <TableHeader>
                           <TableRow className="border-y border-neutral-200 bg-neutral-50/50 hover:bg-neutral-50/50">
-                            <TableHead className="py-4 pl-6 font-poppins text-sm font-semibold text-neutral-700">Kategori</TableHead>
-                            <TableHead className="py-4 pl-6 font-poppins text-sm font-semibold text-neutral-700">Sub Kategori</TableHead>
-                            <TableHead className="py-4 text-center font-poppins text-sm font-semibold text-neutral-700">Juri / Nilai</TableHead>
+                            <TableHead className="py-4 pl-6 font-poppins text-sm font-semibold text-neutral-700">
+                              Kategori
+                            </TableHead>
+                            <TableHead className="py-4 pl-6 font-poppins text-sm font-semibold text-neutral-700">
+                              Sub Kategori
+                            </TableHead>
+                            <TableHead className="py-4 text-center font-poppins text-sm font-semibold text-neutral-700">
+                              Juri / Nilai
+                            </TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {recap.categories?.map((cat: any, i: number) => (
+                          {recap.categories.map((cat, i) => (
                             <React.Fragment key={i}>
                               <TableRow className="border-b border-neutral-200 bg-neutral-100">
-                                <TableCell colSpan={3} className="py-2 pl-6 font-poppins text-sm font-semibold text-neutral-800">
+                                <TableCell
+                                  colSpan={3}
+                                  className="py-2 pl-6 font-poppins text-sm font-semibold text-neutral-800"
+                                >
                                   {cat.category_name}
                                 </TableCell>
                               </TableRow>
-                              {cat.sub_categories?.map((sub: any, j: number) => (
-                                <TableRow key={j} className="border-b border-neutral-200 hover:bg-neutral-50/50">
+                              {cat.sub_categories.map((sub, j) => (
+                                <TableRow
+                                  key={j}
+                                  className="border-b border-neutral-200 hover:bg-neutral-50/50"
+                                >
                                   <TableCell></TableCell>
                                   <TableCell className="py-4 pl-6 font-poppins text-sm text-neutral-700">
                                     {sub.name}
                                   </TableCell>
-                                  <TableCell className="py-4 text-center font-poppins text-sm text-neutral-700 flex gap-4 justify-center">
-                                    {sub.scores?.map((score: any, k: number) => (
-                                      <div key={k} className="flex flex-col text-xs">
-                                        <span className="font-semibold">{score.judge_name}</span>
+                                  <TableCell className="flex justify-center gap-4 py-4 text-center font-poppins text-sm text-neutral-700">
+                                    {sub.scores.map((score, k) => (
+                                      <div
+                                        key={k}
+                                        className="flex flex-col text-xs"
+                                      >
+                                        <span className="font-semibold">
+                                          {score.judge_name}
+                                        </span>
                                         <span>{score.value}</span>
                                       </div>
                                     ))}
@@ -539,9 +609,14 @@ export default function EventOverviewClient({ registrationId, registrationDetail
               )}
             </TabsContent>
 
-            <TabsContent value="leaderboard" className="m-0 flex flex-col gap-6 outline-none">
+            <TabsContent
+              value="leaderboard"
+              className="m-0 flex flex-col gap-6 outline-none"
+            >
               {!scoreboard ? (
-                <div className="text-center p-8 text-neutral-500">Leaderboard belum dipublish oleh organizer.</div>
+                <div className="p-8 text-center text-neutral-500">
+                  Leaderboard belum dipublish oleh organizer.
+                </div>
               ) : (
                 <GlassCard className="flex flex-col gap-8 p-6 md:p-8">
                   <h3 className="border-b border-neutral-200/50 pb-4 font-poppins text-lg font-semibold text-neutral-800">
@@ -565,22 +640,34 @@ export default function EventOverviewClient({ registrationId, registrationDetail
                       <Table>
                         <TableHeader>
                           <TableRow className="bg-neutral-50/50 hover:bg-neutral-50/50">
-                            <TableHead className="w-24 py-4 pl-6 font-poppins text-sm font-semibold text-neutral-700">Ranking</TableHead>
-                            <TableHead className="py-4 font-poppins text-sm font-semibold text-neutral-700">Nama Tim</TableHead>
-                            <TableHead className="py-4 font-poppins text-sm font-semibold text-neutral-700">Nama Sekolah</TableHead>
-                            <TableHead className="py-4 pr-6 text-center font-poppins text-sm font-semibold text-neutral-700">Total Nilai</TableHead>
+                            <TableHead className="w-24 py-4 pl-6 font-poppins text-sm font-semibold text-neutral-700">
+                              Ranking
+                            </TableHead>
+                            <TableHead className="py-4 font-poppins text-sm font-semibold text-neutral-700">
+                              Nama Tim
+                            </TableHead>
+                            <TableHead className="py-4 font-poppins text-sm font-semibold text-neutral-700">
+                              Nama Sekolah
+                            </TableHead>
+                            <TableHead className="py-4 pr-6 text-center font-poppins text-sm font-semibold text-neutral-700">
+                              Total Nilai
+                            </TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {scoreboard.items?.map((rank: any) => (
+                          {scoreboard.items.map((rank) => (
                             <TableRow
                               key={rank.regis_id}
                               className={`hover:bg-neutral-50/50 ${rank.regis_id === registrationId ? "border-l-4 border-l-blue-500 bg-indigo-50" : ""}`}
                             >
-                              <TableCell className="py-4 pl-6 font-poppins text-sm font-semibold text-neutral-800">{rank.rank}</TableCell>
+                              <TableCell className="py-4 pl-6 font-poppins text-sm font-semibold text-neutral-800">
+                                {rank.rank}
+                              </TableCell>
                               <TableCell className="py-4">
                                 <div className="flex items-center gap-3">
-                                  <span className={`font-poppins text-sm ${rank.regis_id === registrationId ? "font-semibold text-blue-600" : "text-neutral-700"}`}>
+                                  <span
+                                    className={`font-poppins text-sm ${rank.regis_id === registrationId ? "font-semibold text-blue-600" : "text-neutral-700"}`}
+                                  >
                                     {rank.team_name}
                                   </span>
                                   {rank.regis_id === registrationId && (
@@ -590,8 +677,12 @@ export default function EventOverviewClient({ registrationId, registrationDetail
                                   )}
                                 </div>
                               </TableCell>
-                              <TableCell className="py-4 font-poppins text-sm text-neutral-600">{rank.insti_name}</TableCell>
-                              <TableCell className="py-4 pr-6 text-center font-poppins text-sm font-bold text-neutral-800">{rank.final_score}</TableCell>
+                              <TableCell className="py-4 font-poppins text-sm text-neutral-600">
+                                {rank.insti_name}
+                              </TableCell>
+                              <TableCell className="py-4 pr-6 text-center font-poppins text-sm font-bold text-neutral-800">
+                                {rank.final_score}
+                              </TableCell>
                             </TableRow>
                           ))}
                         </TableBody>
@@ -613,57 +704,103 @@ export default function EventOverviewClient({ registrationId, registrationDetail
                     Bayar Sisa Pembayaran
                   </DialogTitle>
                   <DialogDescription className="text-center font-poppins text-sm text-neutral-400">
-                    Lengkapi form pembayaran untuk melunasi sisa pembayaran event
+                    Lengkapi form pembayaran untuk melunasi sisa pembayaran
+                    event
                   </DialogDescription>
                 </DialogHeader>
 
                 <div className="flex flex-col gap-6 p-6 sm:px-10 sm:pt-6 sm:pb-10">
                   <div className="flex flex-col gap-4 rounded-2xl border border-sky-100 bg-sky-50/50 p-4 sm:p-5">
                     <div className="flex items-center gap-4">
-                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-stone-300">
-                        {data.event.logoUrl ? (
-                          <img src={data.event.logoUrl.startsWith("/") ? process.env.NEXT_PUBLIC_API_URL + data.event.logoUrl : data.event.logoUrl} className="h-full w-full object-cover rounded-xl" alt="Logo" />
+                      <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-stone-300">
+                        {eventLogoUrl ? (
+                          <Image
+                            src={eventLogoUrl}
+                            className="h-full w-full rounded-xl object-cover"
+                            alt="Logo"
+                            fill
+                            sizes="48px"
+                            unoptimized
+                          />
                         ) : (
                           <ImageIcon className="h-6 w-6 text-neutral-500" />
                         )}
                       </div>
-                      <h3 className="font-poppins text-base font-semibold text-neutral-800">{data.event.title}</h3>
+                      <h3 className="font-poppins text-base font-semibold text-neutral-800">
+                        {data.event.title}
+                      </h3>
                     </div>
-                    <p className="font-poppins text-xs text-neutral-500">{data.event.description}</p>
+                    <p className="font-poppins text-xs text-neutral-500">
+                      {data.event.description || "-"}
+                    </p>
 
                     <div className="grid grid-cols-2 gap-4 border-t border-neutral-200/50 pt-4">
                       <div className="flex flex-col gap-1">
-                        <span className="font-poppins text-xs text-neutral-500">Sisa Pembayaran:</span>
-                        <span className="font-poppins text-lg font-bold text-blue-500">{formatRupiah(data.payment.remaining_amount || 0)}</span>
+                        <span className="font-poppins text-xs text-neutral-500">
+                          Sisa Pembayaran:
+                        </span>
+                        <span className="font-poppins text-lg font-bold text-blue-500">
+                          {formatRupiah(data.payment.remaining_amount || 0)}
+                        </span>
                       </div>
                     </div>
                   </div>
 
                   <div className="flex flex-col gap-2">
                     <Label className="font-poppins text-sm font-normal text-neutral-700">
-                      Upload Bukti Pembayaran <span className="text-red-500">*</span>
+                      Upload Bukti Pembayaran{" "}
+                      <span className="text-red-500">*</span>
                     </Label>
 
-                    <input type="file" className="hidden" ref={fileInputRef} accept=".jpg,.png,.pdf" onChange={handleFileChange} />
+                    <input
+                      type="file"
+                      className="hidden"
+                      ref={fileInputRef}
+                      accept=".jpg,.png,.pdf"
+                      onChange={handleFileChange}
+                    />
 
-                    <div onClick={() => fileInputRef.current?.click()} className="group flex cursor-pointer flex-col items-center justify-center gap-4 rounded-xl border border-dashed border-neutral-300 bg-neutral-50 p-6 transition-all hover:border-blue-400 hover:bg-blue-50/50 sm:p-8">
+                    <div
+                      onClick={() => fileInputRef.current?.click()}
+                      className="group flex cursor-pointer flex-col items-center justify-center gap-4 rounded-xl border border-dashed border-neutral-300 bg-neutral-50 p-6 transition-all hover:border-blue-400 hover:bg-blue-50/50 sm:p-8"
+                    >
                       {paymentProof ? (
                         <>
-                          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-blue-600"><FileText className="h-6 w-6" /></div>
+                          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-blue-600">
+                            <FileText className="h-6 w-6" />
+                          </div>
                           <div className="text-center">
-                            <p className="max-w-[200px] truncate font-poppins text-sm font-semibold text-neutral-800 sm:max-w-xs">{paymentProof.name}</p>
-                            <p className="mt-1 font-poppins text-xs text-neutral-500">Klik untuk mengganti file</p>
+                            <p className="max-w-[200px] truncate font-poppins text-sm font-semibold text-neutral-800 sm:max-w-xs">
+                              {paymentProof.name}
+                            </p>
+                            <p className="mt-1 font-poppins text-xs text-neutral-500">
+                              Klik untuk mengganti file
+                            </p>
                           </div>
                         </>
                       ) : (
                         <>
-                          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-neutral-200 transition-colors group-hover:bg-blue-100"><UploadCloud className="h-6 w-6 text-neutral-500 group-hover:text-blue-500" /></div>
-                          <div className="flex flex-col gap-1 text-center">
-                            <p className="font-poppins text-sm font-medium text-neutral-700">Drag & drop file di sini</p>
-                            <p className="font-poppins text-sm text-neutral-500">atau</p>
+                          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-neutral-200 transition-colors group-hover:bg-blue-100">
+                            <UploadCloud className="h-6 w-6 text-neutral-500 group-hover:text-blue-500" />
                           </div>
-                          <Button type="button" variant="outline" className="pointer-events-none h-9 px-6 font-poppins text-sm">Pilih File</Button>
-                          <p className="mt-2 text-center font-poppins text-xs text-neutral-400">Format: JPG, PNG, atau PDF. Maksimal 5MB</p>
+                          <div className="flex flex-col gap-1 text-center">
+                            <p className="font-poppins text-sm font-medium text-neutral-700">
+                              Drag & drop file di sini
+                            </p>
+                            <p className="font-poppins text-sm text-neutral-500">
+                              atau
+                            </p>
+                          </div>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className="pointer-events-none h-9 px-6 font-poppins text-sm"
+                          >
+                            Pilih File
+                          </Button>
+                          <p className="mt-2 text-center font-poppins text-xs text-neutral-400">
+                            Format: JPG, PNG, atau PDF. Maksimal 5MB
+                          </p>
                         </>
                       )}
                     </div>
@@ -671,10 +808,27 @@ export default function EventOverviewClient({ registrationId, registrationDetail
 
                   <div className="mt-4 flex flex-col-reverse items-center gap-3 sm:flex-row">
                     <DialogClose asChild>
-                      <Button type="button" variant="outline" className="h-12 w-full rounded-full border-neutral-300 font-poppins text-base font-semibold text-neutral-600 hover:bg-neutral-100 sm:flex-1">Batal</Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="h-12 w-full rounded-full border-neutral-300 font-poppins text-base font-semibold text-neutral-600 hover:bg-neutral-100 sm:flex-1"
+                      >
+                        Batal
+                      </Button>
                     </DialogClose>
-                    <Button type="submit" disabled={isSubmittingDP || !paymentProof} className="h-12 w-full rounded-full bg-red-400 font-poppins text-base font-bold text-white shadow-sm hover:bg-red-500 disabled:opacity-50 sm:flex-1">
-                      {isSubmittingDP ? <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Memproses...</> : "Bayar Sisa"}
+                    <Button
+                      type="submit"
+                      disabled={isSubmittingDP || !paymentProof}
+                      className="h-12 w-full rounded-full bg-red-400 font-poppins text-base font-bold text-white shadow-sm hover:bg-red-500 disabled:opacity-50 sm:flex-1"
+                    >
+                      {isSubmittingDP ? (
+                        <>
+                          <Loader2 className="mr-2 h-5 w-5 animate-spin" />{" "}
+                          Memproses...
+                        </>
+                      ) : (
+                        "Bayar Sisa"
+                      )}
                     </Button>
                   </div>
                 </div>

@@ -28,9 +28,9 @@ class EOTeamService {
     const res = await fetch(url.toString(), {
       headers: {
         Authorization: `Bearer ${token}`,
-        "x-api-key": API_KEY || '',
+        "x-api-key": API_KEY || "",
       },
-      next: { revalidate: 0 }, // Ensure fresh data
+      cache: "no-store",
     })
 
     if (!res.ok) {
@@ -51,8 +51,9 @@ class EOTeamService {
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          "x-api-key": API_KEY || '',
+          "x-api-key": API_KEY || "",
         },
+        cache: "no-store",
       }
     )
 
@@ -70,9 +71,9 @@ class EOTeamService {
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          "x-api-key": API_KEY || '',
+          "x-api-key": API_KEY || "",
         },
-        next: { revalidate: 0 },
+        cache: "no-store",
       }
     )
 
@@ -95,7 +96,7 @@ class EOTeamService {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
-          "x-api-key": API_KEY || '',
+          "x-api-key": API_KEY || "",
         },
       }
     )

@@ -5,6 +5,7 @@ import { redirect } from "next/navigation"
 import { profileService } from "@/services/profile.service"
 import { eoTeamService } from "@/services/eo-team.service"
 import { TeamAssessmentList } from "@/components/organizer/team-assessment-list"
+import { isApprovedTeamPaymentStatus } from "@/lib/team-status"
 
 export default async function AssessmentFormListPage() {
   const session: any = await getServerSession(authOptions)
@@ -27,6 +28,9 @@ export default async function AssessmentFormListPage() {
 
   const eventId = events[0].id
   const teams = await eoTeamService.getTeamList(session.accessToken, eventId)
+  const approvedTeams = teams.filter((team) =>
+    isApprovedTeamPaymentStatus(team.payment_status)
+  )
 
   return (
     <div className="flex flex-1 flex-col">
@@ -36,7 +40,7 @@ export default async function AssessmentFormListPage() {
           Form Penilaian
         </h1>
 
-        <TeamAssessmentList teams={teams} />
+        <TeamAssessmentList eventId={eventId} teams={approvedTeams} />
       </div>
     </div>
   )

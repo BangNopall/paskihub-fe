@@ -1,33 +1,42 @@
 import { getServerSession } from "next-auth/next"
+import { redirect } from "next/navigation"
+import type { Session } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { participantEventService } from "@/services/participant-event.service"
 import EventOverviewClient from "./EventOverviewClient"
 
-export default async function EventOverviewPage({ params }: { params: { id: string } }) {
-  const session: any = await getServerSession(authOptions)
+interface EventOverviewPageProps {
+  params: Promise<{ id: string }>
+}
+
+export default async function EventOverviewPage({
+  params,
+}: EventOverviewPageProps) {
+  const { id } = await params
+  const session = (await getServerSession(authOptions)) as Session | null
   const token = session?.accessToken
 
-  const registrationDetail = await participantEventService.getRegistrationDetail(params.id, token)
-
-  let recap = null
-  let scoreboard = null
-
-  if (registrationDetail?.event?.id) {
-    recap = await participantEventService.getAssessmentRecap(params.id, token).catch(() => null)
+  if (!token) {
+    redirect("/auth/login")
   }
 
-  // Get event_level_id from registrationDetail
-  // Since our API currently doesn't return event_level_id explicitly in Detail Response...
-  // Wait, let's see if we can get it from getActiveEvents or fetch it separately. 
-  // For now, scoreboard endpoint requires eventLevelId. We'll pass it if we have it.
-  // We can fetch it if needed, or we just pass the regisID for now and see if the UI needs it.
-  // Let's assume we can get it or we just don't fetch scoreboard here for now since it needs eventLevelID.
-  // Actually, we can fetch scoreboard if we know the level ID. We'll handle it inside the client or update the BE.
-  // For now, we pass what we have.
+  const registrationDetail =
+    await participantEventService.getRegistrationDetail(id, token)
+
+  const [recap, scoreboard] = await Promise.all([
+    registrationDetail
+      ? participantEventService.getAssessmentRecap(id, token).catch(() => null)
+      : Promise.resolve(null),
+    registrationDetail?.event_level_id
+      ? participantEventService
+          .getScoreboard(registrationDetail.event_level_id, token)
+          .catch(() => null)
+      : Promise.resolve(null),
+  ])
 
   return (
-    <EventOverviewClient 
-      registrationId={params.id}
+    <EventOverviewClient
+      registrationId={id}
       registrationDetail={registrationDetail}
       recap={recap}
       scoreboard={scoreboard}

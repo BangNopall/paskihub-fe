@@ -1,8 +1,10 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useTransition } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Search, Filter, ChevronDown, Image as ImageIcon } from "lucide-react"
+import { toast } from "sonner"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -23,6 +25,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { EOTeamListRes } from "@/schemas/eo-team.schema"
+import { startAssessmentAction } from "@/actions/eo-team.actions"
 
 const JENJANG_LIST = ["SD", "SMP", "SMA", "PURNA", "UMUM"]
 
@@ -68,22 +71,40 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 function ActionButton({
+  eventId,
   registrationId,
   status,
 }: {
+  eventId: string
   registrationId: string
   status: string
 }) {
+  const router = useRouter()
+  const [isPending, startTransition] = useTransition()
+
+  const handleStartAssessment = () => {
+    startTransition(async () => {
+      try {
+        await startAssessmentAction(eventId, registrationId)
+        router.push(`/organizer/dashboard/assessment-form/${registrationId}`)
+      } catch (error: unknown) {
+        const message =
+          error instanceof Error ? error.message : "Gagal memulai penilaian"
+        toast.error(message)
+      }
+    })
+  }
+
   if (status === "PENDING") {
     return (
-      <Link href={`/organizer/dashboard/assessment-form/${registrationId}`}>
-        <Button
-          size="sm"
-          className="w-full bg-blue-500 font-poppins text-xs font-semibold text-white hover:bg-blue-600 sm:w-auto"
-        >
-          Mulai Menilai
-        </Button>
-      </Link>
+      <Button
+        size="sm"
+        onClick={handleStartAssessment}
+        disabled={isPending}
+        className="w-full bg-blue-500 font-poppins text-xs font-semibold text-white hover:bg-blue-600 sm:w-auto"
+      >
+        {isPending ? "Memulai..." : "Mulai Menilai"}
+      </Button>
     )
   }
   if (status === "IN_PROGRESS") {
@@ -106,10 +127,14 @@ function ActionButton({
 }
 
 interface TeamAssessmentListProps {
+  eventId: string
   teams: EOTeamListRes[]
 }
 
-export function TeamAssessmentList({ teams }: TeamAssessmentListProps) {
+export function TeamAssessmentList({
+  eventId,
+  teams,
+}: TeamAssessmentListProps) {
   // Filters
   const [searchQuery, setSearchQuery] = useState("")
   const [activeCategory, setActiveCategory] = useState<string>("Semua")
@@ -264,6 +289,7 @@ export function TeamAssessmentList({ teams }: TeamAssessmentListProps) {
                         <div className="flex items-center gap-3">
                           <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-zinc-200">
                             {logo_path ? (
+                              // eslint-disable-next-line @next/next/no-img-element
                               <img
                                 src={logo_path}
                                 alt="Logo"
@@ -294,6 +320,7 @@ export function TeamAssessmentList({ teams }: TeamAssessmentListProps) {
                       <TableCell className="py-4">
                         <div className="flex justify-center">
                           <ActionButton
+                            eventId={eventId}
                             registrationId={team.registration_id}
                             status={team.assessment_status}
                           />

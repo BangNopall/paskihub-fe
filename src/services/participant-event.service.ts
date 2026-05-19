@@ -1,8 +1,16 @@
-import { 
-  OpenEvent, 
-  OpenEventSchema, 
-  ActiveEvent, 
-  ActiveEventSchema 
+import {
+  OpenEventSchema,
+  ActiveEventSchema,
+  AssessmentRecapSchema,
+  ParticipantScoreboardSchema,
+  RegistrationDetailSchema,
+} from "@/schemas/participant-event.schema"
+import type {
+  ActiveEvent,
+  AssessmentRecap,
+  OpenEvent,
+  ParticipantScoreboard,
+  RegistrationDetail,
 } from "@/schemas/participant-event.schema"
 import { z } from "zod"
 
@@ -55,14 +63,17 @@ export const participantEventService = {
   },
 
   async pelunasanEvent(regisId: string, formData: FormData, token: string) {
-    const res = await fetch(`${API_URL}/api/v1/peserta/events/register/${regisId}/pelunasan`, {
-      method: "PUT",
-      headers: {
-        "x-api-key": API_KEY || "",
-        Authorization: `Bearer ${token}`,
-      },
-      body: formData,
-    })
+    const res = await fetch(
+      `${API_URL}/api/v1/peserta/events/register/${regisId}/pelunasan`,
+      {
+        method: "PUT",
+        headers: {
+          "x-api-key": API_KEY || "",
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      }
+    )
     if (!res.ok) {
       const err = await res.json().catch(() => ({}))
       throw new Error(err.message || "Gagal upload pelunasan")
@@ -70,45 +81,63 @@ export const participantEventService = {
     return res.json()
   },
 
-  async getRegistrationDetail(regisId: string, token: string) {
-    const res = await fetch(`${API_URL}/api/v1/peserta/events/registrations/${regisId}`, {
-      method: "GET",
-      headers: {
-        "x-api-key": API_KEY || "",
-        Authorization: `Bearer ${token}`,
-      },
-      cache: "no-store",
-    })
+  async getRegistrationDetail(
+    regisId: string,
+    token: string
+  ): Promise<RegistrationDetail | null> {
+    const res = await fetch(
+      `${API_URL}/api/v1/peserta/events/registrations/${regisId}`,
+      {
+        method: "GET",
+        headers: {
+          "x-api-key": API_KEY || "",
+          Authorization: `Bearer ${token}`,
+        },
+        cache: "no-store",
+      }
+    )
     if (!res.ok) return null
     const json = await res.json()
-    return json.data
+    return RegistrationDetailSchema.parse(json.data)
   },
 
-  async getAssessmentRecap(regisId: string, token: string) {
-    const res = await fetch(`${API_URL}/api/v1/peserta/assessment/recap/${regisId}`, {
-      method: "GET",
-      headers: {
-        "x-api-key": API_KEY || "",
-        Authorization: `Bearer ${token}`,
-      },
-      cache: "no-store",
-    })
+  async getAssessmentRecap(
+    regisId: string,
+    token: string
+  ): Promise<AssessmentRecap | null> {
+    const res = await fetch(
+      `${API_URL}/api/v1/peserta/assessment/recap/${regisId}`,
+      {
+        method: "GET",
+        headers: {
+          "x-api-key": API_KEY || "",
+          Authorization: `Bearer ${token}`,
+        },
+        cache: "no-store",
+      }
+    )
     if (!res.ok) return null
     const json = await res.json()
-    return json.data
+    return AssessmentRecapSchema.parse(json.data)
   },
 
-  async getScoreboard(eventLevelId: string, token: string) {
-    const res = await fetch(`${API_URL}/api/v1/peserta/rekap/scoreboard/${eventLevelId}`, {
-      method: "GET",
-      headers: {
-        "x-api-key": API_KEY || "",
-        Authorization: `Bearer ${token}`,
-      },
-      cache: "no-store",
-    })
+  async getScoreboard(
+    eventLevelId: string,
+    token: string
+  ): Promise<ParticipantScoreboard | null> {
+    const res = await fetch(
+      `${API_URL}/api/v1/peserta/rekap/scoreboard/${eventLevelId}`,
+      {
+        method: "GET",
+        headers: {
+          "x-api-key": API_KEY || "",
+          Authorization: `Bearer ${token}`,
+        },
+        cache: "no-store",
+      }
+    )
     if (!res.ok) return null
     const json = await res.json()
-    return json.data
-  }
+    return ParticipantScoreboardSchema.parse(json.data)
+  },
 }
