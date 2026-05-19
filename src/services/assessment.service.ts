@@ -252,10 +252,10 @@ export const assessmentService = {
       },
       body: JSON.stringify(data),
     })
+    const result = await res.json().catch(() => ({}))
     if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      throw new Error(err.message || "Failed to finalize assessment")
+      throw new Error(result.message || "Failed to finalize assessment")
     }
-    return res.json()
+    return result
   },
 }

@@ -41,7 +41,7 @@ export const ActiveEventSchema = z.object({
 })
 
 export const RegistrationDetailSchema = z.object({
-  event_level_id: NullableStringSchema,
+  event_level_id: z.string(),
   event: z.object({
     id: z.string(),
     title: z.string(),
@@ -50,7 +50,7 @@ export const RegistrationDetailSchema = z.object({
     location: z.string(),
     price: AmountSchema,
     target_date: z.string().nullable().optional(),
-    logo_url: NullableStringSchema,
+    logo_url: z.string().nullable(),
     logo_path: NullableStringSchema,
   }),
   team: z.object({
@@ -108,7 +108,7 @@ export const AssessmentRecapSchema = z.object({
     .array(AssessmentViolationSchema)
     .nullish()
     .transform((value) => value ?? []),
-  max_score: z.number().optional(),
+  max_score: z.number(),
 })
 
 export const ParticipantScoreboardItemSchema = z.object({

@@ -69,9 +69,6 @@ export default async function ScoreRecapPage() {
       rekapService.getScoreboard(levels[0].id, session.accessToken),
     ])
 
-    console.log(awards)
-    console.log(initialScoreboardRes)
-
     return (
       <ScoreRecapClient
         eventId={event.id}

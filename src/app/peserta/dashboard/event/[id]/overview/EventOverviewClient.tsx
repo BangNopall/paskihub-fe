@@ -185,9 +185,9 @@ export default function EventOverviewClient({
   const data = registrationDetail
 
   // Calculate percentage
-  const maxScore = recap?.max_score ?? 500
+  const maxScore = recap?.max_score ?? 0
   let percentage = 0
-  if (recap?.final_score) {
+  if (recap?.final_score && maxScore > 0) {
     percentage = (recap.final_score / maxScore) * 100
   }
 

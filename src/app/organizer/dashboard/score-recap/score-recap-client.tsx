@@ -164,7 +164,6 @@ export default function ScoreRecapClient({
         )
         setAwardsData(results)
       } catch (error) {
-        console.error("Gagal menghitung pemenang:", error)
         toast.error("Gagal menghitung daftar juara")
       } finally {
         setIsLoadingAwards(false)
@@ -349,9 +348,6 @@ export default function ScoreRecapClient({
                           </TableCell>
                           <TableCell className="py-4">
                             <div className="flex items-center gap-3">
-                              <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-zinc-100">
-                                <ImageIcon className="h-5 w-5 text-neutral-400" />
-                              </div>
                               <span className="font-poppins text-sm font-semibold text-neutral-800">
                                 {item.team_name}
                               </span>
@@ -505,9 +501,6 @@ export default function ScoreRecapClient({
                 <div className="flex flex-col gap-6">
                   {/* Identitas Tim */}
                   <div className="flex items-center gap-4 rounded-2xl border border-sky-100 bg-sky-100/50 p-4">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-stone-200">
-                      <ImageIcon className="h-6 w-6 text-neutral-400" />
-                    </div>
                     <div className="flex flex-col">
                       <span className="font-poppins text-base font-semibold text-neutral-800">
                         {selectedDetail.team_name}

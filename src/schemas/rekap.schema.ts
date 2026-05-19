@@ -25,8 +25,14 @@ export const TeamAssessmentDetailResSchema = z.object({
   regis_id: z.string().uuid(),
   team_name: z.string(),
   insti_name: z.string(),
-  categories: z.array(CategoryScoreDetailSchema),
-  violations: z.array(TeamViolationDetailSchema),
+  categories: z
+    .array(CategoryScoreDetailSchema)
+    .nullable()
+    .transform((v) => v || []),
+  violations: z
+    .array(TeamViolationDetailSchema)
+    .nullable()
+    .transform((v) => v || []),
   total_score: z.number(),
   total_violation: z.number(),
   final_score: z.number(),

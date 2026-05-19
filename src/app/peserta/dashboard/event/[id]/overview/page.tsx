@@ -27,7 +27,7 @@ export default async function EventOverviewPage({
     registrationDetail
       ? participantEventService.getAssessmentRecap(id, token).catch(() => null)
       : Promise.resolve(null),
-    registrationDetail?.event_level_id
+    registrationDetail
       ? participantEventService
           .getScoreboard(registrationDetail.event_level_id, token)
           .catch(() => null)

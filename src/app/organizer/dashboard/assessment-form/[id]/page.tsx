@@ -9,6 +9,7 @@ import { profileService } from "@/services/profile.service"
 import { eoTeamService } from "@/services/eo-team.service"
 import { assessmentService } from "@/services/assessment.service"
 import { AssessmentForm } from "@/components/organizer/assessment-form"
+import { isCompletedAssessmentStatus } from "@/lib/assessment-status"
 import { isApprovedTeamPaymentStatus } from "@/lib/team-status"
 import type { EOTeamDetailRes } from "@/schemas/eo-team.schema"
 import type { UnifiedAssessment } from "@/schemas/assessment.schema"
@@ -56,6 +57,29 @@ export default async function AssessmentFormDetailPage({
 
   const event = events[0]
   const eventId = event.id
+
+  let teams: Awaited<ReturnType<typeof eoTeamService.getTeamList>>
+
+  try {
+    teams = await eoTeamService.getTeamList(session.accessToken, eventId)
+  } catch (error: unknown) {
+    return <AssessmentFormError message={getErrorMessage(error)} />
+  }
+
+  const selectedTeam = teams.find(
+    (team) => team.registration_id === registrationId
+  )
+
+  if (!selectedTeam) {
+    notFound()
+  }
+
+  if (isCompletedAssessmentStatus(selectedTeam.assessment_status)) {
+    return (
+      <AssessmentFormError message="Tim ini sudah selesai dinilai dan form penilaian tidak dapat dibuka kembali." />
+    )
+  }
+
   let team: EOTeamDetailRes
 
   try {
