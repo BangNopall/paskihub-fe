@@ -4,6 +4,8 @@ import { adminService } from "@/services/admin.service"
 import { AlertCircle } from "lucide-react"
 import { UserResponse } from "@/schemas/admin.schema"
 
+export const dynamic = "force-dynamic"
+
 export default async function UserManagementPage() {
   let users: UserResponse[] = []
   let isError = false

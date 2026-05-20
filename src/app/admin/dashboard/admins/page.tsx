@@ -2,6 +2,8 @@ import React from "react"
 import { adminService } from "@/services/admin.service"
 import AdminManagementClient from "@/components/admin/admin-management-client"
 
+export const dynamic = "force-dynamic"
+
 export default async function AdminManagementPage() {
   let admins: any = []
   try {
