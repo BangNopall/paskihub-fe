@@ -23,6 +23,10 @@ export default async function OrganizerJuryPage() {
     )
   }
 
+  let eventId
+  let judges
+  let hasEvent = true
+
   try {
     // 1. Resolve EventID for this Organizer
     const events = await profileService.getEventsByUserId(
@@ -31,28 +35,33 @@ export default async function OrganizerJuryPage() {
     )
 
     if (!events || events.length === 0) {
-      return (
-        <div className="flex flex-1 flex-col items-center justify-center p-8 text-center">
-          <AlertCircle className="mb-4 h-12 w-12 text-amber-500" />
-          <h2 className="font-montserrat text-xl font-bold text-slate-900">
-            Event Tidak Ditemukan
-          </h2>
-          <p className="mt-2 text-slate-600">
-            Anda belum memiliki event yang terdaftar. Silakan buat event
-            terlebih dahulu.
-          </p>
-        </div>
-      )
+      hasEvent = false
+    } else {
+      eventId = events[0].id // 1 Organizer = 1 Event rule
+      // 2. Fetch Judges for this Event
+      judges = await judgeService.getAllJudges(session.accessToken, eventId)
     }
-
-    const eventId = events[0].id // 1 Organizer = 1 Event rule
-
-    // 2. Fetch Judges for this Event
-    const judges = await judgeService.getAllJudges(session.accessToken, eventId)
-
-    return <JudgeManagement eventId={eventId} initialJudges={judges} />
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Gagal memuat data juri:", error)
+  }
+
+  if (!hasEvent) {
+    return (
+      <div className="flex flex-1 flex-col items-center justify-center p-8 text-center">
+        <AlertCircle className="mb-4 h-12 w-12 text-amber-500" />
+        <h2 className="font-montserrat text-xl font-bold text-slate-900">
+          Event Tidak Ditemukan
+        </h2>
+        <p className="mt-2 text-slate-600">
+          Anda belum memiliki event yang terdaftar. Silakan buat event terlebih
+          dahulu.
+        </p>
+      </div>
+    )
+  }
+
+  if (!eventId || !judges) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center p-8 text-center">
         <AlertCircle className="mb-4 h-12 w-12 text-red-500" />
@@ -62,15 +71,12 @@ export default async function OrganizerJuryPage() {
         <p className="mt-2 text-slate-600">
           Terjadi kesalahan saat mengambil data juri dari server.
         </p>
-        <Button
-          variant="outline"
-          className="mt-4 rounded-full"
-          // In Next.js, this simple client reload logic inside a Server Component
-          // isn't ideal but keep it for UX consistency with previous mock
-        >
+        <Button variant="outline" className="mt-4 rounded-full">
           Muat Ulang
         </Button>
       </div>
     )
   }
+
+  return <JudgeManagement eventId={eventId} initialJudges={judges} />
 }

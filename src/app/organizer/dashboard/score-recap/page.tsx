@@ -63,22 +63,21 @@ export default async function ScoreRecapPage() {
     )
   }
 
+  let awards
+  let initialScoreboardRes
   try {
-    const [awards, initialScoreboardRes] = await Promise.all([
+    const res = await Promise.all([
       rankingService.getAwards(event.id, session.accessToken),
       rekapService.getScoreboard(levels[0].id, session.accessToken),
     ])
-
-    return (
-      <ScoreRecapClient
-        eventId={event.id}
-        levels={levels}
-        initialAwards={awards}
-        initialScoreboard={initialScoreboardRes.items}
-      />
-    )
+    awards = res[0]
+    initialScoreboardRes = res[1]
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Error fetching score recap data:", error)
+  }
+
+  if (!awards || !initialScoreboardRes) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center p-8 text-center">
         <AlertCircle className="mb-4 h-12 w-12 text-red-500" />
@@ -91,4 +90,13 @@ export default async function ScoreRecapPage() {
       </div>
     )
   }
+
+  return (
+    <ScoreRecapClient
+      eventId={event.id}
+      levels={levels}
+      initialAwards={awards}
+      initialScoreboard={initialScoreboardRes.items}
+    />
+  )
 }

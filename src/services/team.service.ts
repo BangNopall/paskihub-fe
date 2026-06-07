@@ -42,6 +42,7 @@ export const teamService = {
     try {
       return data.map((item: any) => ParticipantTeamResSchema.parse(item))
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error("Zod validation error in getTeams:", error)
       return []
     }
@@ -80,6 +81,7 @@ export const teamService = {
     try {
       return TeamDetailResSchema.parse(json.data)
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error("Zod validation error in getTeamDetail:", error)
       return null
     }

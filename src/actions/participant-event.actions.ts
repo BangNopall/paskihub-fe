@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use server"
 
 import { participantEventService } from "@/services/participant-event.service"

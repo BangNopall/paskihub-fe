@@ -18,6 +18,7 @@ export default async function CoinTransactionsPage({ searchParams }: Props) {
   const limit = typeof params.limit === "string" ? parseInt(params.limit) : 10
 
   const initialData = await adminService.fetchTransactions(status, page, limit)
+  // eslint-disable-next-line no-console
   console.log(initialData)
 
   return (

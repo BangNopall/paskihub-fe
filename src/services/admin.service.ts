@@ -65,6 +65,7 @@ export const adminService = {
 
     const parsed = AdminUserListSchema.safeParse(mappedData)
     if (!parsed.success) {
+      // eslint-disable-next-line no-console
       console.error("Zod parse error:", parsed.error)
       return []
     }
@@ -98,6 +99,7 @@ export const adminService = {
 
     const parsed = AdminUserListSchema.safeParse(mappedData)
     if (!parsed.success) {
+      // eslint-disable-next-line no-console
       console.error("Zod parse error:", parsed.error)
       return []
     }
@@ -323,6 +325,7 @@ export const adminService = {
     const rawData = json.data || json
     const parsed = AdminTransactionListResponseSchema.safeParse(rawData)
     if (!parsed.success) {
+      // eslint-disable-next-line no-console
       console.error("Zod parse error:", parsed.error)
       return { transactions: [], total: 0, page, limit }
     }

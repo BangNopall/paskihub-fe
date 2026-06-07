@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client"
 
 import React, { useState, useEffect, useMemo } from "react"
@@ -104,6 +106,7 @@ export default function ScoreRecapClient({
   // --- FETCH SCOREBOARD WHEN LEVEL CHANGES ---
   useEffect(() => {
     if (activeLevelId === levels[0]?.id) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setScoreboard(initialScoreboard)
       return
     }

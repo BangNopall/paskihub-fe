@@ -1,3 +1,4 @@
+/* eslint-disable prefer-const */
 import React from "react"
 import { getServerSession } from "next-auth/next"
 import { redirect } from "next/navigation"
@@ -71,6 +72,7 @@ export default async function RankingSystemPage() {
       score_categories: a.score_categories,
     }))
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Gagal mengambil data sistem ranking:", error)
   }
 

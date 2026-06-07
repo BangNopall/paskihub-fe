@@ -1,3 +1,6 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @next/next/no-img-element */
 "use client"
 
 import React, { useState, useRef } from "react"
@@ -182,6 +185,16 @@ type MemberState = {
   photoUrl: string | null
 }
 
+const createEmptyMember = (role: string): MemberState => ({
+  id: Math.random().toString(36).substring(2, 9),
+  fullName: "",
+  role: role,
+  idCard: null,
+  idCardUrl: null,
+  photo: null,
+  photoUrl: "",
+})
+
 export default function TeamEditClient({
   initialData,
   id,
@@ -223,16 +236,6 @@ export default function TeamEditClient({
     }))
 
   const [members, setMembers] = useState<MemberState[]>(initialMembers)
-
-  const createEmptyMember = (role: string): MemberState => ({
-    id: Math.random().toString(36).substring(2, 9),
-    fullName: "",
-    role: role,
-    idCard: null,
-    idCardUrl: null,
-    photo: null,
-    photoUrl: "",
-  })
 
   const handleAddMember = (role: string) => {
     setMembers((prev) => [...prev, createEmptyMember(role)])

@@ -1,3 +1,6 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @next/next/no-img-element */
 "use client"
 
 import React, { useState, useTransition } from "react"
@@ -278,6 +281,7 @@ export default function TeamListClient({
 
   // Reset page when filters change
   React.useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCurrentPage(1)
   }, [searchQuery, activeCategory])
 

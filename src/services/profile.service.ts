@@ -47,6 +47,7 @@ export const profileService = {
         }
       } catch (e) {
         // Fallback silently if it's not a staff account or profile is unavailable
+        // eslint-disable-next-line no-console
         console.warn("Staff event fallback check failed:", e)
       }
     }
