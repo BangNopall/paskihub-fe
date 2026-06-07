@@ -37,11 +37,14 @@ export const baseResponseSchema = z.object({
   status: z.string().optional(),
 })
 
+export const RoleSchema = z.enum(["ADMIN", "ORGANIZER", "PESERTA"])
+export type Role = z.infer<typeof RoleSchema>
+
 export const loginResponseSchema = z.object({
   data: z.object({
     id: z.string().optional().or(z.literal("")),
     email: z.string().optional().or(z.literal("")),
-    role: z.string().optional().or(z.literal("")),
+    role: RoleSchema,
     parent_id: z.string().optional().nullable().or(z.literal("")),
     token: z.string(),
   }),

@@ -18,7 +18,7 @@ import {
   Pencil,
 } from "lucide-react"
 
-import { cn } from "@/lib/utils"
+import { cn, getProxyFileUrl } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
@@ -102,13 +102,8 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 function MemberCard({ member }: { member: ParticipantTeamMemberRes }) {
-  const API_URL =
-    process.env.NEXT_PUBLIC_API_BASE_URL ||
-    (process.env.NODE_ENV === "production" ? "" : "http://localhost:3010")
-  const photoUrl = member.photo_path ? `${API_URL}${member.photo_path}` : null
-  const idCardUrl = member.id_card_path
-    ? `${API_URL}${member.id_card_path}`
-    : null
+  const photoUrl = getProxyFileUrl(member.photo_path)
+  const idCardUrl = getProxyFileUrl(member.id_card_path)
 
   return (
     <div className="flex w-full items-center gap-4 rounded-xl bg-gray-50 px-4 py-3">
@@ -174,9 +169,7 @@ export default function TeamListClient({
     { label: "Rejected", value: "REJECTED" },
   ]
 
-  const API_URL =
-    process.env.NEXT_PUBLIC_API_BASE_URL ||
-    (process.env.NODE_ENV === "production" ? "" : "http://localhost:3010")
+
 
   const fetchDetail = async (id: string) => {
     setIsLoadingDetail(true)
@@ -326,7 +319,7 @@ export default function TeamListClient({
                         <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-zinc-200">
                           {team.logo_path ? (
                             <img
-                              src={`${API_URL}${team.logo_path}`}
+                              src={getProxyFileUrl(team.logo_path) || ""}
                               alt="Logo"
                               className="h-full w-full object-cover"
                             />
@@ -379,7 +372,7 @@ export default function TeamListClient({
               <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full border-4 border-stone-200 bg-neutral-100 sm:h-16 sm:w-16">
                 {!isLoadingDetail && teamDetail?.logo_path ? (
                   <img
-                    src={`${API_URL}${teamDetail.logo_path}`}
+                    src={getProxyFileUrl(teamDetail.logo_path) || ""}
                     alt="Logo"
                     className="h-full w-full object-cover"
                   />
@@ -477,7 +470,7 @@ export default function TeamListClient({
                           Surat Rekomendasi
                         </span>
                         <a
-                          href={`${API_URL}${teamDetail.rec_letter_path}`}
+                          href={getProxyFileUrl(teamDetail.rec_letter_path) || "#"}
                           target="_blank"
                           rel="noreferrer"
                           className="font-poppins text-xs text-blue-500 hover:underline"
@@ -486,7 +479,7 @@ export default function TeamListClient({
                         </a>
                       </div>
                       <a
-                        href={`${API_URL}${teamDetail.rec_letter_path}`}
+                        href={getProxyFileUrl(teamDetail.rec_letter_path) || "#"}
                         download
                         className="shrink-0"
                       >
@@ -530,7 +523,7 @@ export default function TeamListClient({
                     <div className="flex h-32 w-32 items-center justify-center overflow-hidden rounded-xl border border-gray-200 bg-stone-100 shadow-sm">
                       {teamDetail.logo_path ? (
                         <img
-                          src={`${API_URL}${teamDetail.logo_path}`}
+                          src={getProxyFileUrl(teamDetail.logo_path) || ""}
                           alt="Logo Tim"
                           className="h-full w-full object-cover"
                         />

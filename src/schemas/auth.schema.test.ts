@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import { loginFormSchema } from "@/schemas/auth.schema"
+import { loginFormSchema, loginResponseSchema } from "@/schemas/auth.schema"
 
 describe("Auth Schema - loginFormSchema", () => {
   it("should validate a correct payload", () => {
@@ -33,5 +33,43 @@ describe("Auth Schema - loginFormSchema", () => {
     if (!result.success) {
       expect(result.error.issues[0].message).toBe("Password minimal 6 karakter")
     }
+  })
+})
+
+describe("Auth Schema - loginResponseSchema", () => {
+  it("should accept valid roles", () => {
+    const validRoles = ["ADMIN", "ORGANIZER", "PESERTA"]
+    
+    validRoles.forEach((role) => {
+      const payload = {
+        data: {
+          id: "123",
+          email: "test@test.com",
+          role,
+          parent_id: null,
+          token: "jwt-token",
+        }
+      }
+      const result = loginResponseSchema.safeParse(payload)
+      expect(result.success).toBe(true)
+    })
+  })
+
+  it("should reject invalid roles", () => {
+    const invalidRoles = ["SUPERADMIN", "STAFF", "unknown", "", null]
+    
+    invalidRoles.forEach((role) => {
+      const payload = {
+        data: {
+          id: "123",
+          email: "test@test.com",
+          role,
+          parent_id: null,
+          token: "jwt-token",
+        }
+      }
+      const result = loginResponseSchema.safeParse(payload)
+      expect(result.success).toBe(false)
+    })
   })
 })

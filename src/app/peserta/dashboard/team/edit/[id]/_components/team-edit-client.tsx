@@ -22,7 +22,7 @@ import { toast } from "sonner"
 import { updateTeamAction } from "@/actions/team.actions"
 import { TeamDetailRes, TeamFormData } from "@/schemas/team.schema"
 
-// ==========================================
+import { getProxyFileUrl } from "@/lib/utils"
 // 1. REUSABLE UI COMPONENTS
 // ==========================================
 
@@ -202,22 +202,16 @@ export default function TeamEditClient({
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const API_URL =
-    process.env.NEXT_PUBLIC_API_BASE_URL ||
-    (process.env.NODE_ENV === "production" ? "" : "http://localhost:3010")
-
   // --- STATE UNTUK INFO TIM ---
   const [namaTim, setNamaTim] = useState(initialData.name)
   const [pelatihName, setPelatihName] = useState(initialData.pelatih)
   const [logoTim, setLogoTim] = useState<File | null>(null)
   const [logoTimUrl, setLogoTimUrl] = useState(
-    initialData.logo_path ? `${API_URL}${initialData.logo_path}` : ""
+    getProxyFileUrl(initialData.logo_path) || ""
   )
   const [suratRekTim, setSuratRekTim] = useState<File | null>(null)
   const [suratRekUrl, setSuratRekUrl] = useState(
-    initialData.rec_letter_path
-      ? `${API_URL}${initialData.rec_letter_path}`
-      : ""
+    getProxyFileUrl(initialData.rec_letter_path) || ""
   )
 
   // Flatten grouped members for editing state
@@ -230,9 +224,9 @@ export default function TeamEditClient({
       fullName: m.full_name,
       role: m.role,
       idCard: null,
-      idCardUrl: m.id_card_path ? `${API_URL}${m.id_card_path}` : null,
+      idCardUrl: getProxyFileUrl(m.id_card_path),
       photo: null,
-      photoUrl: m.photo_path ? `${API_URL}${m.photo_path}` : null,
+      photoUrl: getProxyFileUrl(m.photo_path),
     }))
 
   const [members, setMembers] = useState<MemberState[]>(initialMembers)
@@ -388,7 +382,7 @@ export default function TeamEditClient({
                       file
                         ? URL.createObjectURL(file)
                         : initialData.logo_path
-                          ? `${API_URL}${initialData.logo_path}`
+                          ? getProxyFileUrl(initialData.logo_path) || ""
                           : ""
                     )
                   }}

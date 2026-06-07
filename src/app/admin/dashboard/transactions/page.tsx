@@ -19,7 +19,7 @@ export default async function CoinTransactionsPage({ searchParams }: Props) {
     page: z.coerce.number().min(1).catch(1),
     limit: z.coerce.number().min(1).max(100).catch(10),
     status: z
-      .enum(["PENDING", "APPROVED", "REJECTED"])
+      .enum(["PENDING", "APPROVE", "REJECTED"])
       .optional()
       .catch(undefined),
   })

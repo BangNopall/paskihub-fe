@@ -8,6 +8,7 @@ import { teamService } from "@/services/team.service"
 import { TeamFormData } from "@/schemas/team.schema"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
+import { buildCreateTeamFormData, buildUpdateTeamFormData } from "@/lib/team-form"
 
 async function getAuthToken() {
   const session: any = await getServerSession(authOptions)
@@ -18,28 +19,7 @@ async function getAuthToken() {
 export async function createTeamAction(data: TeamFormData) {
   const token = await getAuthToken()
 
-  const formData = new FormData()
-  formData.append("name", data.namaTim)
-  formData.append("coach_name", data.pelatih)
-
-  if (data.logoTim instanceof File) {
-    formData.append("logo", data.logoTim)
-  }
-
-  if (data.suratRekomendasi instanceof File) {
-    formData.append("recommendation_letter", data.suratRekomendasi)
-  }
-
-  data.members.forEach((member, index) => {
-    formData.append(`members[${index}][full_name]`, member.fullName)
-    formData.append(`members[${index}][role]`, member.role)
-    if (member.idCard instanceof File) {
-      formData.append(`members[${index}][id_card]`, member.idCard)
-    }
-    if (member.photo instanceof File) {
-      formData.append(`members[${index}][photo]`, member.photo)
-    }
-  })
+  const formData = buildCreateTeamFormData(data)
 
   try {
     const res = await teamService.createTeam(formData, token)
@@ -54,28 +34,7 @@ export async function updateTeamAction(id: string, data: TeamFormData) {
   const token = await getAuthToken()
   if (!token) throw new Error("Unauthorized")
 
-  const formData = new FormData()
-  formData.append("name", data.namaTim)
-  formData.append("coach_name", data.pelatih)
-
-  if (data.logoTim instanceof File) {
-    formData.append("logo", data.logoTim)
-  }
-
-  if (data.suratRekomendasi instanceof File) {
-    formData.append("recommendation_letter", data.suratRekomendasi)
-  }
-
-  data.members.forEach((member, index) => {
-    formData.append(`members[${index}][full_name]`, member.fullName)
-    formData.append(`members[${index}][role]`, member.role)
-    if (member.idCard instanceof File) {
-      formData.append(`members[${index}][id_card]`, member.idCard)
-    }
-    if (member.photo instanceof File) {
-      formData.append(`members[${index}][photo]`, member.photo)
-    }
-  })
+  const formData = buildUpdateTeamFormData(data)
 
   try {
     const res = await teamService.updateTeam(id, formData, token)

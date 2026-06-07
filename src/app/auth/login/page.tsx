@@ -1,7 +1,7 @@
 "use client"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { getSession, signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 
@@ -26,6 +26,18 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const error = params.get("error")
+    if (error === "SessionExpired") {
+      toast.error("Sesi Berakhir", { description: "Sesi Anda telah berakhir. Silakan masuk kembali." })
+      window.history.replaceState(null, "", window.location.pathname)
+    } else if (error === "AccessDenied") {
+      toast.error("Akses Ditolak", { description: "Anda tidak memiliki akses ke halaman tersebut." })
+      window.history.replaceState(null, "", window.location.pathname)
+    }
+  }, [])
+
   const {
     register,
     handleSubmit,
@@ -45,9 +57,21 @@ const Login = () => {
       })
 
       if (res?.error) {
-        toast.error("Gagal Masuk", {
-          description: "Email atau password salah.",
-        })
+        let title = "Gagal Masuk"
+        let desc = "Email atau password salah."
+        
+        if (res.error === "Banned") {
+          title = "Akses Ditolak"
+          desc = "Akun Anda tidak dapat digunakan. Silakan hubungi admin."
+        } else if (res.error === "ServerError") {
+          title = "Terjadi Kesalahan"
+          desc = "Terjadi masalah pada server. Coba lagi nanti."
+        } else if (res.error === "InvalidCredentials") {
+          title = "Gagal Masuk"
+          desc = "Email atau password salah."
+        }
+
+        toast.error(title, { description: desc })
       } else {
         toast.success("Berhasil", { description: "Anda berhasil masuk." })
         const session = (await getSession()) as {
