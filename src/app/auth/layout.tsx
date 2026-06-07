@@ -13,19 +13,19 @@ export default async function AuthLayout({
   const navigationData = [
     {
       title: "Home",
-      href: "/",
+      href: "/#home",
     },
     {
       title: "About Us",
-      href: "#",
+      href: "/#about",
     },
     {
       title: "Service",
-      href: "#",
+      href: "/#service",
     },
     {
       title: "Contacts",
-      href: "#",
+      href: "/#contact",
     },
   ]
 

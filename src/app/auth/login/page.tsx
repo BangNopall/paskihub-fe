@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useState } from "react"
-import { signIn } from "next-auth/react"
+import { getSession, signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 
 import { EyeIcon, EyeOffIcon } from "lucide-react"
@@ -15,6 +15,12 @@ import { toast } from "sonner"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { loginFormSchema, LoginFormData } from "@/schemas/auth.schema"
+
+const getDashboardPath = (role?: string | null) => {
+  if (role === "ADMIN") return "/admin/dashboard"
+  if (role === "ORGANIZER") return "/organizer/dashboard"
+  return "/peserta/dashboard"
+}
 
 const Login = () => {
   const [isVisible, setIsVisible] = useState(false)
@@ -45,10 +51,13 @@ const Login = () => {
         })
       } else {
         toast.success("Berhasil", { description: "Anda berhasil masuk." })
-        router.push("/") // Middleware will intercept and redirect appropriately
+        const session = (await getSession()) as {
+          user?: { role?: string | null }
+        } | null
+        router.replace(getDashboardPath(session?.user?.role))
         router.refresh()
       }
-    } catch (e: any) {
+    } catch {
       toast.error("Terjadi Kesalahan", {
         description: "Gagal terhubung ke server.",
       })

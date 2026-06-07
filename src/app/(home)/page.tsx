@@ -11,21 +11,25 @@ import commentCursor2Img from "../../../public/home/comment-cursor2.png"
 import { Button } from "@/components/ui/button"
 import {
   Card,
-  CardAction,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
 import { Icon } from "@iconify/react"
 import Link from "next/link"
+import { homeStatsService } from "@/services/home-stats.service"
 
-export default function HomePage() {
+export default async function HomePage() {
+  const stats = await homeStatsService.getStats()
+
   return (
     <div className="container mx-auto overflow-x-hidden px-6 sm:px-10 lg:px-12">
       {/* Hero Section */}
-      <section className="my-20 mt-32 flex h-full w-full flex-col items-center justify-center space-y-12 md:my-20 md:space-y-20">
+      <section
+        id="home"
+        className="my-20 mt-32 flex h-full w-full flex-col items-center justify-center space-y-12 md:my-20 md:space-y-20"
+      >
         <div className="flex max-w-4xl flex-col gap-4 text-center md:gap-5">
           <div
             className={`text-5xl text-dark-blue sm:text-7xl lg:text-8xl ${Montserrat.className} leading-tight font-bold`}
@@ -67,7 +71,10 @@ export default function HomePage() {
       </section>
 
       {/* About Section */}
-      <section className="my-16 flex h-full w-full flex-col space-y-12 md:my-32 md:space-y-20">
+      <section
+        id="about"
+        className="my-16 flex h-full w-full flex-col space-y-12 md:my-32 md:space-y-20"
+      >
         <div className="mx-auto flex max-w-3xl flex-col gap-3 text-center">
           <div
             className={`text-2xl text-dark-blue sm:text-3xl ${Montserrat.className} font-bold`}
@@ -139,7 +146,7 @@ export default function HomePage() {
         <div className="mx-auto grid w-full grid-cols-2 gap-4 rounded-3xl bg-primary-200 p-4 text-neutral-500 md:w-[90%] md:gap-6 md:rounded-4xl md:p-6 lg:w-[80%] lg:grid-cols-4">
           <div className="flex flex-col gap-2 rounded-2xl bg-white py-6 text-center shadow-sm transition-shadow hover:shadow-md md:py-8">
             <div className="text-2xl font-bold text-neutral-600 md:text-3xl lg:text-4xl">
-              0
+              {stats.total_events}
             </div>
             <div className="text-xs font-medium tracking-wide text-neutral-400 uppercase md:text-sm">
               Jumlah event
@@ -147,7 +154,7 @@ export default function HomePage() {
           </div>
           <div className="flex flex-col gap-2 rounded-2xl bg-white py-6 text-center shadow-sm transition-shadow hover:shadow-md md:py-8">
             <div className="text-2xl font-bold text-neutral-600 md:text-3xl lg:text-4xl">
-              0
+              {stats.total_organizers}
             </div>
             <div className="text-xs font-medium tracking-wide text-neutral-400 uppercase md:text-sm">
               Event Organizer
@@ -155,7 +162,7 @@ export default function HomePage() {
           </div>
           <div className="flex flex-col gap-2 rounded-2xl bg-white py-6 text-center shadow-sm transition-shadow hover:shadow-md md:py-8">
             <div className="text-2xl font-bold text-neutral-600 md:text-3xl lg:text-4xl">
-              0
+              {stats.total_participants}
             </div>
             <div className="text-xs font-medium tracking-wide text-neutral-400 uppercase md:text-sm">
               Peserta
@@ -163,7 +170,7 @@ export default function HomePage() {
           </div>
           <div className="flex flex-col gap-2 rounded-2xl bg-white py-6 text-center shadow-sm transition-shadow hover:shadow-md md:py-8">
             <div className="text-2xl font-bold text-neutral-600 md:text-3xl lg:text-4xl">
-              0
+              {stats.total_teams}
             </div>
             <div className="text-xs font-medium tracking-wide text-neutral-400 uppercase md:text-sm">
               Tim
@@ -173,7 +180,10 @@ export default function HomePage() {
       </section>
 
       {/* Mengapa PaskiHub Section */}
-      <section className="my-20 flex h-full w-full flex-col space-y-16 md:my-32 md:space-y-24">
+      <section
+        id="service"
+        className="my-20 flex h-full w-full flex-col space-y-16 md:my-32 md:space-y-24"
+      >
         <div className="text-center">
           <div
             className={`text-2xl text-dark-blue sm:text-3xl md:text-4xl ${Montserrat.className} font-bold`}
@@ -289,7 +299,10 @@ export default function HomePage() {
       </section>
 
       {/* contact us */}
-      <section className="my-20 flex h-full w-full flex-col items-center space-y-10 md:my-32 md:space-y-16">
+      <section
+        id="contact"
+        className="my-20 flex h-full w-full flex-col items-center space-y-10 md:my-32 md:space-y-16"
+      >
         <Card className="w-full max-w-4xl bg-primary-100 p-6 sm:p-8 md:p-12">
           <CardHeader className="px-0 pb-6 text-center md:pb-8">
             <CardTitle className="text-xl font-bold sm:text-2xl md:text-3xl">

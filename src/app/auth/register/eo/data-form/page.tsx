@@ -1,15 +1,6 @@
 "use client"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import { useState, useEffect } from "react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -24,7 +15,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { useForm, Controller } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { eoDataFormSchema, EODataFormData } from "@/schemas/profile.schema"
 import { createEventAction } from "@/actions/profile.actions"
@@ -45,7 +36,6 @@ const RegisterEODataForm = () => {
   const {
     register,
     handleSubmit,
-    control,
     setValue,
     formState: { errors },
   } = useForm<EODataFormData>({
@@ -71,7 +61,8 @@ const RegisterEODataForm = () => {
       const res = await createEventAction(data)
       if (res.success) {
         toast.success("Berhasil", { description: res.message })
-        router.push("/organizer/dashboard")
+        router.replace("/organizer/dashboard")
+        router.refresh()
       } else {
         toast.error("Gagal", { description: res.message })
       }

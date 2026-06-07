@@ -43,7 +43,8 @@ const RegisterPesertaDataForm = () => {
       const res = await updatePesertaProfileAction(data)
       if (res.success) {
         toast.success("Berhasil", { description: res.message })
-        router.push("/peserta/dashboard")
+        router.replace("/peserta/dashboard")
+        router.refresh()
       } else {
         toast.error("Gagal", { description: res.message })
       }

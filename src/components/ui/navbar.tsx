@@ -1,7 +1,7 @@
 "use client"
 import { MenuIcon, LogOutIcon, LoaderIcon } from "lucide-react"
 import { Montserrat } from "@/lib/fonts"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import type { Session } from "next-auth"
 import { signOut } from "next-auth/react"
 import { logoutAction } from "@/actions/auth.actions"
@@ -21,6 +21,8 @@ type NavigationItem = {
   href: string
 }[]
 
+const NAVBAR_OFFSET = 100
+
 const Navbar = ({
   navigationData,
   session,
@@ -32,22 +34,58 @@ const Navbar = ({
 }) => {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isLoggingOut, setIsLoggingOut] = useState(false)
+  const [activeSection, setActiveSection] = useState("")
+
+  const handleScrollToSection = useCallback(
+    (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+      if (!href.startsWith("#")) return
+
+      e.preventDefault()
+      const targetId = href.replace("#", "")
+      const element = document.getElementById(targetId)
+
+      if (element) {
+        const offsetTop =
+          element.getBoundingClientRect().top + window.scrollY - NAVBAR_OFFSET
+        window.scrollTo({ top: offsetTop, behavior: "smooth" })
+      }
+    },
+    [],
+  )
 
   useEffect(() => {
+    const sectionIds = navigationData
+      .map((item) => item.href.replace("#", ""))
+      .filter(Boolean)
+
     const handleScroll = () => {
       if (window.scrollY > 10) {
         setIsScrolled(true)
       } else {
         setIsScrolled(false)
       }
+
+      // Determine which section is currently in view
+      let currentSection = ""
+      for (const id of sectionIds) {
+        const element = document.getElementById(id)
+        if (element) {
+          const rect = element.getBoundingClientRect()
+          if (rect.top <= NAVBAR_OFFSET + 50 && rect.bottom > NAVBAR_OFFSET) {
+            currentSection = id
+          }
+        }
+      }
+      setActiveSection(currentSection)
     }
 
+    handleScroll()
     window.addEventListener("scroll", handleScroll)
 
     return () => {
       window.removeEventListener("scroll", handleScroll)
     }
-  }, [])
+  }, [navigationData])
 
   const getDashboardUrl = () => {
     const role = (session as any)?.user?.role
@@ -116,15 +154,25 @@ const Navbar = ({
           PaskiHub
         </Link>
         <div className="flex flex-1 items-center gap-8 font-medium text-neutral-700 md:justify-center lg:gap-16">
-          {navigationData.map((item, index) => (
-            <a
-              href={item.href}
-              key={index}
-              className="hover:text-primary max-md:hidden"
-            >
-              {item.title}
-            </a>
-          ))}
+          {navigationData.map((item, index) => {
+            const isActive =
+              activeSection === item.href.replace("#", "") &&
+              item.href.startsWith("#")
+            return (
+              <a
+                href={item.href}
+                key={index}
+                onClick={(e) => handleScrollToSection(e, item.href)}
+                className={`transition-colors duration-200 max-md:hidden ${
+                  isActive
+                    ? "font-semibold text-secondary-500"
+                    : "hover:text-primary"
+                }`}
+              >
+                {item.title}
+              </a>
+            )
+          })}
         </div>
         <div className="flex items-center gap-6">
           {renderAuthButton()}
@@ -137,11 +185,26 @@ const Navbar = ({
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56" align="end">
               <DropdownMenuGroup>
-                {navigationData.map((item, index) => (
-                  <DropdownMenuItem key={index}>
-                    <a href={item.href}>{item.title}</a>
-                  </DropdownMenuItem>
-                ))}
+                {navigationData.map((item, index) => {
+                  const isActive =
+                    activeSection === item.href.replace("#", "") &&
+                    item.href.startsWith("#")
+                  return (
+                    <DropdownMenuItem key={index} asChild>
+                      <a
+                        href={item.href}
+                        onClick={(e) => handleScrollToSection(e, item.href)}
+                        className={
+                          isActive
+                            ? "font-semibold text-secondary-500"
+                            : undefined
+                        }
+                      >
+                        {item.title}
+                      </a>
+                    </DropdownMenuItem>
+                  )
+                })}
               </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -152,3 +215,4 @@ const Navbar = ({
 }
 
 export default Navbar
+

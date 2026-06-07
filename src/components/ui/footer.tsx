@@ -36,10 +36,11 @@ const Footer = () => {
                 Hubungi Kami
               </div>
               <Link
-                href="#"
+                href="https://wa.me/6285198240667"
+                target="_blank"
                 className="text-xs leading-4 font-normal text-dark-blue transition-colors hover:text-dark-blue/80"
               >
-                +62812312312
+                +62 851-9824-0667
               </Link>
             </div>
             <div className="flex flex-col items-center gap-1 md:items-start">

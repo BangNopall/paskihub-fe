@@ -22,6 +22,8 @@ export async function createEventAction(data: EODataFormData) {
 
     const parsed = eoDataFormSchema.parse(data)
     await profileService.createEvent(parsed, session.accessToken)
+    revalidatePath("/organizer/dashboard")
+    revalidatePath("/organizer/dashboard/event")
     return { success: true, message: "Event berhasil dibuat." }
   } catch (error: any) {
     return { success: false, message: error.message || "Terjadi kesalahan" }
@@ -35,6 +37,7 @@ export async function updatePesertaProfileAction(data: PesertaDataFormData) {
 
     const parsed = pesertaDataFormSchema.parse(data)
     await profileService.updatePesertaProfile(parsed, session.accessToken)
+    revalidatePath("/peserta/dashboard")
     revalidatePath("/peserta/dashboard/profile")
     return { success: true, message: "Profil berhasil diperbarui." }
   } catch (error: any) {
