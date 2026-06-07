@@ -51,7 +51,7 @@ const Footer = () => {
                 href="#"
                 className="text-center text-xs leading-4 font-normal text-dark-blue transition-colors hover:text-dark-blue/80 md:text-left"
               >
-                Lorem ipsum dolor
+                Malang, Jawa Timur, Indonesia
               </Link>
             </div>
           </div>
@@ -62,23 +62,23 @@ const Footer = () => {
           {/* Column 3: Social Links */}
           <div className="my-auto flex flex-col items-center justify-center gap-4">
             <Link
-              href="#"
+              href="https://instagram.com/paskihub.id"
               className="group flex items-center justify-center gap-2 text-xs leading-4 font-semibold text-dark-blue transition-colors hover:text-dark-blue/80 md:justify-start"
             >
               <div className="flex items-center justify-center rounded-full bg-white p-1 transition-transform group-hover:scale-105">
                 <Icon icon="mdi:instagram" width="24" height="24" />
               </div>
-              loremipsum
+              paskihub.id
             </Link>
 
             <Link
-              href="#"
+              href="https://tiktok.com/@paskihub.id"
               className="group flex items-center justify-center gap-2 text-xs leading-4 font-semibold text-dark-blue transition-colors hover:text-dark-blue/80 md:justify-start"
             >
               <div className="flex items-center justify-center rounded-full bg-white p-1 transition-transform group-hover:scale-105">
                 <Icon icon="ic:baseline-tiktok" width="24" height="24" />
               </div>
-              loremipsum
+              paskihub.id
             </Link>
           </div>
         </div>
