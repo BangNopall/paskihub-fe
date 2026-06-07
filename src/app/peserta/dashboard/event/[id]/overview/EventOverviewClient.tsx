@@ -47,7 +47,7 @@ import type {
 
 export type PaymentStatusType = "Lunas" | "Belum Lunas/DP" | string
 
-const ASSET_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? ""
+const ASSET_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? ""
 const EMPTY_TIME_LEFT = { days: 0, hours: 0, minutes: 0, seconds: 0 }
 
 function formatRupiah(amount: number | string) {

@@ -354,14 +354,14 @@ export default function MyEventClient({
   const logo_path = selectedEventToRegister?.logo_path
     ? selectedEventToRegister?.logo_path.startsWith("http")
       ? selectedEventToRegister?.logo_path
-      : process.env.NEXT_PUBLIC_API_URL +
+      : process.env.NEXT_PUBLIC_API_BASE_URL +
         "/" +
         selectedEventToRegister?.logo_path
     : null
   const poster_path = selectedEventToRegister?.poster_path
     ? selectedEventToRegister?.poster_path.startsWith("http")
       ? selectedEventToRegister?.poster_path
-      : process.env.NEXT_PUBLIC_API_URL +
+      : process.env.NEXT_PUBLIC_API_BASE_URL +
         "/" +
         selectedEventToRegister?.poster_path
     : null
@@ -434,7 +434,9 @@ export default function MyEventClient({
                 const logo_path = event.logo_path
                   ? event.logo_path.startsWith("http")
                     ? event.logo_path
-                    : process.env.NEXT_PUBLIC_API_URL + "/" + event.logo_path
+                    : process.env.NEXT_PUBLIC_API_BASE_URL +
+                      "/" +
+                      event.logo_path
                   : null
                 return (
                   <div
@@ -549,7 +551,7 @@ export default function MyEventClient({
                         const logo_path = event.event_logo_path
                           ? event.event_logo_path.startsWith("http")
                             ? event.event_logo_path
-                            : process.env.NEXT_PUBLIC_API_URL +
+                            : process.env.NEXT_PUBLIC_API_BASE_URL +
                               "/" +
                               event.event_logo_path
                           : null
@@ -665,7 +667,7 @@ export default function MyEventClient({
                             <img
                               src={
                                 event.event_logo_path.startsWith("/")
-                                  ? process.env.NEXT_PUBLIC_API_URL +
+                                  ? process.env.NEXT_PUBLIC_API_BASE_URL +
                                     event.event_logo_path
                                   : event.event_logo_path
                               }

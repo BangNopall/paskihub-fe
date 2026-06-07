@@ -8,7 +8,9 @@ import {
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 
-const API_URL = process.env.API_BASE_URL || "http://localhost:3010"
+const API_URL =
+  process.env.API_BASE_URL ||
+  (process.env.NODE_ENV === "production" ? "" : "http://localhost:3010")
 const API_KEY = process.env.API_KEY
 
 const mapUserData = (u: any) => {

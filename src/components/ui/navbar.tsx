@@ -50,7 +50,7 @@ const Navbar = ({
         window.scrollTo({ top: offsetTop, behavior: "smooth" })
       }
     },
-    [],
+    []
   )
 
   useEffect(() => {
@@ -215,4 +215,3 @@ const Navbar = ({
 }
 
 export default Navbar
-

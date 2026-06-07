@@ -112,12 +112,12 @@ function MemberCard({ member }: { member: any }) {
   const photo_path = member.photo_path
     ? member.photo_path.startsWith("http")
       ? member.photo_path
-      : process.env.NEXT_PUBLIC_API_URL + member.photo_path
+      : process.env.NEXT_PUBLIC_API_BASE_URL + member.photo_path
     : null
   const id_card_path = member.id_card_path
     ? member.id_card_path.startsWith("http")
       ? member.id_card_path
-      : process.env.NEXT_PUBLIC_API_URL + member.id_card_path
+      : process.env.NEXT_PUBLIC_API_BASE_URL + member.id_card_path
     : null
 
   return (
@@ -284,18 +284,18 @@ export default function TeamListClient({
   const logo_path = teamDetail?.logo_path
     ? teamDetail.logo_path.startsWith("http")
       ? teamDetail.logo_path
-      : process.env.NEXT_PUBLIC_API_URL + teamDetail.logo_path
+      : process.env.NEXT_PUBLIC_API_BASE_URL + teamDetail.logo_path
     : null
 
   const payment_proof_path = teamDetail?.payment_proof_path
     ? teamDetail.payment_proof_path.startsWith("http")
       ? teamDetail.payment_proof_path
-      : process.env.NEXT_PUBLIC_API_URL + teamDetail.payment_proof_path
+      : process.env.NEXT_PUBLIC_API_BASE_URL + teamDetail.payment_proof_path
     : null
   const rec_letter_path = teamDetail?.rec_letter_path
     ? teamDetail.rec_letter_path.startsWith("http")
       ? teamDetail.rec_letter_path
-      : process.env.NEXT_PUBLIC_API_URL + teamDetail.rec_letter_path
+      : process.env.NEXT_PUBLIC_API_BASE_URL + teamDetail.rec_letter_path
     : null
 
   return (
@@ -428,7 +428,7 @@ export default function TeamListClient({
                     const logo_path = team.logo_path
                       ? team.logo_path.startsWith("http")
                         ? team.logo_path
-                        : process.env.NEXT_PUBLIC_API_URL + team.logo_path
+                        : process.env.NEXT_PUBLIC_API_BASE_URL + team.logo_path
                       : null
                     return (
                       <TableRow

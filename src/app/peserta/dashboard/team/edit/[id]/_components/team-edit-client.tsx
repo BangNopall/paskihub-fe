@@ -190,7 +190,8 @@ export default function TeamEditClient({
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const API_URL =
-    process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3010"
+    process.env.NEXT_PUBLIC_API_BASE_URL ||
+    (process.env.NODE_ENV === "production" ? "" : "http://localhost:3010")
 
   // --- STATE UNTUK INFO TIM ---
   const [namaTim, setNamaTim] = useState(initialData.name)

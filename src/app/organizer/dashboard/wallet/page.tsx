@@ -44,7 +44,7 @@ export default async function WalletPage() {
     walletService.getPublicSettings(session.accessToken),
   ])
 
-  if (!walletData) {
+  if (!walletData || !settings) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center p-8 text-center">
         <AlertCircle className="mb-4 h-12 w-12 text-red-500" />

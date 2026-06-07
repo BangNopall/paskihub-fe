@@ -5,7 +5,9 @@ import {
   TeamDetailResSchema,
 } from "@/schemas/team.schema"
 
-const API_URL = process.env.API_BASE_URL || "http://localhost:3010"
+const API_URL =
+  process.env.API_BASE_URL ||
+  (process.env.NODE_ENV === "production" ? "" : "http://localhost:3010")
 const API_KEY = process.env.API_KEY
 
 export const teamService = {
@@ -19,7 +21,20 @@ export const teamService = {
       cache: "no-store",
     })
 
-    if (!res.ok) return []
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}))
+      const errMsg = err?.message || err?.error || `HTTP ${res.status}`
+      if (res.status === 401) throw new Error("Unauthorized: " + errMsg)
+      if (res.status === 403) throw new Error("Forbidden: " + errMsg)
+      if (res.status === 400) throw new Error("Bad Request: " + errMsg)
+      if (
+        err?.status === "KICKED" ||
+        err?.message === "KICKED" ||
+        err?.error === "KICKED"
+      )
+        throw new Error("KICKED")
+      throw new Error(errMsg)
+    }
 
     const json = await res.json()
     const data = json.data || []
@@ -45,7 +60,20 @@ export const teamService = {
       cache: "no-store",
     })
 
-    if (!res.ok) return null
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}))
+      const errMsg = err?.message || err?.error || `HTTP ${res.status}`
+      if (res.status === 401) throw new Error("Unauthorized: " + errMsg)
+      if (res.status === 403) throw new Error("Forbidden: " + errMsg)
+      if (res.status === 400) throw new Error("Bad Request: " + errMsg)
+      if (
+        err?.status === "KICKED" ||
+        err?.message === "KICKED" ||
+        err?.error === "KICKED"
+      )
+        throw new Error("KICKED")
+      throw new Error(errMsg)
+    }
 
     const json = await res.json()
 

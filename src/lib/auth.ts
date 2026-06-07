@@ -1,7 +1,9 @@
 import CredentialsProvider from "next-auth/providers/credentials"
 import { loginResponseSchema } from "@/schemas/auth.schema"
 
-const API_URL = process.env.API_BASE_URL || "http://localhost:3010"
+const API_URL =
+  process.env.API_BASE_URL ||
+  (process.env.NODE_ENV === "production" ? "" : "http://localhost:3010")
 const API_KEY = process.env.API_KEY
 
 export function getOrganizerUserId(session: {

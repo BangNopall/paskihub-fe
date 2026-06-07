@@ -100,7 +100,8 @@ function StatusBadge({ status }: { status: string }) {
 
 function MemberCard({ member }: { member: ParticipantTeamMemberRes }) {
   const API_URL =
-    process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3010"
+    process.env.NEXT_PUBLIC_API_BASE_URL ||
+    (process.env.NODE_ENV === "production" ? "" : "http://localhost:3010")
   const photoUrl = member.photo_path ? `${API_URL}${member.photo_path}` : null
   const idCardUrl = member.id_card_path
     ? `${API_URL}${member.id_card_path}`
@@ -171,7 +172,8 @@ export default function TeamListClient({
   ]
 
   const API_URL =
-    process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3010"
+    process.env.NEXT_PUBLIC_API_BASE_URL ||
+    (process.env.NODE_ENV === "production" ? "" : "http://localhost:3010")
 
   const fetchDetail = async (id: string) => {
     setIsLoadingDetail(true)

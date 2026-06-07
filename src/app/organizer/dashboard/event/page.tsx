@@ -52,12 +52,12 @@ export default async function OrganizerEventDetailPage() {
   const logo_path = event.logo_path
     ? event.logo_path.startsWith("http")
       ? event.logo_path
-      : process.env.NEXT_PUBLIC_API_URL + "/" + event.logo_path
+      : process.env.NEXT_PUBLIC_API_BASE_URL + "/" + event.logo_path
     : null
   const poster_path = event.poster_path
     ? event.poster_path.startsWith("http")
       ? event.poster_path
-      : process.env.NEXT_PUBLIC_API_URL + "/" + event.poster_path
+      : process.env.NEXT_PUBLIC_API_BASE_URL + "/" + event.poster_path
     : null
 
   // Map API response to our EventData interface
