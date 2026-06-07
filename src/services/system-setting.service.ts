@@ -1,23 +1,26 @@
-const API_URL =
-  process.env.API_BASE_URL ||
-  (process.env.NODE_ENV === "production" ? "" : "http://localhost:3010")
+import { parseApiError } from "@/lib/api-error"
+import { getApiKeyHeader } from "@/lib/env"
 import {
   SystemSettingResSchema,
   SystemSettingRes,
   UpdateSystemSettingReq,
 } from "@/schemas/system-setting.schema"
 
+const API_URL =
+  process.env.API_BASE_URL ||
+  (process.env.NODE_ENV === "production" ? "" : "http://localhost:3010")
+
 class SystemSettingService {
   async getSettings(token: string): Promise<SystemSettingRes> {
     const res = await fetch(`${API_URL}/api/v1/settings`, {
       headers: {
         Authorization: `Bearer ${token}`,
-        "x-api-key": process.env.API_KEY!,
+        "x-api-key": getApiKeyHeader(),
       },
     })
 
     if (!res.ok) {
-      throw new Error("Gagal mengambil pengaturan sistem")
+      await parseApiError(res)
     }
 
     const json = await res.json()
@@ -27,12 +30,12 @@ class SystemSettingService {
   async getPublicSettings(): Promise<SystemSettingRes> {
     const res = await fetch(`${API_URL}/api/v1/settings/public`, {
       headers: {
-        "x-api-key": process.env.API_KEY!,
+        "x-api-key": getApiKeyHeader(),
       },
     })
 
     if (!res.ok) {
-      throw new Error("Gagal mengambil pengaturan publik")
+      await parseApiError(res)
     }
 
     const json = await res.json()
@@ -45,14 +48,13 @@ class SystemSettingService {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
-        "x-api-key": process.env.API_KEY!,
+        "x-api-key": getApiKeyHeader(),
       },
       body: JSON.stringify(data),
     })
 
     if (!res.ok) {
-      const json = await res.json()
-      throw new Error(json.message || "Gagal memperbarui pengaturan")
+      await parseApiError(res)
     }
 
     return res.json()

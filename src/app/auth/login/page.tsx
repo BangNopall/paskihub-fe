@@ -18,7 +18,8 @@ import { loginFormSchema, LoginFormData } from "@/schemas/auth.schema"
 const getDashboardPath = (role?: string | null) => {
   if (role === "ADMIN") return "/admin/dashboard"
   if (role === "ORGANIZER") return "/organizer/dashboard"
-  return "/peserta/dashboard"
+  if (role === "PESERTA") return "/peserta/dashboard"
+  return null
 }
 
 const Login = () => {
@@ -30,10 +31,14 @@ const Login = () => {
     const params = new URLSearchParams(window.location.search)
     const error = params.get("error")
     if (error === "SessionExpired") {
-      toast.error("Sesi Berakhir", { description: "Sesi Anda telah berakhir. Silakan masuk kembali." })
+      toast.error("Sesi Berakhir", {
+        description: "Sesi Anda telah berakhir. Silakan masuk kembali.",
+      })
       window.history.replaceState(null, "", window.location.pathname)
     } else if (error === "AccessDenied") {
-      toast.error("Akses Ditolak", { description: "Anda tidak memiliki akses ke halaman tersebut." })
+      toast.error("Akses Ditolak", {
+        description: "Anda tidak memiliki akses ke halaman tersebut.",
+      })
       window.history.replaceState(null, "", window.location.pathname)
     }
   }, [])
@@ -59,7 +64,7 @@ const Login = () => {
       if (res?.error) {
         let title = "Gagal Masuk"
         let desc = "Email atau password salah."
-        
+
         if (res.error === "Banned") {
           title = "Akses Ditolak"
           desc = "Akun Anda tidak dapat digunakan. Silakan hubungi admin."
@@ -77,7 +82,14 @@ const Login = () => {
         const session = (await getSession()) as {
           user?: { role?: string | null }
         } | null
-        router.replace(getDashboardPath(session?.user?.role))
+        const dashboardPath = getDashboardPath(session?.user?.role)
+        if (!dashboardPath) {
+          toast.error("Akses Ditolak", {
+            description: "Role akun tidak dikenali. Silakan hubungi admin.",
+          })
+          return
+        }
+        router.replace(dashboardPath)
         router.refresh()
       }
     } catch {

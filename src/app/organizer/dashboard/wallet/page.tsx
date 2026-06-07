@@ -41,7 +41,7 @@ export default async function WalletPage() {
   const [walletData, transactions, settings] = await Promise.all([
     walletService.getWalletInfo(session.accessToken, eventId),
     walletService.getWalletLogs(session.accessToken, eventId),
-    walletService.getPublicSettings(session.accessToken),
+    walletService.getPublicSettings(),
   ])
 
   if (!walletData || !settings) {

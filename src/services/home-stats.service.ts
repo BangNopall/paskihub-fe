@@ -1,4 +1,5 @@
 import { getApiKeyHeader } from "@/lib/env"
+import { parseApiError } from "@/lib/api-error"
 import {
   homeStatsResponseSchema,
   type HomeStats,
@@ -7,34 +8,22 @@ import {
 const API_URL =
   process.env.API_BASE_URL ||
   (process.env.NODE_ENV === "production" ? "" : "http://localhost:3010")
-const API_KEY = process.env.API_KEY
-
-export const emptyHomeStats: HomeStats = {
-  total_events: 0,
-  total_organizers: 0,
-  total_participants: 0,
-  total_teams: 0,
-}
 
 class HomeStatsService {
   async getStats(): Promise<HomeStats> {
-    try {
-      const res = await fetch(`${API_URL}/api/v1/public/home-stats`, {
-        headers: {
-          "x-api-key": getApiKeyHeader(),
-        },
-        cache: "no-store",
-      })
+    const res = await fetch(`${API_URL}/api/v1/public/home-stats`, {
+      headers: {
+        "x-api-key": getApiKeyHeader(),
+      },
+      cache: "no-store",
+    })
 
-      if (!res.ok) {
-        return emptyHomeStats
-      }
-
-      const json = await res.json()
-      return homeStatsResponseSchema.parse(json).data
-    } catch {
-      return emptyHomeStats
+    if (!res.ok) {
+      await parseApiError(res)
     }
+
+    const json = await res.json()
+    return homeStatsResponseSchema.parse(json).data
   }
 }
 

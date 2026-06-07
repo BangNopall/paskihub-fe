@@ -8,16 +8,19 @@ import { teamService } from "@/services/team.service"
 import { TeamFormData } from "@/schemas/team.schema"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
-import { buildCreateTeamFormData, buildUpdateTeamFormData } from "@/lib/team-form"
+import {
+  buildCreateTeamFormData,
+  buildUpdateTeamFormData,
+} from "@/lib/team-form"
 import { validateFile } from "@/lib/file-validation"
 
 function validateTeamDataFiles(data: TeamFormData) {
   const imageTypes = ["image/jpeg", "image/jpg", "image/png"]
   const docTypes = ["image/jpeg", "image/jpg", "image/png", "application/pdf"]
-  
+
   validateFile(data.logoTim, imageTypes, 5, "Logo Tim")
   validateFile(data.suratRekomendasi, docTypes, 5, "Surat Rekomendasi")
-  
+
   data.members?.forEach((m, i) => {
     validateFile(m.idCard, docTypes, 5, `Kartu Identitas Anggota ${i + 1}`)
     validateFile(m.photo, docTypes, 5, `Foto Anggota ${i + 1}`)

@@ -88,10 +88,11 @@ const Navbar = ({
   }, [navigationData])
 
   const getDashboardUrl = () => {
-    const role = (session as any)?.user?.role
+    const role = session?.user?.role
     if (role === "ADMIN") return "/admin/dashboard"
     if (role === "ORGANIZER") return "/organizer/dashboard"
-    return "/peserta/dashboard"
+    if (role === "PESERTA") return "/peserta/dashboard"
+    return "/auth/login?error=AccessDenied"
   }
 
   const handleLogout = async () => {

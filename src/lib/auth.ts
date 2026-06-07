@@ -5,7 +5,6 @@ import { loginResponseSchema } from "@/schemas/auth.schema"
 const API_URL =
   process.env.API_BASE_URL ||
   (process.env.NODE_ENV === "production" ? "" : "http://localhost:3010")
-const API_KEY = process.env.API_KEY
 
 export function getOrganizerUserId(session: {
   user?: { id?: string; organizerId?: string; parentId?: string }
@@ -71,7 +70,11 @@ export const authOptions: any = {
             accessTokenExpires: decoded?.exp ? decoded.exp * 1000 : 0,
           }
         } catch (error: any) {
-          if (["Banned", "ServerError", "InvalidCredentials"].includes(error.message)) {
+          if (
+            ["Banned", "ServerError", "InvalidCredentials"].includes(
+              error.message
+            )
+          ) {
             throw error
           }
           return null

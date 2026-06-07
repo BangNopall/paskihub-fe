@@ -1,6 +1,6 @@
-import { getApiKeyHeader } from "@/lib/env"
 "use server"
 
+import { getApiKeyHeader } from "@/lib/env"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 import { revalidatePath } from "next/cache"

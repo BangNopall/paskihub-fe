@@ -1,4 +1,5 @@
 import { getApiKeyHeader } from "@/lib/env"
+import { parseApiError } from "@/lib/api-error"
 import {
   OpenEventSchema,
   ActiveEventSchema,
@@ -18,7 +19,6 @@ import { z } from "zod"
 const API_URL =
   process.env.API_BASE_URL ||
   (process.env.NODE_ENV === "production" ? "" : "http://localhost:3010")
-const API_KEY = process.env.API_KEY
 
 export const participantEventService = {
   async getOpenEvents(token: string): Promise<OpenEvent[]> {
@@ -30,22 +30,9 @@ export const participantEventService = {
       },
       cache: "no-store",
     })
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      const errMsg = err?.message || err?.error || `HTTP ${res.status}`
-      if (res.status === 401) throw new Error("Unauthorized: " + errMsg)
-      if (res.status === 403) throw new Error("Forbidden: " + errMsg)
-      if (res.status === 400) throw new Error("Bad Request: " + errMsg)
-      if (
-        err?.status === "KICKED" ||
-        err?.message === "KICKED" ||
-        err?.error === "KICKED"
-      )
-        throw new Error("KICKED")
-      throw new Error(errMsg)
-    }
+    if (!res.ok) await parseApiError(res)
     const json = await res.json()
-    return z.array(OpenEventSchema).parse(json.data || [])
+    return z.array(OpenEventSchema).parse(json.data)
   },
 
   async getActiveEvents(token: string): Promise<ActiveEvent[]> {
@@ -57,22 +44,9 @@ export const participantEventService = {
       },
       cache: "no-store",
     })
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      const errMsg = err?.message || err?.error || `HTTP ${res.status}`
-      if (res.status === 401) throw new Error("Unauthorized: " + errMsg)
-      if (res.status === 403) throw new Error("Forbidden: " + errMsg)
-      if (res.status === 400) throw new Error("Bad Request: " + errMsg)
-      if (
-        err?.status === "KICKED" ||
-        err?.message === "KICKED" ||
-        err?.error === "KICKED"
-      )
-        throw new Error("KICKED")
-      throw new Error(errMsg)
-    }
+    if (!res.ok) await parseApiError(res)
     const json = await res.json()
-    return z.array(ActiveEventSchema).parse(json.data || [])
+    return z.array(ActiveEventSchema).parse(json.data)
   },
 
   async registerEvent(formData: FormData, token: string) {
@@ -84,10 +58,7 @@ export const participantEventService = {
       },
       body: formData,
     })
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      throw new Error(err.message || "Gagal mendaftar event")
-    }
+    if (!res.ok) await parseApiError(res)
     return res.json()
   },
 
@@ -103,10 +74,7 @@ export const participantEventService = {
         body: formData,
       }
     )
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      throw new Error(err.message || "Gagal upload pelunasan")
-    }
+    if (!res.ok) await parseApiError(res)
     return res.json()
   },
 
@@ -125,20 +93,7 @@ export const participantEventService = {
         cache: "no-store",
       }
     )
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      const errMsg = err?.message || err?.error || `HTTP ${res.status}`
-      if (res.status === 401) throw new Error("Unauthorized: " + errMsg)
-      if (res.status === 403) throw new Error("Forbidden: " + errMsg)
-      if (res.status === 400) throw new Error("Bad Request: " + errMsg)
-      if (
-        err?.status === "KICKED" ||
-        err?.message === "KICKED" ||
-        err?.error === "KICKED"
-      )
-        throw new Error("KICKED")
-      throw new Error(errMsg)
-    }
+    if (!res.ok) await parseApiError(res)
     const json = await res.json()
     return RegistrationDetailSchema.parse(json.data)
   },
@@ -158,20 +113,7 @@ export const participantEventService = {
         cache: "no-store",
       }
     )
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      const errMsg = err?.message || err?.error || `HTTP ${res.status}`
-      if (res.status === 401) throw new Error("Unauthorized: " + errMsg)
-      if (res.status === 403) throw new Error("Forbidden: " + errMsg)
-      if (res.status === 400) throw new Error("Bad Request: " + errMsg)
-      if (
-        err?.status === "KICKED" ||
-        err?.message === "KICKED" ||
-        err?.error === "KICKED"
-      )
-        throw new Error("KICKED")
-      throw new Error(errMsg)
-    }
+    if (!res.ok) await parseApiError(res)
     const json = await res.json()
     return AssessmentRecapSchema.parse(json.data)
   },
@@ -191,20 +133,7 @@ export const participantEventService = {
         cache: "no-store",
       }
     )
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      const errMsg = err?.message || err?.error || `HTTP ${res.status}`
-      if (res.status === 401) throw new Error("Unauthorized: " + errMsg)
-      if (res.status === 403) throw new Error("Forbidden: " + errMsg)
-      if (res.status === 400) throw new Error("Bad Request: " + errMsg)
-      if (
-        err?.status === "KICKED" ||
-        err?.message === "KICKED" ||
-        err?.error === "KICKED"
-      )
-        throw new Error("KICKED")
-      throw new Error(errMsg)
-    }
+    if (!res.ok) await parseApiError(res)
     const json = await res.json()
     return ParticipantScoreboardSchema.parse(json.data)
   },

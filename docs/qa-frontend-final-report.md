@@ -10,6 +10,38 @@ Referensi wajib:
 - `swagger.json`
 - `AGENTS.md`
 
+## 0. Production Readiness Addendum
+
+Tanggal perbaikan: 7 Juni 2026  
+Status setelah perbaikan production blocker: **PASS - siap untuk regression QA dengan backend runtime/staging.**
+
+Perbaikan yang sudah diterapkan setelah audit final awal:
+
+- `src/actions/eo-team.actions.ts`: directive `"use server"` dipindahkan menjadi statement pertama sehingga Next production build tidak gagal.
+- `src/app/api/files/[resourceType]/[resourceId]/route.ts`: private file proxy sekarang memakai `session.accessToken`, `getApiKeyHeader()`, format `x-api-key: Key <api_key>`, dan kontrak `params` Next 16.
+- `src/services/system-setting.service.ts` dan service lain: raw/unused `API_KEY` lokal dibersihkan; header API key memakai helper seragam.
+- `src/lib/api-error.ts`: nested backend error diparse aman agar tidak jatuh menjadi pesan `[object Object]`; 413/non-JSON error tetap aman.
+- `src/services/home-stats.service.ts`, `src/services/ranking.service.ts`, dan `src/services/participant-event.service.ts`: false empty fallback prioritas dihapus; contract/schema mismatch sekarang naik sebagai error.
+- `src/app/(home)/page.tsx`: home stats menampilkan status tidak tersedia, bukan angka nol palsu, saat backend/contract gagal.
+- `src/app/auth/login/page.tsx` dan `src/components/ui/navbar.tsx`: unknown role fail closed dan tidak diarahkan ke dashboard peserta.
+- `src/services/wallet.service.ts`: public settings tidak lagi mengirim bearer token.
+- `.prettierignore`: artefak referensi lokal yang tidak dipakai build diabaikan dari `prettier --check`.
+
+Verification setelah perbaikan:
+
+| Command | Status | Evidence |
+|---|---|---|
+| `npm run typecheck` | PASS | `tsc --noEmit` selesai tanpa error |
+| `npm run lint` | PASS | ESLint selesai dengan `--max-warnings 0` |
+| `npm test` | PASS | Vitest: 5 files, 15 tests |
+| `npm run build:prod` | PASS | `prettier --check .` dan `next build` selesai sukses |
+
+Catatan tersisa:
+
+- `npm run build:prod` masih menampilkan warning Next 16: konvensi `middleware` deprecated dan disarankan migrasi ke `proxy`. Warning ini tidak memblokir build.
+- `npm audit --omit=dev` masih menunjukkan 4 moderate vulnerabilities pada transitive dependency (`next/postcss`, `next-auth/uuid`). Tidak diperbaiki di batch ini karena `npm audit fix --force` menyarankan perubahan breaking/downgrade dependency.
+- Authenticated E2E lintas role, ownership private file valid, dan mutasi backend tetap perlu diverifikasi di staging dengan akun/fixture backend.
+
 ## 1. Executive Summary
 
 **Overall status: FAIL - belum siap production.**

@@ -245,7 +245,7 @@ export function WalletTopUpForm({
           />
           <label
             htmlFor="wallet-proof-upload"
-            className="group flex w-full cursor-pointer flex-col items-center justify-center gap-4 rounded-[20px] border border-dashed border-gray-300 bg-neutral-50 p-8 transition-colors hover:border-blue-400 hover:bg-blue-50/50 focus-within:ring-2 focus-within:ring-blue-500 md:p-12"
+            className="group flex w-full cursor-pointer flex-col items-center justify-center gap-4 rounded-[20px] border border-dashed border-gray-300 bg-neutral-50 p-8 transition-colors focus-within:ring-2 focus-within:ring-blue-500 hover:border-blue-400 hover:bg-blue-50/50 md:p-12"
           >
             {paymentProof ? (
               <>

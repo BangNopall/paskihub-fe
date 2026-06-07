@@ -4,7 +4,6 @@ import { EODataFormData, PesertaDataFormData } from "@/schemas/profile.schema"
 const API_URL =
   process.env.API_BASE_URL ||
   (process.env.NODE_ENV === "production" ? "" : "http://localhost:3010")
-const API_KEY = process.env.API_KEY
 import { parseApiError } from "@/lib/api-error"
 
 export const profileService = {

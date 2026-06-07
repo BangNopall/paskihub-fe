@@ -393,7 +393,11 @@ export default function TransactionManagementClient({ initialData }: Props) {
                                           className="h-8 rounded-full font-bold text-info-600"
                                         >
                                           <a
-                                            href={getProxyFileUrl(selectedTx.proof_path) || "#"}
+                                            href={
+                                              getProxyFileUrl(
+                                                selectedTx.proof_path
+                                              ) || "#"
+                                            }
                                             target="_blank"
                                           >
                                             <Download className="mr-2 h-3.5 w-3.5" />{" "}
@@ -405,7 +409,11 @@ export default function TransactionManagementClient({ initialData }: Props) {
                                     <div className="group relative flex aspect-[4/3] w-full cursor-zoom-in items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-neutral-200 bg-neutral-100">
                                       {selectedTx?.proof_path ? (
                                         <img
-                                          src={getProxyFileUrl(selectedTx.proof_path) || ""}
+                                          src={
+                                            getProxyFileUrl(
+                                              selectedTx.proof_path
+                                            ) || ""
+                                          }
                                           alt="Bukti Transfer"
                                           className="h-full w-full object-contain"
                                         />

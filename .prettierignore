@@ -10,3 +10,5 @@ pnpm-lock.yaml
 backend-frontend-implementation-alignment.md
 swagger.json
 docs/
+qa-backend-regression-report.md
+replace-apikey.cjs

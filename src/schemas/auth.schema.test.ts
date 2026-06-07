@@ -39,7 +39,7 @@ describe("Auth Schema - loginFormSchema", () => {
 describe("Auth Schema - loginResponseSchema", () => {
   it("should accept valid roles", () => {
     const validRoles = ["ADMIN", "ORGANIZER", "PESERTA"]
-    
+
     validRoles.forEach((role) => {
       const payload = {
         data: {
@@ -48,7 +48,7 @@ describe("Auth Schema - loginResponseSchema", () => {
           role,
           parent_id: null,
           token: "jwt-token",
-        }
+        },
       }
       const result = loginResponseSchema.safeParse(payload)
       expect(result.success).toBe(true)
@@ -57,7 +57,7 @@ describe("Auth Schema - loginResponseSchema", () => {
 
   it("should reject invalid roles", () => {
     const invalidRoles = ["SUPERADMIN", "STAFF", "unknown", "", null]
-    
+
     invalidRoles.forEach((role) => {
       const payload = {
         data: {
@@ -66,7 +66,7 @@ describe("Auth Schema - loginResponseSchema", () => {
           role,
           parent_id: null,
           token: "jwt-token",
-        }
+        },
       }
       const result = loginResponseSchema.safeParse(payload)
       expect(result.success).toBe(false)

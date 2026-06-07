@@ -1,8 +1,8 @@
 export class ApiError extends Error {
   public status: number
-  public details: any
+  public details?: unknown
 
-  constructor(status: number, message: string, details?: any) {
+  constructor(status: number, message: string, details?: unknown) {
     super(message)
     this.name = "ApiError"
     this.status = status
@@ -10,8 +10,20 @@ export class ApiError extends Error {
   }
 }
 
+function asRecord(value: unknown): Record<string, unknown> | null {
+  return value && typeof value === "object"
+    ? (value as Record<string, unknown>)
+    : null
+}
+
+function asMessage(value: unknown): string | undefined {
+  if (typeof value === "string" && value.trim()) return value
+  if (typeof value === "number") return String(value)
+  return undefined
+}
+
 export async function parseApiError(res: Response): Promise<never> {
-  let errData: any = {}
+  let errData: unknown = {}
   try {
     const text = await res.text()
     errData = text ? JSON.parse(text) : {}
@@ -19,28 +31,47 @@ export async function parseApiError(res: Response): Promise<never> {
     // Non-JSON response
   }
 
+  const errorPayload = asRecord(errData) ?? {}
+  const nestedError = asRecord(errorPayload.error)
+
   if (
-    errData?.status === "KICKED" ||
-    errData?.message === "KICKED" ||
-    errData?.error === "KICKED"
+    errorPayload.status === "KICKED" ||
+    errorPayload.message === "KICKED" ||
+    errorPayload.error === "KICKED"
   ) {
     throw new Error("KICKED")
   }
 
   const message =
-    errData.message ||
-    errData.error ||
-    errData.details ||
+    asMessage(errorPayload.message) ||
+    asMessage(errorPayload.error) ||
+    asMessage(nestedError?.message) ||
+    asMessage(nestedError?.details) ||
+    asMessage(errorPayload.details) ||
+    res.statusText ||
     `HTTP Error ${res.status}`
 
-  if (res.status === 401) throw new ApiError(401, "Sesi berakhir. Silakan login kembali.", errData)
+  if (res.status === 401)
+    throw new ApiError(401, "Sesi berakhir. Silakan login kembali.", errData)
   if (res.status === 403) throw new ApiError(403, "Akses ditolak.", errData)
-  if (res.status === 404) throw new ApiError(404, "Data tidak ditemukan.", errData)
-  if (res.status === 413) throw new ApiError(413, "File terlalu besar.", errData)
+  if (res.status === 404)
+    throw new ApiError(404, "Data tidak ditemukan.", errData)
+  if (res.status === 413)
+    throw new ApiError(413, "File terlalu besar.", errData)
   if (res.status === 400) throw new ApiError(400, message, errData)
   if (res.status === 409) throw new ApiError(409, message, errData)
-  if (res.status === 429) throw new ApiError(429, "Terlalu banyak permintaan. Coba lagi nanti.", errData)
-  if (res.status >= 500) throw new ApiError(res.status, "Terjadi masalah pada server. Coba lagi nanti.", errData)
+  if (res.status === 429)
+    throw new ApiError(
+      429,
+      "Terlalu banyak permintaan. Coba lagi nanti.",
+      errData
+    )
+  if (res.status >= 500)
+    throw new ApiError(
+      res.status,
+      "Terjadi masalah pada server. Coba lagi nanti.",
+      errData
+    )
 
   throw new ApiError(res.status, message, errData)
 }

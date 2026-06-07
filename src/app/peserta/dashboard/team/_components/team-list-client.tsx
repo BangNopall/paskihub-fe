@@ -169,8 +169,6 @@ export default function TeamListClient({
     { label: "Rejected", value: "REJECTED" },
   ]
 
-
-
   const fetchDetail = async (id: string) => {
     setIsLoadingDetail(true)
     try {
@@ -470,7 +468,9 @@ export default function TeamListClient({
                           Surat Rekomendasi
                         </span>
                         <a
-                          href={getProxyFileUrl(teamDetail.rec_letter_path) || "#"}
+                          href={
+                            getProxyFileUrl(teamDetail.rec_letter_path) || "#"
+                          }
                           target="_blank"
                           rel="noreferrer"
                           className="font-poppins text-xs text-blue-500 hover:underline"
@@ -479,7 +479,9 @@ export default function TeamListClient({
                         </a>
                       </div>
                       <a
-                        href={getProxyFileUrl(teamDetail.rec_letter_path) || "#"}
+                        href={
+                          getProxyFileUrl(teamDetail.rec_letter_path) || "#"
+                        }
                         download
                         className="shrink-0"
                       >
