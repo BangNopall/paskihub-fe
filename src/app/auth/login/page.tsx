@@ -1,12 +1,11 @@
 "use client"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { useState } from "react"
 import { getSession, signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 
 import { EyeIcon, EyeOffIcon } from "lucide-react"
-import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Montserrat } from "@/lib/fonts"
@@ -71,11 +70,11 @@ const Login = () => {
       <Card className="z-10 w-full max-w-[90%] border-none bg-glassmorphism-50 p-6 shadow-md sm:max-w-md sm:p-10 md:max-w-xl md:p-16 lg:max-w-2xl">
         <CardHeader className="gap-4 sm:gap-6">
           <div>
-            <CardTitle
+            <h1
               className={`${Montserrat.className} mb-1.5 text-center text-2xl font-bold text-dark-blue sm:text-3xl`}
             >
               Masuk ke PaskiHub
-            </CardTitle>
+            </h1>
           </div>
         </CardHeader>
         <CardContent>
@@ -93,10 +92,15 @@ const Login = () => {
                   id="userEmail"
                   placeholder="Masukan email Anda"
                   className={`h-10 sm:h-11 ${errors.email ? "border-red-500" : ""}`}
+                  aria-invalid={!!errors.email}
+                  aria-describedby={errors.email ? "email-error" : undefined}
                   {...register("email")}
                 />
                 {errors.email && (
-                  <p className="mt-1 text-xs text-red-500 sm:text-sm">
+                  <p
+                    id="email-error"
+                    className="mt-1 text-xs text-red-500 sm:text-sm"
+                  >
                     {errors.email.message}
                   </p>
                 )}
@@ -115,6 +119,10 @@ const Login = () => {
                     type={isVisible ? "text" : "password"}
                     placeholder="••••••••••••••••"
                     className={`h-10 pr-9 sm:h-11 ${errors.password ? "border-red-500" : ""}`}
+                    aria-invalid={!!errors.password}
+                    aria-describedby={
+                      errors.password ? "password-error" : undefined
+                    }
                     {...register("password")}
                   />
                   <Button
@@ -135,23 +143,17 @@ const Login = () => {
                   </Button>
                 </div>
                 {errors.password && (
-                  <p className="mt-1 text-xs text-red-500 sm:text-sm">
+                  <p
+                    id="password-error"
+                    className="mt-1 text-xs text-red-500 sm:text-sm"
+                  >
                     {errors.password.message}
                   </p>
                 )}
               </div>
 
               <div className="flex flex-col justify-between gap-4 pt-2 sm:flex-row sm:items-center sm:gap-y-2 sm:pt-0">
-                <div className="flex items-center gap-3">
-                  <Checkbox id="rememberMe" className="size-5 sm:size-6" />
-                  <Label
-                    htmlFor="rememberMe"
-                    className="text-sm text-muted-foreground sm:text-base"
-                  >
-                    {" "}
-                    Ingat saya
-                  </Label>
-                </div>
+                <div className="flex items-center gap-3"></div>
 
                 <Link
                   href="/auth/forgot-password"

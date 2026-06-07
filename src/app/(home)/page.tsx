@@ -31,11 +31,11 @@ export default async function HomePage() {
         className="my-20 mt-32 flex h-full w-full flex-col items-center justify-center space-y-12 md:my-20 md:space-y-20"
       >
         <div className="flex max-w-4xl flex-col gap-4 text-center md:gap-5">
-          <div
+          <h1
             className={`text-5xl text-dark-blue sm:text-7xl lg:text-8xl ${Montserrat.className} leading-tight font-bold`}
           >
             PaskiHub
-          </div>
+          </h1>
           <div className="px-4 text-sm text-neutral-500 sm:text-base md:px-0">
             Kelola dan ikuti lomba Paskibra dalam satu platform untuk membuat
             seluruh proses lebih mudah
@@ -318,7 +318,7 @@ export default async function HomePage() {
               <div className="text-sm leading-relaxed font-normal text-neutral-700 md:text-base">
                 Klik di sini untuk mendapatkan bantuan terkait PaskiHub
               </div>
-              <Link href="#" className="w-full sm:w-auto">
+              <Link href="/auth/register" className="w-full sm:w-auto">
                 <Button
                   variant={"secondary"}
                   className="flex w-full items-center justify-center gap-2 font-semibold sm:w-auto"

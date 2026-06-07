@@ -496,7 +496,6 @@ export function UserManagementClient({
                       <PaginationContent>
                         <PaginationItem>
                           <PaginationPrevious
-                            href="#"
                             onClick={(e) => {
                               e.preventDefault()
                               if (currentPage > 1)
@@ -512,7 +511,6 @@ export function UserManagementClient({
                         {Array.from({ length: totalPages }).map((_, i) => (
                           <PaginationItem key={i}>
                             <PaginationLink
-                              href="#"
                               isActive={currentPage === i + 1}
                               onClick={(e) => {
                                 e.preventDefault()
@@ -526,7 +524,6 @@ export function UserManagementClient({
 
                         <PaginationItem>
                           <PaginationNext
-                            href="#"
                             onClick={(e) => {
                               e.preventDefault()
                               if (currentPage < totalPages)
