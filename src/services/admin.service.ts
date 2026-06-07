@@ -7,6 +7,7 @@ import {
 } from "@/schemas/admin.schema"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
+import { parseApiError } from "@/lib/api-error"
 
 const API_URL =
   process.env.API_BASE_URL ||
@@ -54,23 +55,13 @@ export const adminService = {
       cache: "no-store",
     })
 
-    if (!res.ok) {
-      const err = await res.json()
-      throw new Error(err.error?.details || "Gagal mengambil data admin")
-    }
+    if (!res.ok) await parseApiError(res)
 
     const json = await res.json()
     const rawData = json.data || json
     const mappedData = Array.isArray(rawData) ? rawData.map(mapUserData) : []
 
-    const parsed = AdminUserListSchema.safeParse(mappedData)
-    if (!parsed.success) {
-      // eslint-disable-next-line no-console
-      console.error("Zod parse error:", parsed.error)
-      return []
-    }
-
-    return parsed.data
+    return AdminUserListSchema.parse(mappedData)
   },
 
   async fetchUsers(): Promise<UserResponse[]> {
@@ -88,23 +79,13 @@ export const adminService = {
       cache: "no-store",
     })
 
-    if (!res.ok) {
-      const err = await res.json()
-      throw new Error(err.error?.details || "Gagal mengambil data user")
-    }
+    if (!res.ok) await parseApiError(res)
 
     const json = await res.json()
     const rawData = json.data || json
     const mappedData = Array.isArray(rawData) ? rawData.map(mapUserData) : []
 
-    const parsed = AdminUserListSchema.safeParse(mappedData)
-    if (!parsed.success) {
-      // eslint-disable-next-line no-console
-      console.error("Zod parse error:", parsed.error)
-      return []
-    }
-
-    return parsed.data
+    return AdminUserListSchema.parse(mappedData)
   },
 
   async banUser(userId: string) {
@@ -121,10 +102,7 @@ export const adminService = {
       },
     })
 
-    if (!res.ok) {
-      const err = await res.json()
-      throw new Error(err.error?.details || "Gagal memblokir user")
-    }
+    if (!res.ok) await parseApiError(res)
 
     return { success: true }
   },
@@ -143,10 +121,7 @@ export const adminService = {
       },
     })
 
-    if (!res.ok) {
-      const err = await res.json()
-      throw new Error(err.error?.details || "Gagal mengaktifkan user")
-    }
+    if (!res.ok) await parseApiError(res)
 
     return { success: true }
   },
@@ -165,10 +140,7 @@ export const adminService = {
       },
     })
 
-    if (!res.ok) {
-      const err = await res.json()
-      throw new Error(err.error?.details || "Gagal memverifikasi user")
-    }
+    if (!res.ok) await parseApiError(res)
 
     return { success: true }
   },
@@ -188,10 +160,7 @@ export const adminService = {
       cache: "no-store",
     })
 
-    if (!res.ok) {
-      const err = await res.json()
-      throw new Error(err.error?.details || "Gagal mengambil detail user")
-    }
+    if (!res.ok) await parseApiError(res)
 
     const json = await res.json()
     return json.data || json
@@ -212,10 +181,7 @@ export const adminService = {
       body: JSON.stringify(payload),
     })
 
-    if (!res.ok) {
-      const err = await res.json()
-      throw new Error(err.error?.details || "Gagal membuat akun admin")
-    }
+    if (!res.ok) await parseApiError(res)
 
     return await res.json()
   },
@@ -234,10 +200,7 @@ export const adminService = {
       },
     })
 
-    if (!res.ok) {
-      const err = await res.json()
-      throw new Error(err.error?.details || "Gagal menghapus akun admin")
-    }
+    if (!res.ok) await parseApiError(res)
 
     return { success: true }
   },
@@ -259,10 +222,7 @@ export const adminService = {
       }
     )
 
-    if (!res.ok) {
-      const err = await res.json()
-      throw new Error(err.error?.details || "Gagal mereset password admin")
-    }
+    if (!res.ok) await parseApiError(res)
 
     return { success: true }
   },
@@ -285,10 +245,7 @@ export const adminService = {
       }
     )
 
-    if (!res.ok) {
-      const err = await res.json()
-      throw new Error(err.error?.details || "Gagal memperbarui status event")
-    }
+    if (!res.ok) await parseApiError(res)
     return { success: true }
   },
 
@@ -316,23 +273,15 @@ export const adminService = {
       cache: "no-store",
     })
 
-    if (!res.ok) {
-      const err = await res.json()
-      throw new Error(err.error?.details || "Gagal mengambil data transaksi")
-    }
+    if (!res.ok) await parseApiError(res)
 
     const json = await res.json()
     const rawData = json.data || json
-    const parsed = AdminTransactionListResponseSchema.safeParse(rawData)
-    if (!parsed.success) {
-      // eslint-disable-next-line no-console
-      console.error("Zod parse error:", parsed.error)
-      return { transactions: [], total: 0, page, limit }
-    }
+    const parsed = AdminTransactionListResponseSchema.parse(rawData)
 
     return {
-      ...parsed.data,
-      transactions: parsed.data.transactions ?? [],
+      ...parsed,
+      transactions: parsed.transactions ?? [],
     }
   },
 
@@ -353,10 +302,7 @@ export const adminService = {
       }
     )
 
-    if (!res.ok) {
-      const err = await res.json()
-      throw new Error(err.error?.details || "Gagal menyetujui transaksi")
-    }
+    if (!res.ok) await parseApiError(res)
 
     return { success: true }
   },
@@ -379,10 +325,7 @@ export const adminService = {
       }
     )
 
-    if (!res.ok) {
-      const err = await res.json()
-      throw new Error(err.error?.details || "Gagal menolak transaksi")
-    }
+    if (!res.ok) await parseApiError(res)
 
     return { success: true }
   },

@@ -89,11 +89,16 @@ export function WalletTopUpForm({
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      if (e.target.files[0].size > 10 * 1024 * 1024) {
+      const file = e.target.files[0]
+      if (file.size > 5 * 1024 * 1024) {
         toast.error("File terlalu besar. Maksimal 5MB.")
         return
       }
-      setPaymentProof(e.target.files[0])
+      if (!["image/jpeg", "image/jpg", "image/png"].includes(file.type)) {
+        toast.error("Format file bukti harus JPG atau PNG.")
+        return
+      }
+      setPaymentProof(file)
     }
   }
 
@@ -233,7 +238,7 @@ export function WalletTopUpForm({
             type="file"
             className="hidden"
             ref={fileInputRef}
-            accept=".jpg,.png,.jpeg,.pdf"
+            accept=".jpg,.jpeg,.png"
             onChange={handleFileChange}
           />
           <div

@@ -4,6 +4,7 @@ const API_URL =
   process.env.API_BASE_URL ||
   (process.env.NODE_ENV === "production" ? "" : "http://localhost:3010")
 const API_KEY = process.env.API_KEY
+import { parseApiError } from "@/lib/api-error"
 
 export const profileService = {
   async getEventsByUserId(token: string, userId: string) {
@@ -16,7 +17,7 @@ export const profileService = {
       },
       cache: "no-store",
     })
-    if (!res.ok) return []
+    if (!res.ok) await parseApiError(res)
     const data = await res.json()
     let events = data.data || []
 
@@ -65,10 +66,7 @@ export const profileService = {
       },
       body: JSON.stringify(data),
     })
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      throw new Error(err.message || "Failed to update event")
-    }
+    if (!res.ok) await parseApiError(res)
     return res.json()
   },
 
@@ -83,10 +81,7 @@ export const profileService = {
       },
       body: formData,
     })
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      throw new Error(err.message || "Failed to upload logo")
-    }
+    if (!res.ok) await parseApiError(res)
     return res.json()
   },
 
@@ -102,10 +97,7 @@ export const profileService = {
       },
       body: formData,
     })
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      throw new Error(err.message || "Failed to upload poster")
-    }
+    if (!res.ok) await parseApiError(res)
     return res.json()
   },
 
@@ -119,10 +111,7 @@ export const profileService = {
       },
       body: JSON.stringify(data),
     })
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      throw new Error(err.message || "Failed to create event level")
-    }
+    if (!res.ok) await parseApiError(res)
     return res.json()
   },
 
@@ -144,10 +133,7 @@ export const profileService = {
         body: JSON.stringify(data),
       }
     )
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      throw new Error(err.message || "Failed to update event level")
-    }
+    if (!res.ok) await parseApiError(res)
     return res.json()
   },
 
@@ -163,10 +149,7 @@ export const profileService = {
         },
       }
     )
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      throw new Error(err.message || "Failed to delete event level")
-    }
+    if (!res.ok) await parseApiError(res)
     return res.json()
   },
 
@@ -180,7 +163,7 @@ export const profileService = {
       },
       cache: "no-store",
     })
-    if (!res.ok) return null
+    if (!res.ok) await parseApiError(res)
     return res.json()
   },
 
@@ -208,10 +191,7 @@ export const profileService = {
       },
       body: JSON.stringify(payload),
     })
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      throw new Error(err.message || "Failed to create event")
-    }
+    if (!res.ok) await parseApiError(res)
     return res.json()
   },
 
@@ -225,10 +205,7 @@ export const profileService = {
       },
       body: JSON.stringify(data),
     })
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      throw new Error(err.message || "Failed to update profile")
-    }
+    if (!res.ok) await parseApiError(res)
     return res.json()
   },
 
@@ -242,10 +219,7 @@ export const profileService = {
       },
       body: JSON.stringify(data),
     })
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      throw new Error(err.message || "Failed to update password")
-    }
+    if (!res.ok) await parseApiError(res)
     return res.json()
   },
 
@@ -257,10 +231,7 @@ export const profileService = {
         Authorization: `Bearer ${token}`,
       },
     })
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      throw new Error(err.message || "Failed to get EO profile")
-    }
+    if (!res.ok) await parseApiError(res)
     return res.json()
   },
 
@@ -274,10 +245,7 @@ export const profileService = {
       },
       body: JSON.stringify(data),
     })
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      throw new Error(err.message || "Failed to update EO password")
-    }
+    if (!res.ok) await parseApiError(res)
     return res.json()
   },
 }

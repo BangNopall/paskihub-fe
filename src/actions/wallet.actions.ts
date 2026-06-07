@@ -16,17 +16,18 @@ export async function topUpAction(eventId: string, formData: FormData) {
     }
 
     const proof = formData.get("proof") as File | null
-    if (proof) {
-      if (proof.size > 5 * 1024 * 1024) {
-        return { success: false, message: "Ukuran file bukti maksimal 5MB." }
-      }
-      if (
-        !["image/jpeg", "image/png", "application/pdf"].includes(proof.type)
-      ) {
-        return {
-          success: false,
-          message: "Format file bukti harus JPG, PNG, atau PDF.",
-        }
+    if (!proof || proof.size === 0) {
+      return { success: false, message: "Bukti transfer wajib diunggah." }
+    }
+
+    if (proof.size > 5 * 1024 * 1024) {
+      return { success: false, message: "Ukuran file bukti maksimal 5MB." }
+    }
+
+    if (!["image/jpeg", "image/jpg", "image/png"].includes(proof.type)) {
+      return {
+        success: false,
+        message: "Format file bukti harus JPG atau PNG.",
       }
     }
 

@@ -4,6 +4,7 @@ import {
   RankingAwardFormData,
 } from "@/schemas/ranking.schema"
 import { z } from "zod"
+import { parseApiError } from "@/lib/api-error"
 
 const API_URL =
   process.env.API_BASE_URL ||
@@ -31,9 +32,7 @@ export const rankingService = {
       cache: "no-store",
     })
 
-    if (!res.ok) {
-      throw new Error("Failed to fetch awards")
-    }
+    if (!res.ok) await parseApiError(res)
 
     const data = await res.json()
     if (!data.data) {
@@ -60,10 +59,7 @@ export const rankingService = {
       }
     )
 
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      throw new Error(err.message || "Failed to create award")
-    }
+    if (!res.ok) await parseApiError(res)
 
     const result = await res.json()
     return AwardResSchema.parse(result.data)
@@ -88,10 +84,7 @@ export const rankingService = {
       }
     )
 
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      throw new Error(err.message || "Failed to update award")
-    }
+    if (!res.ok) await parseApiError(res)
 
     const result = await res.json()
     return AwardResSchema.parse(result.data)
@@ -110,9 +103,6 @@ export const rankingService = {
       }
     )
 
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      throw new Error(err.message || "Failed to delete award")
-    }
+    if (!res.ok) await parseApiError(res)
   },
 }

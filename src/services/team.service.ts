@@ -4,6 +4,7 @@ import {
   TeamDetailRes,
   TeamDetailResSchema,
 } from "@/schemas/team.schema"
+import { parseApiError } from "@/lib/api-error"
 
 const API_URL =
   process.env.API_BASE_URL ||
@@ -21,31 +22,12 @@ export const teamService = {
       cache: "no-store",
     })
 
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      const errMsg = err?.message || err?.error || `HTTP ${res.status}`
-      if (res.status === 401) throw new Error("Unauthorized: " + errMsg)
-      if (res.status === 403) throw new Error("Forbidden: " + errMsg)
-      if (res.status === 400) throw new Error("Bad Request: " + errMsg)
-      if (
-        err?.status === "KICKED" ||
-        err?.message === "KICKED" ||
-        err?.error === "KICKED"
-      )
-        throw new Error("KICKED")
-      throw new Error(errMsg)
-    }
+    if (!res.ok) await parseApiError(res)
 
     const json = await res.json()
     const data = json.data || []
 
-    try {
-      return data.map((item: any) => ParticipantTeamResSchema.parse(item))
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error("Zod validation error in getTeams:", error)
-      return []
-    }
+    return data.map((item: any) => ParticipantTeamResSchema.parse(item))
   },
 
   async getTeamDetail(
@@ -61,30 +43,11 @@ export const teamService = {
       cache: "no-store",
     })
 
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      const errMsg = err?.message || err?.error || `HTTP ${res.status}`
-      if (res.status === 401) throw new Error("Unauthorized: " + errMsg)
-      if (res.status === 403) throw new Error("Forbidden: " + errMsg)
-      if (res.status === 400) throw new Error("Bad Request: " + errMsg)
-      if (
-        err?.status === "KICKED" ||
-        err?.message === "KICKED" ||
-        err?.error === "KICKED"
-      )
-        throw new Error("KICKED")
-      throw new Error(errMsg)
-    }
+    if (!res.ok) await parseApiError(res)
 
     const json = await res.json()
 
-    try {
-      return TeamDetailResSchema.parse(json.data)
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error("Zod validation error in getTeamDetail:", error)
-      return null
-    }
+    return TeamDetailResSchema.parse(json.data)
   },
 
   async createTeam(formData: FormData, token: string) {
@@ -97,23 +60,9 @@ export const teamService = {
       body: formData,
     })
 
-    // Read body once — Response stream can only be consumed a single time
-    const text = await res.text()
-    let json: any = {}
-    try {
-      json = JSON.parse(text)
-    } catch {
-      // Backend returned non-JSON (e.g. "Request Entity Too Large")
-      if (!res.ok) {
-        throw new Error(text || `Request failed with status ${res.status}`)
-      }
-    }
+    if (!res.ok) await parseApiError(res)
 
-    if (!res.ok) {
-      throw new Error(json.message || "Failed to create team")
-    }
-
-    return json
+    return await res.json().catch(() => ({}))
   },
 
   async updateTeam(id: string, formData: FormData, token: string) {
@@ -126,21 +75,9 @@ export const teamService = {
       body: formData,
     })
 
-    const text = await res.text()
-    let json: any = {}
-    try {
-      json = JSON.parse(text)
-    } catch {
-      if (!res.ok) {
-        throw new Error(text || `Request failed with status ${res.status}`)
-      }
-    }
+    if (!res.ok) await parseApiError(res)
 
-    if (!res.ok) {
-      throw new Error(json.message || "Failed to update team")
-    }
-
-    return json
+    return await res.json().catch(() => ({}))
   },
 
   async deleteTeam(id: string, token: string) {
@@ -152,20 +89,8 @@ export const teamService = {
       },
     })
 
-    const text = await res.text()
-    let json: any = {}
-    try {
-      json = JSON.parse(text)
-    } catch {
-      if (!res.ok) {
-        throw new Error(text || `Request failed with status ${res.status}`)
-      }
-    }
+    if (!res.ok) await parseApiError(res)
 
-    if (!res.ok) {
-      throw new Error(json.message || "Failed to delete team")
-    }
-
-    return json
+    return await res.json().catch(() => ({}))
   },
 }

@@ -2,6 +2,7 @@ const API_URL =
   process.env.API_BASE_URL ||
   (process.env.NODE_ENV === "production" ? "" : "http://localhost:3010")
 const API_KEY = process.env.API_KEY
+import { parseApiError } from "@/lib/api-error"
 
 export const walletService = {
   async getWalletInfo(token: string, eventId: string) {
@@ -13,20 +14,7 @@ export const walletService = {
       },
       cache: "no-store",
     })
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      const errMsg = err?.message || err?.error || `HTTP ${res.status}`
-      if (res.status === 401) throw new Error("Unauthorized: " + errMsg)
-      if (res.status === 403) throw new Error("Forbidden: " + errMsg)
-      if (res.status === 400) throw new Error("Bad Request: " + errMsg)
-      if (
-        err?.status === "KICKED" ||
-        err?.message === "KICKED" ||
-        err?.error === "KICKED"
-      )
-        throw new Error("KICKED")
-      throw new Error(errMsg)
-    }
+    if (!res.ok) await parseApiError(res)
     const data = await res.json()
     return data.data
   },
@@ -40,45 +28,25 @@ export const walletService = {
       },
       cache: "no-store",
     })
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      const errMsg = err?.message || err?.error || `HTTP ${res.status}`
-      if (res.status === 401) throw new Error("Unauthorized: " + errMsg)
-      if (res.status === 403) throw new Error("Forbidden: " + errMsg)
-      if (res.status === 400) throw new Error("Bad Request: " + errMsg)
-      if (
-        err?.status === "KICKED" ||
-        err?.message === "KICKED" ||
-        err?.error === "KICKED"
-      )
-        throw new Error("KICKED")
-      throw new Error(errMsg)
-    }
+    if (!res.ok) await parseApiError(res)
     const data = await res.json()
     return data.data || []
   },
 
   async getPublicSettings(token: string) {
-    try {
-      const res = await fetch(`${API_URL}/api/v1/settings/public`, {
-        method: "GET",
-        headers: {
-          "x-api-key": API_KEY || "",
-          Authorization: `Bearer ${token}`,
-        },
-        next: { revalidate: 3600 }, // Cache selama 1 jam
-      })
+    const res = await fetch(`${API_URL}/api/v1/settings/public`, {
+      method: "GET",
+      headers: {
+        "x-api-key": API_KEY || "",
+        Authorization: `Bearer ${token}`,
+      },
+      next: { revalidate: 3600 }, // Cache selama 1 jam
+    })
 
-      if (!res.ok) {
-        throw new Error("Failed to fetch public settings")
-      }
-      const data = await res.json()
-      return data.data
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error("Failed to fetch public settings:", error)
-      return null
-    }
+    if (!res.ok) await parseApiError(res)
+    
+    const data = await res.json()
+    return data.data
   },
 
   async requestTopUp(token: string, eventId: string, formData: FormData) {
@@ -90,10 +58,7 @@ export const walletService = {
       },
       body: formData,
     })
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      throw new Error(err.error.message || "Gagal mengajukan top up")
-    }
+    if (!res.ok) await parseApiError(res)
     return res.json()
   },
 }
