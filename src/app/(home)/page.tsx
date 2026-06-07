@@ -47,6 +47,7 @@ export default async function HomePage() {
             alt="Home"
             width={1000}
             height={1000}
+            priority
             className="h-full w-full rounded-2xl object-cover object-top-left shadow-lg md:rounded-4xl"
           />
           <div className="absolute -right-10 bottom-10 hidden w-32 transition-transform hover:scale-105 sm:block md:-right-20 md:bottom-20 md:w-50">
@@ -318,7 +319,7 @@ export default async function HomePage() {
               <div className="text-sm leading-relaxed font-normal text-neutral-700 md:text-base">
                 Klik di sini untuk mendapatkan bantuan terkait PaskiHub
               </div>
-              <Link href="/auth/register" className="w-full sm:w-auto">
+              <Link href="https://wa.me/6281234567890" target="_blank" className="w-full sm:w-auto">
                 <Button
                   variant={"secondary"}
                   className="flex w-full items-center justify-center gap-2 font-semibold sm:w-auto"

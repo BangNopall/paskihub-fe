@@ -1,3 +1,4 @@
+import { getApiKeyHeader } from "@/lib/env"
 import {
   RegisterFormData,
   ForgotPasswordFormData,
@@ -15,7 +16,7 @@ export const authService = {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
       },
       body: JSON.stringify(data),
     })
@@ -32,7 +33,7 @@ export const authService = {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
       },
       body: JSON.stringify(data),
     })
@@ -45,7 +46,7 @@ export const authService = {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
       },
       body: JSON.stringify(data),
     })
@@ -57,7 +58,7 @@ export const authService = {
     const res = await fetch(`${API_URL}/api/v1/users/logout`, {
       method: "POST",
       headers: {
-        "x-api-key": API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
         Authorization: `Bearer ${token}`,
       },
     })
@@ -71,7 +72,7 @@ export const authService = {
       {
         method: "GET",
         headers: {
-          "x-api-key": API_KEY || "",
+          "x-api-key": getApiKeyHeader(),
         },
       }
     )

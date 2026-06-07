@@ -5,3 +5,8 @@ node_modules/
 coverage/
 pnpm-lock.yaml
 .pnpm-store/
+
+# Ignore untracked reference files
+backend-frontend-implementation-alignment.md
+swagger.json
+docs/

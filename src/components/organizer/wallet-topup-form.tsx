@@ -148,11 +148,12 @@ export function WalletTopUpForm({
           </span>
           <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
             {TOP_UP_OPTIONS.map((opt) => (
-              <div
+              <button
                 key={opt.id}
+                type="button"
                 onClick={() => handleOptionSelect(opt.coins)}
                 className={cn(
-                  "flex cursor-pointer flex-col items-center justify-center gap-1 rounded-2xl border p-4 shadow-sm transition-all",
+                  "flex cursor-pointer flex-col items-center justify-center gap-1 rounded-2xl border p-4 shadow-sm transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
                   selectedOption === opt.coins
                     ? "border-blue-500 bg-blue-50/50"
                     : "border-gray-100 bg-white hover:border-blue-300"
@@ -167,7 +168,7 @@ export function WalletTopUpForm({
                 <span className="font-poppins text-xs text-neutral-700">
                   {formatRupiah(opt.coins * coinRate)}
                 </span>
-              </div>
+              </button>
             ))}
           </div>
           <Input
@@ -237,13 +238,14 @@ export function WalletTopUpForm({
           <input
             type="file"
             className="hidden"
+            id="wallet-proof-upload"
             ref={fileInputRef}
             accept=".jpg,.jpeg,.png"
             onChange={handleFileChange}
           />
-          <div
-            onClick={() => fileInputRef.current?.click()}
-            className="group flex w-full cursor-pointer flex-col items-center justify-center gap-4 rounded-[20px] border border-dashed border-gray-300 bg-neutral-50 p-8 transition-colors hover:border-blue-400 hover:bg-blue-50/50 md:p-12"
+          <label
+            htmlFor="wallet-proof-upload"
+            className="group flex w-full cursor-pointer flex-col items-center justify-center gap-4 rounded-[20px] border border-dashed border-gray-300 bg-neutral-50 p-8 transition-colors hover:border-blue-400 hover:bg-blue-50/50 focus-within:ring-2 focus-within:ring-blue-500 md:p-12"
           >
             {paymentProof ? (
               <>
@@ -260,7 +262,7 @@ export function WalletTopUpForm({
                 </span>
               </>
             )}
-          </div>
+          </label>
           <Button
             type="submit"
             disabled={

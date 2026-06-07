@@ -1,3 +1,4 @@
+import { getApiKeyHeader } from "@/lib/env"
 import {
   AwardRes,
   AwardResSchema,
@@ -26,7 +27,7 @@ export const rankingService = {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
         Authorization: `Bearer ${token}`,
       },
       cache: "no-store",
@@ -52,7 +53,7 @@ export const rankingService = {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-api-key": API_KEY || "",
+          "x-api-key": getApiKeyHeader(),
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(data),
@@ -77,7 +78,7 @@ export const rankingService = {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          "x-api-key": API_KEY || "",
+          "x-api-key": getApiKeyHeader(),
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(data),
@@ -97,7 +98,7 @@ export const rankingService = {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
-          "x-api-key": API_KEY || "",
+          "x-api-key": getApiKeyHeader(),
           Authorization: `Bearer ${token}`,
         },
       }

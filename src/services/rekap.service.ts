@@ -1,3 +1,4 @@
+import { getApiKeyHeader } from "@/lib/env"
 import {
   ScoreboardRes,
   ScoreboardResSchema,
@@ -19,7 +20,7 @@ export const rekapService = {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
         Authorization: `Bearer ${token}`,
       },
       cache: "no-store",
@@ -42,7 +43,7 @@ export const rekapService = {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "x-api-key": API_KEY || "",
+          "x-api-key": getApiKeyHeader(),
           Authorization: `Bearer ${token}`,
         },
         cache: "no-store",
@@ -67,7 +68,7 @@ export const rekapService = {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-api-key": API_KEY || "",
+          "x-api-key": getApiKeyHeader(),
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
@@ -92,7 +93,7 @@ export const rekapService = {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({

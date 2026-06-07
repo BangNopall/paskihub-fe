@@ -1,3 +1,4 @@
+import { getApiKeyHeader } from "@/lib/env"
 import {
   AdminDashboard,
   adminDashboardResponseSchema,
@@ -13,7 +14,7 @@ class AdminDashboardService {
     const res = await fetch(`${API_URL}/api/v1/admin/dashboard`, {
       headers: {
         Authorization: `Bearer ${token}`,
-        "x-api-key": API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
       },
       cache: "no-store",
     })

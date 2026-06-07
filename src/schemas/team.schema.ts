@@ -4,8 +4,8 @@ import { z } from "zod"
 export const TeamMemberSchema = z.object({
   fullName: z.string().min(1, "Nama lengkap wajib diisi"),
   role: z.string().min(1, "Jabatan wajib diisi"),
-  idCard: z.any().optional(), // For File object in client
-  photo: z.any().optional(), // For File object in client
+  idCard: z.custom<File>((v) => typeof window === "undefined" ? true : v instanceof File).optional(),
+  photo: z.custom<File>((v) => typeof window === "undefined" ? true : v instanceof File).optional(),
   idCardUrl: z.string().optional(), // For existing URLs during edit
   photoUrl: z.string().optional(), // For existing URLs during edit
 })
@@ -14,8 +14,8 @@ export const TeamMemberSchema = z.object({
 export const TeamFormSchema = z.object({
   namaTim: z.string().min(1, "Nama tim wajib diisi"),
   pelatih: z.string().min(1, "Nama pelatih wajib diisi"),
-  logoTim: z.any().optional(),
-  suratRekomendasi: z.any().optional(),
+  logoTim: z.custom<File>((v) => typeof window === "undefined" ? true : v instanceof File).optional(),
+  suratRekomendasi: z.custom<File>((v) => typeof window === "undefined" ? true : v instanceof File).optional(),
   logoTimUrl: z.string().optional(),
   suratRekomendasiUrl: z.string().optional(),
   members: z.array(TeamMemberSchema).min(1, "Minimal harus ada 1 anggota"),

@@ -148,7 +148,7 @@ const Navbar = ({
     >
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-2 px-4 py-7 sm:gap-8 sm:px-6">
         <Link
-          href={`#`}
+          href="/"
           className={`${Montserrat.className} justify-start text-3xl leading-9 font-bold text-dark-blue`}
         >
           PaskiHub

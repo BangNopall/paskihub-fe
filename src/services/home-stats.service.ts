@@ -1,3 +1,4 @@
+import { getApiKeyHeader } from "@/lib/env"
 import {
   homeStatsResponseSchema,
   type HomeStats,
@@ -20,7 +21,7 @@ class HomeStatsService {
     try {
       const res = await fetch(`${API_URL}/api/v1/public/home-stats`, {
         headers: {
-          "x-api-key": API_KEY || "",
+          "x-api-key": getApiKeyHeader(),
         },
         cache: "no-store",
       })

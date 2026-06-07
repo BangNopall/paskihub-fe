@@ -1,3 +1,4 @@
+import { getApiKeyHeader } from "@/lib/env"
 "use server"
 
 import { getServerSession } from "next-auth/next"
@@ -24,7 +25,7 @@ export async function getTeamDetailAction(
     {
       headers: {
         Authorization: `Bearer ${session.accessToken}`,
-        "x-api-key": process.env.API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
       },
     }
   )
@@ -53,7 +54,7 @@ export async function approveTeamAction(
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${session.accessToken}`,
-        "x-api-key": process.env.API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
       },
       body: JSON.stringify({ payment_status: paymentStatus }),
     }
@@ -83,7 +84,7 @@ export async function rejectTeamAction(
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${session.accessToken}`,
-        "x-api-key": process.env.API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
       },
       body: JSON.stringify({ rejection_reason: rejectionReason }),
     }
@@ -109,7 +110,7 @@ export async function kickTeamAction(eventId: string, registrationId: string) {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${session.accessToken}`,
-        "x-api-key": process.env.API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
       },
     }
   )
@@ -136,7 +137,7 @@ export async function startAssessmentAction(
       method: "PUT",
       headers: {
         Authorization: `Bearer ${session.accessToken}`,
-        "x-api-key": process.env.API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
       },
     }
   )

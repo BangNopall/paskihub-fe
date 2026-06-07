@@ -1,3 +1,4 @@
+import { getApiKeyHeader } from "@/lib/env"
 const API_URL =
   process.env.API_BASE_URL ||
   (process.env.NODE_ENV === "production" ? "" : "http://localhost:3010")
@@ -9,7 +10,7 @@ export const walletService = {
     const res = await fetch(`${API_URL}/api/v1/wallets/${eventId}`, {
       method: "GET",
       headers: {
-        "x-api-key": API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
         Authorization: `Bearer ${token}`,
       },
       cache: "no-store",
@@ -23,7 +24,7 @@ export const walletService = {
     const res = await fetch(`${API_URL}/api/v1/wallets/${eventId}/logs`, {
       method: "GET",
       headers: {
-        "x-api-key": API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
         Authorization: `Bearer ${token}`,
       },
       cache: "no-store",
@@ -37,7 +38,7 @@ export const walletService = {
     const res = await fetch(`${API_URL}/api/v1/settings/public`, {
       method: "GET",
       headers: {
-        "x-api-key": API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
         Authorization: `Bearer ${token}`,
       },
       next: { revalidate: 3600 }, // Cache selama 1 jam
@@ -53,7 +54,7 @@ export const walletService = {
     const res = await fetch(`${API_URL}/api/v1/wallets/${eventId}/topup`, {
       method: "POST",
       headers: {
-        "x-api-key": API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
         Authorization: `Bearer ${token}`,
       },
       body: formData,

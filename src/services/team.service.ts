@@ -1,3 +1,4 @@
+import { getApiKeyHeader } from "@/lib/env"
 import {
   ParticipantTeamRes,
   ParticipantTeamResSchema,
@@ -16,7 +17,7 @@ export const teamService = {
     const res = await fetch(`${API_URL}/api/v1/peserta/teams`, {
       method: "GET",
       headers: {
-        "x-api-key": API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
         Authorization: `Bearer ${token}`,
       },
       cache: "no-store",
@@ -37,7 +38,7 @@ export const teamService = {
     const res = await fetch(`${API_URL}/api/v1/peserta/teams/${id}`, {
       method: "GET",
       headers: {
-        "x-api-key": API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
         Authorization: `Bearer ${token}`,
       },
       cache: "no-store",
@@ -54,7 +55,7 @@ export const teamService = {
     const res = await fetch(`${API_URL}/api/v1/peserta/teams`, {
       method: "POST",
       headers: {
-        "x-api-key": API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
         Authorization: `Bearer ${token}`,
       },
       body: formData,
@@ -69,7 +70,7 @@ export const teamService = {
     const res = await fetch(`${API_URL}/api/v1/peserta/teams/${id}`, {
       method: "PUT",
       headers: {
-        "x-api-key": API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
         Authorization: `Bearer ${token}`,
       },
       body: formData,
@@ -84,7 +85,7 @@ export const teamService = {
     const res = await fetch(`${API_URL}/api/v1/peserta/teams/${id}`, {
       method: "DELETE",
       headers: {
-        "x-api-key": API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
         Authorization: `Bearer ${token}`,
       },
     })

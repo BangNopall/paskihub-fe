@@ -1,3 +1,4 @@
+import { getApiKeyHeader } from "@/lib/env"
 const API_URL =
   process.env.API_BASE_URL ||
   (process.env.NODE_ENV === "production" ? "" : "http://localhost:3010")
@@ -30,7 +31,7 @@ class EOTeamService {
     const res = await fetch(url.toString(), {
       headers: {
         Authorization: `Bearer ${token}`,
-        "x-api-key": API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
       },
       cache: "no-store",
     })
@@ -53,7 +54,7 @@ class EOTeamService {
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          "x-api-key": API_KEY || "",
+          "x-api-key": getApiKeyHeader(),
         },
         cache: "no-store",
       }
@@ -73,7 +74,7 @@ class EOTeamService {
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          "x-api-key": API_KEY || "",
+          "x-api-key": getApiKeyHeader(),
         },
         cache: "no-store",
       }
@@ -98,7 +99,7 @@ class EOTeamService {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
-          "x-api-key": API_KEY || "",
+          "x-api-key": getApiKeyHeader(),
         },
       }
     )

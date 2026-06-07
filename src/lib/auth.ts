@@ -1,3 +1,4 @@
+import { getApiKeyHeader } from "@/lib/env"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { loginResponseSchema } from "@/schemas/auth.schema"
 
@@ -40,7 +41,7 @@ export const authOptions: any = {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "x-api-key": API_KEY || "",
+              "x-api-key": getApiKeyHeader(),
             },
             body: JSON.stringify({
               email: credentials.email,

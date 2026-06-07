@@ -1,3 +1,4 @@
+import { getApiKeyHeader } from "@/lib/env"
 import { EODataFormData, PesertaDataFormData } from "@/schemas/profile.schema"
 
 const API_URL =
@@ -12,7 +13,7 @@ export const profileService = {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
         Authorization: `Bearer ${token}`,
       },
       cache: "no-store",
@@ -35,7 +36,7 @@ export const profileService = {
               method: "GET",
               headers: {
                 "Content-Type": "application/json",
-                "x-api-key": API_KEY || "",
+                "x-api-key": getApiKeyHeader(),
                 Authorization: `Bearer ${token}`,
               },
               cache: "no-store",
@@ -61,7 +62,7 @@ export const profileService = {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(data),
@@ -76,7 +77,7 @@ export const profileService = {
     const res = await fetch(`${API_URL}/api/v1/events/upload/${id}/logo`, {
       method: "POST",
       headers: {
-        "x-api-key": API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
         Authorization: `Bearer ${token}`,
       },
       body: formData,
@@ -92,7 +93,7 @@ export const profileService = {
     const res = await fetch(`${API_URL}/api/v1/events/upload/${id}/poster`, {
       method: "POST",
       headers: {
-        "x-api-key": API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
         Authorization: `Bearer ${token}`,
       },
       body: formData,
@@ -106,7 +107,7 @@ export const profileService = {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(data),
@@ -127,7 +128,7 @@ export const profileService = {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          "x-api-key": API_KEY || "",
+          "x-api-key": getApiKeyHeader(),
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(data),
@@ -144,7 +145,7 @@ export const profileService = {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
-          "x-api-key": API_KEY || "",
+          "x-api-key": getApiKeyHeader(),
           Authorization: `Bearer ${token}`,
         },
       }
@@ -158,7 +159,7 @@ export const profileService = {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
         Authorization: `Bearer ${token}`,
       },
       cache: "no-store",
@@ -186,7 +187,7 @@ export const profileService = {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(payload),
@@ -200,7 +201,7 @@ export const profileService = {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(data),
@@ -214,7 +215,7 @@ export const profileService = {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(data),
@@ -227,7 +228,7 @@ export const profileService = {
     const res = await fetch(`${API_URL}/api/v1/eo/profile`, {
       method: "GET",
       headers: {
-        "x-api-key": API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
         Authorization: `Bearer ${token}`,
       },
     })
@@ -240,7 +241,7 @@ export const profileService = {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(data),

@@ -1,3 +1,4 @@
+import { getApiKeyHeader } from "@/lib/env"
 import {
   OpenEventSchema,
   ActiveEventSchema,
@@ -24,7 +25,7 @@ export const participantEventService = {
     const res = await fetch(`${API_URL}/api/v1/peserta/events/open`, {
       method: "GET",
       headers: {
-        "x-api-key": API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
         Authorization: `Bearer ${token}`,
       },
       cache: "no-store",
@@ -51,7 +52,7 @@ export const participantEventService = {
     const res = await fetch(`${API_URL}/api/v1/peserta/events/active`, {
       method: "GET",
       headers: {
-        "x-api-key": API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
         Authorization: `Bearer ${token}`,
       },
       cache: "no-store",
@@ -78,7 +79,7 @@ export const participantEventService = {
     const res = await fetch(`${API_URL}/api/v1/peserta/events/register`, {
       method: "POST",
       headers: {
-        "x-api-key": API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
         Authorization: `Bearer ${token}`,
       },
       body: formData,
@@ -96,7 +97,7 @@ export const participantEventService = {
       {
         method: "PUT",
         headers: {
-          "x-api-key": API_KEY || "",
+          "x-api-key": getApiKeyHeader(),
           Authorization: `Bearer ${token}`,
         },
         body: formData,
@@ -118,7 +119,7 @@ export const participantEventService = {
       {
         method: "GET",
         headers: {
-          "x-api-key": API_KEY || "",
+          "x-api-key": getApiKeyHeader(),
           Authorization: `Bearer ${token}`,
         },
         cache: "no-store",
@@ -151,7 +152,7 @@ export const participantEventService = {
       {
         method: "GET",
         headers: {
-          "x-api-key": API_KEY || "",
+          "x-api-key": getApiKeyHeader(),
           Authorization: `Bearer ${token}`,
         },
         cache: "no-store",
@@ -184,7 +185,7 @@ export const participantEventService = {
       {
         method: "GET",
         headers: {
-          "x-api-key": API_KEY || "",
+          "x-api-key": getApiKeyHeader(),
           Authorization: `Bearer ${token}`,
         },
         cache: "no-store",
