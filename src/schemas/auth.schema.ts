@@ -16,6 +16,38 @@ export const registerFormSchema = z
     message: "Password tidak cocok",
     path: ["confirm_password"],
   })
+  .refine((data) => /[A-Z]/.test(data.password), {
+    message: "Password harus mengandung minimal satu huruf besar",
+    path: ["password"],
+  })
+  .refine((data) => /[a-z]/.test(data.password), {
+    message: "Password harus mengandung minimal satu huruf kecil",
+    path: ["password"],
+  })
+  .refine((data) => /[0-9]/.test(data.password), {
+    message: "Password harus mengandung minimal satu angka",
+    path: ["password"],
+  })
+  .refine((data) => /[^A-Za-z0-9]/.test(data.password), {
+    message: "Password harus mengandung minimal satu karakter khusus",
+    path: ["password"],
+  })
+  .refine((data) => /[A-Z]/.test(data.confirm_password), {
+    message: "Password harus mengandung minimal satu huruf besar",
+    path: ["confirm_password"],
+  })
+  .refine((data) => /[a-z]/.test(data.confirm_password), {
+    message: "Password harus mengandung minimal satu huruf kecil",
+    path: ["confirm_password"],
+  })
+  .refine((data) => /[0-9]/.test(data.confirm_password), {
+    message: "Password harus mengandung minimal satu angka",
+    path: ["confirm_password"],
+  })
+  .refine((data) => /[^A-Za-z0-9]/.test(data.confirm_password), {
+    message: "Password harus mengandung minimal satu karakter khusus",
+    path: ["confirm_password"],
+  })
 
 export const forgotPasswordSchema = z.object({
   email: z.string().email("Email tidak valid"),

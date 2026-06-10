@@ -32,7 +32,7 @@ export const participantEventService = {
     })
     if (!res.ok) await parseApiError(res)
     const json = await res.json()
-    return z.array(OpenEventSchema).parse(json.data)
+    return z.array(OpenEventSchema).parse(json.data ?? [])
   },
 
   async getActiveEvents(token: string): Promise<ActiveEvent[]> {
@@ -46,7 +46,7 @@ export const participantEventService = {
     })
     if (!res.ok) await parseApiError(res)
     const json = await res.json()
-    return z.array(ActiveEventSchema).parse(json.data)
+    return z.array(ActiveEventSchema).parse(json.data ?? [])
   },
 
   async registerEvent(formData: FormData, token: string) {

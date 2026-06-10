@@ -35,7 +35,8 @@ export const rankingService = {
     if (!res.ok) await parseApiError(res)
 
     const data = await res.json()
-    return z.array(AwardResSchema).parse(data.data)
+    const parsed = z.array(AwardResSchema).nullable().parse(data.data)
+    return parsed || []
   },
 
   async createAward(

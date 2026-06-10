@@ -106,7 +106,10 @@ export const AdminTransactionSchema = z.object({
 })
 
 export const AdminTransactionListResponseSchema = z.object({
-  transactions: z.array(AdminTransactionSchema).optional().default([]),
+  transactions: z
+    .array(AdminTransactionSchema)
+    .nullish()
+    .transform((val) => val ?? []),
   total: z.number().optional().default(0),
   page: z.number().optional().default(1),
   limit: z.number().optional().default(10),
