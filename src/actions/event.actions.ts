@@ -27,7 +27,10 @@ export async function uploadEventLogoAction(id: string, formData: FormData) {
     if (!session?.accessToken) throw new Error("Unauthorized")
 
     const file = formData.get("logo") as File
-    if (!file) throw new Error("File logo tidak ditemukan")
+    if (!file || file.size === 0) throw new Error("File logo tidak ditemukan")
+    if (file.size > 5 * 1024 * 1024) throw new Error("Ukuran file maksimal 5MB")
+    if (!["image/jpeg", "image/png"].includes(file.type))
+      throw new Error("Format file harus JPG atau PNG")
 
     await profileService.uploadEventLogo(id, file, session.accessToken)
     revalidatePath("/organizer/dashboard/event")
@@ -43,7 +46,10 @@ export async function uploadEventPosterAction(id: string, formData: FormData) {
     if (!session?.accessToken) throw new Error("Unauthorized")
 
     const file = formData.get("poster") as File
-    if (!file) throw new Error("File poster tidak ditemukan")
+    if (!file || file.size === 0) throw new Error("File poster tidak ditemukan")
+    if (file.size > 5 * 1024 * 1024) throw new Error("Ukuran file maksimal 5MB")
+    if (!["image/jpeg", "image/png"].includes(file.type))
+      throw new Error("Format file harus JPG atau PNG")
 
     await profileService.uploadEventPoster(id, file, session.accessToken)
     revalidatePath("/organizer/dashboard/event")

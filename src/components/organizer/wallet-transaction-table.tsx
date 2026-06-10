@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client"
 
 import React, { useState } from "react"
@@ -220,7 +222,6 @@ export function WalletTransactionTable({
               <PaginationContent>
                 <PaginationItem>
                   <PaginationPrevious
-                    href="#"
                     onClick={(e) => {
                       e.preventDefault()
                       if (currentPage > 1) setCurrentPage(currentPage - 1)
@@ -234,7 +235,6 @@ export function WalletTransactionTable({
                 {Array.from({ length: totalPages }).map((_, i) => (
                   <PaginationItem key={i}>
                     <PaginationLink
-                      href="#"
                       isActive={currentPage === i + 1}
                       onClick={(e) => {
                         e.preventDefault()
@@ -248,7 +248,6 @@ export function WalletTransactionTable({
 
                 <PaginationItem>
                   <PaginationNext
-                    href="#"
                     onClick={(e) => {
                       e.preventDefault()
                       if (currentPage < totalPages)

@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use server"
 
 import { revalidatePath } from "next/cache"
@@ -6,6 +8,24 @@ import { teamService } from "@/services/team.service"
 import { TeamFormData } from "@/schemas/team.schema"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
+import {
+  buildCreateTeamFormData,
+  buildUpdateTeamFormData,
+} from "@/lib/team-form"
+import { validateFile } from "@/lib/file-validation"
+
+function validateTeamDataFiles(data: TeamFormData) {
+  const imageTypes = ["image/jpeg", "image/jpg", "image/png"]
+  const docTypes = ["image/jpeg", "image/jpg", "image/png", "application/pdf"]
+
+  validateFile(data.logoTim, imageTypes, 5, "Logo Tim")
+  validateFile(data.suratRekomendasi, docTypes, 5, "Surat Rekomendasi")
+
+  data.members?.forEach((m, i) => {
+    validateFile(m.idCard, docTypes, 5, `Kartu Identitas Anggota ${i + 1}`)
+    validateFile(m.photo, docTypes, 5, `Foto Anggota ${i + 1}`)
+  })
+}
 
 async function getAuthToken() {
   const session: any = await getServerSession(authOptions)
@@ -16,30 +36,9 @@ async function getAuthToken() {
 export async function createTeamAction(data: TeamFormData) {
   const token = await getAuthToken()
 
-  const formData = new FormData()
-  formData.append("name", data.namaTim)
-  formData.append("coach_name", data.pelatih)
-
-  if (data.logoTim instanceof File) {
-    formData.append("logo", data.logoTim)
-  }
-
-  if (data.suratRekomendasi instanceof File) {
-    formData.append("recommendation_letter", data.suratRekomendasi)
-  }
-
-  data.members.forEach((member, index) => {
-    formData.append(`members[${index}][full_name]`, member.fullName)
-    formData.append(`members[${index}][role]`, member.role)
-    if (member.idCard instanceof File) {
-      formData.append(`members[${index}][id_card]`, member.idCard)
-    }
-    if (member.photo instanceof File) {
-      formData.append(`members[${index}][photo]`, member.photo)
-    }
-  })
-
   try {
+    validateTeamDataFiles(data)
+    const formData = buildCreateTeamFormData(data)
     const res = await teamService.createTeam(formData, token)
     revalidatePath("/peserta/dashboard/team")
     return { success: true, data: res }
@@ -52,30 +51,9 @@ export async function updateTeamAction(id: string, data: TeamFormData) {
   const token = await getAuthToken()
   if (!token) throw new Error("Unauthorized")
 
-  const formData = new FormData()
-  formData.append("name", data.namaTim)
-  formData.append("coach_name", data.pelatih)
-
-  if (data.logoTim instanceof File) {
-    formData.append("logo", data.logoTim)
-  }
-
-  if (data.suratRekomendasi instanceof File) {
-    formData.append("recommendation_letter", data.suratRekomendasi)
-  }
-
-  data.members.forEach((member, index) => {
-    formData.append(`members[${index}][full_name]`, member.fullName)
-    formData.append(`members[${index}][role]`, member.role)
-    if (member.idCard instanceof File) {
-      formData.append(`members[${index}][id_card]`, member.idCard)
-    }
-    if (member.photo instanceof File) {
-      formData.append(`members[${index}][photo]`, member.photo)
-    }
-  })
-
   try {
+    validateTeamDataFiles(data)
+    const formData = buildUpdateTeamFormData(data)
     const res = await teamService.updateTeam(id, formData, token)
     revalidatePath("/peserta/dashboard/team")
     revalidatePath(`/peserta/dashboard/team/edit/${id}`)

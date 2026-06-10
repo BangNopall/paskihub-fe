@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable react-hooks/preserve-manual-memoization */
 "use client"
 
 import * as React from "react"
@@ -35,7 +37,6 @@ type MotionHighlightContextType<T extends string> = {
 }
 
 const MotionHighlightContext = React.createContext<
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   MotionHighlightContextType<any> | undefined
 >(undefined)
 
@@ -191,6 +192,7 @@ function MotionHighlight<T extends string>({
   }, [])
 
   React.useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (value !== undefined) setActiveValue(value)
     else if (defaultValue !== undefined) setActiveValue(defaultValue)
   }, [value, defaultValue])

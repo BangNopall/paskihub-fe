@@ -32,11 +32,20 @@ export default withAuth(
 
       // Helper for dashboard redirect
       const redirectToDashboard = () => {
-        if (role === "ORGANIZER")
-          return NextResponse.redirect(new URL("/organizer/dashboard", req.url))
         if (role === "ADMIN")
           return NextResponse.redirect(new URL("/admin/dashboard", req.url))
-        return NextResponse.redirect(new URL("/peserta/dashboard", req.url))
+        if (role === "ORGANIZER")
+          return NextResponse.redirect(new URL("/organizer/dashboard", req.url))
+        if (role === "PESERTA")
+          return NextResponse.redirect(new URL("/peserta/dashboard", req.url))
+
+        // Fail closed
+        const loginUrl = new URL("/auth/login", req.url)
+        loginUrl.searchParams.set("error", "AccessDenied")
+        const response = NextResponse.redirect(loginUrl)
+        response.cookies.delete("next-auth.session-token")
+        response.cookies.delete("__Secure-next-auth.session-token")
+        return response
       }
 
       // 1. Handle Auth Pages (redirect to dashboard if already logged in)
@@ -51,6 +60,9 @@ export default withAuth(
           return redirectToDashboard()
         }
         if (role === "PESERTA" && !pathname.includes("/peserta/data-form")) {
+          return redirectToDashboard()
+        }
+        if (role !== "ORGANIZER" && role !== "PESERTA") {
           return redirectToDashboard()
         }
       }
@@ -69,6 +81,9 @@ export default withAuth(
           return redirectToDashboard()
         }
         if (role === "ADMIN" && !pathname.startsWith("/admin")) {
+          return redirectToDashboard()
+        }
+        if (role !== "ORGANIZER" && role !== "PESERTA" && role !== "ADMIN") {
           return redirectToDashboard()
         }
       }

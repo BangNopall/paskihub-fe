@@ -1,17 +1,19 @@
+import { getApiKeyHeader } from "@/lib/env"
 import {
   ParticipantDashboard,
   participantDashboardResponseSchema,
 } from "@/schemas/participant-dashboard.schema"
 
-const API_URL = process.env.API_BASE_URL || "http://localhost:3010"
-const API_KEY = process.env.API_KEY
+const API_URL =
+  process.env.API_BASE_URL ||
+  (process.env.NODE_ENV === "production" ? "" : "http://localhost:3010")
 
 class ParticipantDashboardService {
   async getDashboard(token: string): Promise<ParticipantDashboard> {
     const res = await fetch(`${API_URL}/api/v1/peserta/dashboard`, {
       headers: {
         Authorization: `Bearer ${token}`,
-        "x-api-key": API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
       },
       cache: "no-store",
     })

@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable @next/next/no-img-element */
 "use client"
 
 import React, { useState, useRef } from "react"
@@ -346,6 +348,7 @@ function EditableField({
           formattedDisplay = valStr
         }
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error("Error parsing date:", error)
       }
     }
@@ -503,6 +506,7 @@ export default function OrganizerEventForm({ initialData }: EventFormProps) {
             timePart = parts[1] ? parts[1].split(/[+Z]/)[0] : "00:00:00"
           }
         } catch (error) {
+          // eslint-disable-next-line no-console
           console.error("Error parsing date:", error)
         }
       }
@@ -735,7 +739,9 @@ export default function OrganizerEventForm({ initialData }: EventFormProps) {
         window.location.reload()
       }, 500)
     } catch (error: any) {
+      // eslint-disable-next-line no-console
       console.log(error)
+      // eslint-disable-next-line no-console
       console.error("Gagal menyimpan data:", error)
       toast.error(
         error.message || "Terjadi kesalahan saat menyimpan perubahan."

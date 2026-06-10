@@ -1,3 +1,4 @@
+import { getApiKeyHeader } from "@/lib/env"
 import {
   ScoreboardRes,
   ScoreboardResSchema,
@@ -5,8 +6,9 @@ import {
   TeamAssessmentDetailResSchema,
 } from "@/schemas/rekap.schema"
 
-const API_URL = process.env.API_BASE_URL || "http://localhost:3010"
-const API_KEY = process.env.API_KEY
+const API_URL =
+  process.env.API_BASE_URL ||
+  (process.env.NODE_ENV === "production" ? "" : "http://localhost:3010")
 
 export const rekapService = {
   async getTeamAssessmentDetail(
@@ -17,7 +19,7 @@ export const rekapService = {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
         Authorization: `Bearer ${token}`,
       },
       cache: "no-store",
@@ -40,7 +42,7 @@ export const rekapService = {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "x-api-key": API_KEY || "",
+          "x-api-key": getApiKeyHeader(),
           Authorization: `Bearer ${token}`,
         },
         cache: "no-store",
@@ -65,7 +67,7 @@ export const rekapService = {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-api-key": API_KEY || "",
+          "x-api-key": getApiKeyHeader(),
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
@@ -90,7 +92,7 @@ export const rekapService = {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({

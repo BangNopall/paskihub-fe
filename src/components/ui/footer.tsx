@@ -47,12 +47,9 @@ const Footer = () => {
               <div className="text-base leading-6 font-semibold text-dark-blue">
                 Alamat
               </div>
-              <Link
-                href="#"
-                className="text-center text-xs leading-4 font-normal text-dark-blue transition-colors hover:text-dark-blue/80 md:text-left"
-              >
+              <p className="text-center text-xs leading-4 font-normal text-dark-blue md:text-left">
                 Malang, Jawa Timur, Indonesia
-              </Link>
+              </p>
             </div>
           </div>
 

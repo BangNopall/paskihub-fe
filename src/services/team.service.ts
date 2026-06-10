@@ -1,35 +1,33 @@
+import { getApiKeyHeader } from "@/lib/env"
 import {
   ParticipantTeamRes,
   ParticipantTeamResSchema,
   TeamDetailRes,
   TeamDetailResSchema,
 } from "@/schemas/team.schema"
+import { parseApiError } from "@/lib/api-error"
 
-const API_URL = process.env.API_BASE_URL || "http://localhost:3010"
-const API_KEY = process.env.API_KEY
+const API_URL =
+  process.env.API_BASE_URL ||
+  (process.env.NODE_ENV === "production" ? "" : "http://localhost:3010")
 
 export const teamService = {
   async getTeams(token: string): Promise<ParticipantTeamRes[]> {
     const res = await fetch(`${API_URL}/api/v1/peserta/teams`, {
       method: "GET",
       headers: {
-        "x-api-key": API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
         Authorization: `Bearer ${token}`,
       },
       cache: "no-store",
     })
 
-    if (!res.ok) return []
+    if (!res.ok) await parseApiError(res)
 
     const json = await res.json()
     const data = json.data || []
 
-    try {
-      return data.map((item: any) => ParticipantTeamResSchema.parse(item))
-    } catch (error) {
-      console.error("Zod validation error in getTeams:", error)
-      return []
-    }
+    return data.map((item: any) => ParticipantTeamResSchema.parse(item))
   },
 
   async getTeamDetail(
@@ -39,103 +37,60 @@ export const teamService = {
     const res = await fetch(`${API_URL}/api/v1/peserta/teams/${id}`, {
       method: "GET",
       headers: {
-        "x-api-key": API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
         Authorization: `Bearer ${token}`,
       },
       cache: "no-store",
     })
 
-    if (!res.ok) return null
+    if (!res.ok) await parseApiError(res)
 
     const json = await res.json()
 
-    try {
-      return TeamDetailResSchema.parse(json.data)
-    } catch (error) {
-      console.error("Zod validation error in getTeamDetail:", error)
-      return null
-    }
+    return TeamDetailResSchema.parse(json.data)
   },
 
   async createTeam(formData: FormData, token: string) {
     const res = await fetch(`${API_URL}/api/v1/peserta/teams`, {
       method: "POST",
       headers: {
-        "x-api-key": API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
         Authorization: `Bearer ${token}`,
       },
       body: formData,
     })
 
-    // Read body once — Response stream can only be consumed a single time
-    const text = await res.text()
-    let json: any = {}
-    try {
-      json = JSON.parse(text)
-    } catch {
-      // Backend returned non-JSON (e.g. "Request Entity Too Large")
-      if (!res.ok) {
-        throw new Error(text || `Request failed with status ${res.status}`)
-      }
-    }
+    if (!res.ok) await parseApiError(res)
 
-    if (!res.ok) {
-      throw new Error(json.message || "Failed to create team")
-    }
-
-    return json
+    return await res.json().catch(() => ({}))
   },
 
   async updateTeam(id: string, formData: FormData, token: string) {
     const res = await fetch(`${API_URL}/api/v1/peserta/teams/${id}`, {
       method: "PUT",
       headers: {
-        "x-api-key": API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
         Authorization: `Bearer ${token}`,
       },
       body: formData,
     })
 
-    const text = await res.text()
-    let json: any = {}
-    try {
-      json = JSON.parse(text)
-    } catch {
-      if (!res.ok) {
-        throw new Error(text || `Request failed with status ${res.status}`)
-      }
-    }
+    if (!res.ok) await parseApiError(res)
 
-    if (!res.ok) {
-      throw new Error(json.message || "Failed to update team")
-    }
-
-    return json
+    return await res.json().catch(() => ({}))
   },
 
   async deleteTeam(id: string, token: string) {
     const res = await fetch(`${API_URL}/api/v1/peserta/teams/${id}`, {
       method: "DELETE",
       headers: {
-        "x-api-key": API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
         Authorization: `Bearer ${token}`,
       },
     })
 
-    const text = await res.text()
-    let json: any = {}
-    try {
-      json = JSON.parse(text)
-    } catch {
-      if (!res.ok) {
-        throw new Error(text || `Request failed with status ${res.status}`)
-      }
-    }
+    if (!res.ok) await parseApiError(res)
 
-    if (!res.ok) {
-      throw new Error(json.message || "Failed to delete team")
-    }
-
-    return json
+    return await res.json().catch(() => ({}))
   },
 }

@@ -1,3 +1,6 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @next/next/no-img-element */
 "use client"
 
 import React, { useState, useTransition } from "react"
@@ -17,6 +20,7 @@ import {
   Maximize2,
 } from "lucide-react"
 
+import { getProxyFileUrl } from "@/lib/utils"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -313,198 +317,217 @@ export default function TransactionManagementClient({ initialData }: Props) {
                             {new Date(tx.created_at).toLocaleString("id-ID")}
                           </TableCell>
                           <TableCell className="px-6 py-4 text-right">
-                            <Dialog
-                              onOpenChange={(open) => {
-                                if (!open) {
-                                  setSelectedTx(null)
-                                  setIsRejecting(false)
-                                  setRejectionReason("")
-                                }
-                              }}
-                            >
-                              <DialogTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="rounded-full text-info-600 hover:bg-info-50 hover:text-info-700"
-                                  onClick={() => setSelectedTx(tx)}
-                                >
-                                  <Eye className="mr-2 h-4 w-4" /> Detail
-                                </Button>
-                              </DialogTrigger>
-                              <DialogContent className="overflow-hidden rounded-[32px] border-none p-0 shadow-2xl sm:max-w-[550px]">
-                                <DialogHeader className="relative bg-gradient-to-r from-info-600 to-info-500 p-8 text-white">
-                                  <DialogTitle className="font-montserrat text-2xl font-bold">
-                                    Verifikasi Pembayaran
-                                  </DialogTitle>
-                                  <DialogDescription className="text-info-50 opacity-90">
-                                    ID: {selectedTx?.id} • {selectedTx?.eo_name}
-                                  </DialogDescription>
-                                </DialogHeader>
+                            {tx.amount >= 0 ? (
+                              <Dialog
+                                onOpenChange={(open) => {
+                                  if (!open) {
+                                    setSelectedTx(null)
+                                    setIsRejecting(false)
+                                    setRejectionReason("")
+                                  }
+                                }}
+                              >
+                                <DialogTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="rounded-full text-info-600 hover:bg-info-50 hover:text-info-700"
+                                    onClick={() => setSelectedTx(tx)}
+                                  >
+                                    <Eye className="mr-2 h-4 w-4" /> Detail
+                                  </Button>
+                                </DialogTrigger>
+                                <DialogContent className="overflow-hidden rounded-[32px] border-none p-0 shadow-2xl sm:max-w-[550px]">
+                                  <DialogHeader className="relative bg-gradient-to-r from-info-600 to-info-500 p-8 text-white">
+                                    <DialogTitle className="font-montserrat text-2xl font-bold">
+                                      Verifikasi Pembayaran
+                                    </DialogTitle>
+                                    <DialogDescription className="text-info-50 opacity-90">
+                                      ID: {selectedTx?.id} •{" "}
+                                      {selectedTx?.eo_name}
+                                    </DialogDescription>
+                                  </DialogHeader>
 
-                                <div className="no-scrollbar grid max-h-[70vh] gap-6 overflow-y-auto p-8">
-                                  <div className="flex items-center justify-between rounded-2xl border border-neutral-100 bg-neutral-50 p-6">
-                                    <div className="flex flex-col">
-                                      <span className="mb-1 text-xs font-bold tracking-wider text-neutral-500 uppercase">
-                                        Total Nominal
-                                      </span>
-                                      <span className="text-2xl font-bold text-slate-900">
-                                        {formatRupiah(selectedTx?.amount || 0)}
-                                      </span>
-                                    </div>
-                                    <div className="flex flex-col items-end">
-                                      <span className="mb-1 text-xs font-bold tracking-wider text-neutral-500 uppercase">
-                                        Koin Didapat
-                                      </span>
-                                      <span className="text-2xl font-bold text-info-600">
-                                        {selectedTx?.amount_koin} Koin
-                                      </span>
-                                    </div>
-                                  </div>
-
-                                  {selectedTx?.status === "REJECTED" && (
-                                    <div className="flex items-start gap-3 rounded-xl border border-red-100 bg-red-50 p-4">
-                                      <Ban className="mt-0.5 h-5 w-5 text-red-600" />
-                                      <div className="space-y-1">
-                                        <p className="text-sm font-bold text-red-700">
-                                          Alasan Penolakan:
-                                        </p>
-                                        <p className="text-sm text-red-600">
-                                          {selectedTx.rejection_reason}
-                                        </p>
+                                  <div className="no-scrollbar grid max-h-[70vh] gap-6 overflow-y-auto p-8">
+                                    <div className="flex items-center justify-between rounded-2xl border border-neutral-100 bg-neutral-50 p-6">
+                                      <div className="flex flex-col">
+                                        <span className="mb-1 text-xs font-bold tracking-wider text-neutral-500 uppercase">
+                                          Total Nominal
+                                        </span>
+                                        <span className="text-2xl font-bold text-slate-900">
+                                          {formatRupiah(
+                                            selectedTx?.amount || 0
+                                          )}
+                                        </span>
+                                      </div>
+                                      <div className="flex flex-col items-end">
+                                        <span className="mb-1 text-xs font-bold tracking-wider text-neutral-500 uppercase">
+                                          Koin Didapat
+                                        </span>
+                                        <span className="text-2xl font-bold text-info-600">
+                                          {selectedTx?.amount_koin} Koin
+                                        </span>
                                       </div>
                                     </div>
-                                  )}
 
-                                  <div className="space-y-3">
-                                    <div className="flex items-center justify-between">
-                                      <label className="text-sm font-semibold text-neutral-800">
-                                        Bukti Transfer
-                                      </label>
-                                      {selectedTx?.proof_path && (
-                                        <Button
-                                          variant="ghost"
-                                          size="sm"
-                                          asChild
-                                          className="h-8 rounded-full font-bold text-info-600"
-                                        >
-                                          <a
-                                            href={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3010"}/${selectedTx.proof_path}`}
-                                            target="_blank"
-                                          >
-                                            <Download className="mr-2 h-3.5 w-3.5" />{" "}
-                                            Download
-                                          </a>
-                                        </Button>
-                                      )}
-                                    </div>
-                                    <div className="group relative flex aspect-[4/3] w-full cursor-zoom-in items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-neutral-200 bg-neutral-100">
-                                      {selectedTx?.proof_path ? (
-                                        <img
-                                          src={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3010"}/${selectedTx.proof_path}`}
-                                          alt="Bukti Transfer"
-                                          className="h-full w-full object-contain"
-                                        />
-                                      ) : (
-                                        <div className="flex flex-col items-center gap-2 text-neutral-400 transition-all group-hover:scale-110 group-hover:text-info-500">
-                                          <Maximize2 className="h-10 w-10" />
-                                          <span className="text-sm font-medium">
-                                            Bukti transfer tidak tersedia
-                                          </span>
+                                    {selectedTx?.status === "REJECTED" && (
+                                      <div className="flex items-start gap-3 rounded-xl border border-red-100 bg-red-50 p-4">
+                                        <Ban className="mt-0.5 h-5 w-5 text-red-600" />
+                                        <div className="space-y-1">
+                                          <p className="text-sm font-bold text-red-700">
+                                            Alasan Penolakan:
+                                          </p>
+                                          <p className="text-sm text-red-600">
+                                            {selectedTx.rejection_reason}
+                                          </p>
                                         </div>
-                                      )}
-                                    </div>
-                                  </div>
+                                      </div>
+                                    )}
 
-                                  {isRejecting && (
-                                    <div className="animate-in space-y-3 fade-in slide-in-from-top-2">
-                                      <label className="flex items-center gap-2 text-sm font-semibold text-red-600">
-                                        <AlertCircle className="h-4 w-4" />{" "}
-                                        Alasan Penolakan
-                                      </label>
-                                      <Textarea
-                                        placeholder="Tulis alasan kenapa transaksi ini ditolak..."
-                                        className="min-h-[100px] rounded-xl border-red-200 bg-red-50/10 focus-visible:ring-red-500"
-                                        value={rejectionReason}
-                                        onChange={(e) =>
-                                          setRejectionReason(e.target.value)
-                                        }
-                                      />
-                                    </div>
-                                  )}
-                                </div>
-
-                                <DialogFooter className="flex flex-col gap-3 p-8 pt-0 sm:flex-row">
-                                  {selectedTx?.status === "PENDING" ? (
-                                    <>
-                                      {!isRejecting ? (
-                                        <>
-                                          <Button
-                                            variant="outline"
-                                            className="h-12 flex-1 rounded-full border-red-200 font-bold text-red-600 hover:bg-red-50 hover:text-red-700"
-                                            onClick={() => setIsRejecting(true)}
-                                            disabled={isPending}
-                                          >
-                                            <X className="mr-2 h-4 w-4" /> Tolak
-                                            Transaksi
-                                          </Button>
-                                          <Button
-                                            className="h-12 flex-1 rounded-full bg-green-600 font-bold text-white shadow-lg hover:bg-green-700"
-                                            onClick={handleApprove}
-                                            disabled={isPending}
-                                          >
-                                            {isPending ? (
-                                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                            ) : (
-                                              <Check className="mr-2 h-4 w-4" />
-                                            )}
-                                            Setujui & Tambah Koin
-                                          </Button>
-                                        </>
-                                      ) : (
-                                        <>
+                                    <div className="space-y-3">
+                                      <div className="flex items-center justify-between">
+                                        <label className="text-sm font-semibold text-neutral-800">
+                                          Bukti Transfer
+                                        </label>
+                                        {selectedTx?.proof_path && (
                                           <Button
                                             variant="ghost"
-                                            className="h-12 flex-1 rounded-full font-bold"
-                                            onClick={() =>
-                                              setIsRejecting(false)
-                                            }
-                                            disabled={isPending}
+                                            size="sm"
+                                            asChild
+                                            className="h-8 rounded-full font-bold text-info-600"
                                           >
-                                            Batalkan
+                                            <a
+                                              href={
+                                                getProxyFileUrl(
+                                                  selectedTx.proof_path
+                                                ) || "#"
+                                              }
+                                              target="_blank"
+                                            >
+                                              <Download className="mr-2 h-3.5 w-3.5" />{" "}
+                                              Download
+                                            </a>
                                           </Button>
-                                          <Button
-                                            className="h-12 flex-1 rounded-full bg-red-600 font-bold text-white shadow-lg hover:bg-red-700"
-                                            onClick={handleRejectSubmit}
-                                            disabled={
-                                              !rejectionReason || isPending
+                                        )}
+                                      </div>
+                                      <div className="group relative flex aspect-[4/3] w-full cursor-zoom-in items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-neutral-200 bg-neutral-100">
+                                        {selectedTx?.proof_path ? (
+                                          <img
+                                            src={
+                                              getProxyFileUrl(
+                                                selectedTx.proof_path
+                                              ) || ""
                                             }
-                                          >
-                                            {isPending ? (
-                                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                            ) : (
-                                              <Ban className="mr-2 h-4 w-4" />
-                                            )}
-                                            Kirim Penolakan
-                                          </Button>
-                                        </>
-                                      )}
-                                    </>
-                                  ) : (
-                                    <Button
-                                      variant="secondary"
-                                      className="h-12 w-full rounded-full"
-                                      disabled
-                                    >
-                                      Sudah Diproses pada{" "}
-                                      {new Date(
-                                        selectedTx?.created_at || ""
-                                      ).toLocaleDateString("id-ID")}
-                                    </Button>
-                                  )}
-                                </DialogFooter>
-                              </DialogContent>
-                            </Dialog>
+                                            alt="Bukti Transfer"
+                                            className="h-full w-full object-contain"
+                                          />
+                                        ) : (
+                                          <div className="flex flex-col items-center gap-2 text-neutral-400 transition-all group-hover:scale-110 group-hover:text-info-500">
+                                            <Maximize2 className="h-10 w-10" />
+                                            <span className="text-sm font-medium">
+                                              Bukti transfer tidak tersedia
+                                            </span>
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+
+                                    {isRejecting && (
+                                      <div className="animate-in space-y-3 fade-in slide-in-from-top-2">
+                                        <label className="flex items-center gap-2 text-sm font-semibold text-red-600">
+                                          <AlertCircle className="h-4 w-4" />{" "}
+                                          Alasan Penolakan
+                                        </label>
+                                        <Textarea
+                                          placeholder="Tulis alasan kenapa transaksi ini ditolak..."
+                                          className="min-h-[100px] rounded-xl border-red-200 bg-red-50/10 focus-visible:ring-red-500"
+                                          value={rejectionReason}
+                                          onChange={(e) =>
+                                            setRejectionReason(e.target.value)
+                                          }
+                                        />
+                                      </div>
+                                    )}
+                                  </div>
+
+                                  <DialogFooter className="flex flex-col gap-3 p-8 pt-0 sm:flex-row">
+                                    {selectedTx?.status === "PENDING" ? (
+                                      <>
+                                        {!isRejecting ? (
+                                          <>
+                                            <Button
+                                              variant="outline"
+                                              className="h-12 flex-1 rounded-full border-red-200 font-bold text-red-600 hover:bg-red-50 hover:text-red-700"
+                                              onClick={() =>
+                                                setIsRejecting(true)
+                                              }
+                                              disabled={isPending}
+                                            >
+                                              <X className="mr-2 h-4 w-4" />{" "}
+                                              Tolak Transaksi
+                                            </Button>
+                                            <Button
+                                              className="h-12 flex-1 rounded-full bg-green-600 font-bold text-white shadow-lg hover:bg-green-700"
+                                              onClick={handleApprove}
+                                              disabled={isPending}
+                                            >
+                                              {isPending ? (
+                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                              ) : (
+                                                <Check className="mr-2 h-4 w-4" />
+                                              )}
+                                              Setujui & Tambah Koin
+                                            </Button>
+                                          </>
+                                        ) : (
+                                          <>
+                                            <Button
+                                              variant="ghost"
+                                              className="h-12 flex-1 rounded-full font-bold"
+                                              onClick={() =>
+                                                setIsRejecting(false)
+                                              }
+                                              disabled={isPending}
+                                            >
+                                              Batalkan
+                                            </Button>
+                                            <Button
+                                              className="h-12 flex-1 rounded-full bg-red-600 font-bold text-white shadow-lg hover:bg-red-700"
+                                              onClick={handleRejectSubmit}
+                                              disabled={
+                                                !rejectionReason || isPending
+                                              }
+                                            >
+                                              {isPending ? (
+                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                              ) : (
+                                                <Ban className="mr-2 h-4 w-4" />
+                                              )}
+                                              Kirim Penolakan
+                                            </Button>
+                                          </>
+                                        )}
+                                      </>
+                                    ) : (
+                                      <Button
+                                        variant="secondary"
+                                        className="h-12 w-full rounded-full"
+                                        disabled
+                                      >
+                                        Sudah Diproses pada{" "}
+                                        {new Date(
+                                          selectedTx?.created_at || ""
+                                        ).toLocaleDateString("id-ID")}
+                                      </Button>
+                                    )}
+                                  </DialogFooter>
+                                </DialogContent>
+                              </Dialog>
+                            ) : (
+                              <span className="text-sm text-neutral-400">
+                                -
+                              </span>
+                            )}
                           </TableCell>
                         </TableRow>
                       ))

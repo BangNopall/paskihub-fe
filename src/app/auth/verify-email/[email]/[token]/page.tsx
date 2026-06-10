@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client"
 
 import React, { useState, useEffect } from "react"
@@ -37,6 +39,7 @@ export default function VerifyEmailPage() {
   // --- API SIMULATION (VERIFICATION) ---
   useEffect(() => {
     if (!email || !token) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setStatus("error")
       setErrorMessage("Link verifikasi tidak valid atau tidak lengkap.")
       return

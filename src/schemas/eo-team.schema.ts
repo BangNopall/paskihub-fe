@@ -8,7 +8,13 @@ export const EOTeamListResSchema = z.object({
   team_name: z.string(),
   institution: z.string(),
   event_level: z.string(),
-  payment_status: z.enum(["WAITING", "DP_PAID", "FULL_PAID", "REJECTED"]),
+  payment_status: z.enum([
+    "WAITING",
+    "DP_PAID",
+    "FULL_PAID",
+    "REJECTED",
+    "KICKED",
+  ]),
   assessment_status: z.string(), // PENDING, COMPLETED
   institution_type: z.string(), // SD, SMP, SMA, etc.
 })
@@ -33,7 +39,13 @@ export const EOTeamDetailResSchema = z.object({
   rec_letter_path: z.string().nullable(),
   institution: z.string(),
   event_level: z.string(),
-  payment_status: z.enum(["WAITING", "DP_PAID", "FULL_PAID", "REJECTED"]),
+  payment_status: z.enum([
+    "WAITING",
+    "DP_PAID",
+    "FULL_PAID",
+    "REJECTED",
+    "KICKED",
+  ]),
   payment_proof_path: z.string().nullable(),
   rejection_reason: z.string().nullable(),
   is_kick: z.boolean(),

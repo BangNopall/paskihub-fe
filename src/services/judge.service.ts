@@ -1,5 +1,7 @@
-const API_URL = process.env.API_BASE_URL || "http://localhost:3010"
-const API_KEY = process.env.API_KEY
+import { getApiKeyHeader } from "@/lib/env"
+const API_URL =
+  process.env.API_BASE_URL ||
+  (process.env.NODE_ENV === "production" ? "" : "http://localhost:3010")
 
 export interface Judge {
   id: string
@@ -14,7 +16,7 @@ export const judgeService = {
       {
         method: "GET",
         headers: {
-          "x-api-key": API_KEY || "",
+          "x-api-key": getApiKeyHeader(),
           Authorization: `Bearer ${token}`,
         },
         cache: "no-store",
@@ -40,7 +42,7 @@ export const judgeService = {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-api-key": API_KEY || "",
+          "x-api-key": getApiKeyHeader(),
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ name }),
@@ -68,7 +70,7 @@ export const judgeService = {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          "x-api-key": API_KEY || "",
+          "x-api-key": getApiKeyHeader(),
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ name }),
@@ -90,7 +92,7 @@ export const judgeService = {
       {
         method: "DELETE",
         headers: {
-          "x-api-key": API_KEY || "",
+          "x-api-key": getApiKeyHeader(),
           Authorization: `Bearer ${token}`,
         },
       }

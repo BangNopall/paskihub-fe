@@ -1,5 +1,6 @@
 "use server"
 
+import { getApiKeyHeader } from "@/lib/env"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 import { revalidatePath } from "next/cache"
@@ -8,7 +9,9 @@ import {
   EOTeamDetailResSchema,
 } from "@/schemas/eo-team.schema"
 
-const API_URL = process.env.API_BASE_URL || "http://localhost:3010"
+const API_URL =
+  process.env.API_BASE_URL ||
+  (process.env.NODE_ENV === "production" ? "" : "http://localhost:3010")
 
 export async function getTeamDetailAction(
   eventId: string,
@@ -22,7 +25,7 @@ export async function getTeamDetailAction(
     {
       headers: {
         Authorization: `Bearer ${session.accessToken}`,
-        "x-api-key": process.env.API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
       },
     }
   )
@@ -51,7 +54,7 @@ export async function approveTeamAction(
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${session.accessToken}`,
-        "x-api-key": process.env.API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
       },
       body: JSON.stringify({ payment_status: paymentStatus }),
     }
@@ -81,7 +84,7 @@ export async function rejectTeamAction(
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${session.accessToken}`,
-        "x-api-key": process.env.API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
       },
       body: JSON.stringify({ rejection_reason: rejectionReason }),
     }
@@ -107,7 +110,7 @@ export async function kickTeamAction(eventId: string, registrationId: string) {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${session.accessToken}`,
-        "x-api-key": process.env.API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
       },
     }
   )
@@ -134,7 +137,7 @@ export async function startAssessmentAction(
       method: "PUT",
       headers: {
         Authorization: `Bearer ${session.accessToken}`,
-        "x-api-key": process.env.API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
       },
     }
   )

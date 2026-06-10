@@ -22,15 +22,19 @@ export default async function OrganizerProfilePage() {
     )
   }
 
+  let profileRes
   try {
     // Fetch initial data in parallel
-    const [profileRes] = await Promise.all([
+    const res = await Promise.all([
       profileService.getEOProfile(session.accessToken),
     ])
-
-    return <OrganizerProfileContent primaryEmail={profileRes.data.email} />
+    profileRes = res[0]
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Profile page data fetch error:", error)
+  }
+
+  if (!profileRes) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center p-8 text-center">
         <AlertCircle className="mb-4 h-12 w-12 text-red-500" />
@@ -49,4 +53,6 @@ export default async function OrganizerProfilePage() {
       </div>
     )
   }
+
+  return <OrganizerProfileContent primaryEmail={profileRes.data.email} />
 }

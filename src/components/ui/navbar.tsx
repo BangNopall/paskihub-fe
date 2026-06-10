@@ -50,7 +50,7 @@ const Navbar = ({
         window.scrollTo({ top: offsetTop, behavior: "smooth" })
       }
     },
-    [],
+    []
   )
 
   useEffect(() => {
@@ -88,10 +88,11 @@ const Navbar = ({
   }, [navigationData])
 
   const getDashboardUrl = () => {
-    const role = (session as any)?.user?.role
+    const role = session?.user?.role
     if (role === "ADMIN") return "/admin/dashboard"
     if (role === "ORGANIZER") return "/organizer/dashboard"
-    return "/peserta/dashboard"
+    if (role === "PESERTA") return "/peserta/dashboard"
+    return "/auth/login?error=AccessDenied"
   }
 
   const handleLogout = async () => {
@@ -148,7 +149,7 @@ const Navbar = ({
     >
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-2 px-4 py-7 sm:gap-8 sm:px-6">
         <Link
-          href={`#`}
+          href="/"
           className={`${Montserrat.className} justify-start text-3xl leading-9 font-bold text-dark-blue`}
         >
           PaskiHub
@@ -215,4 +216,3 @@ const Navbar = ({
 }
 
 export default Navbar
-

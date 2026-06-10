@@ -1,12 +1,15 @@
+import { getApiKeyHeader } from "@/lib/env"
 import {
   AwardRes,
   AwardResSchema,
   RankingAwardFormData,
 } from "@/schemas/ranking.schema"
 import { z } from "zod"
+import { parseApiError } from "@/lib/api-error"
 
-const API_URL = process.env.API_BASE_URL || "http://localhost:3010"
-const API_KEY = process.env.API_KEY
+const API_URL =
+  process.env.API_BASE_URL ||
+  (process.env.NODE_ENV === "production" ? "" : "http://localhost:3010")
 
 export const rankingService = {
   async getAwards(
@@ -23,21 +26,17 @@ export const rankingService = {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
         Authorization: `Bearer ${token}`,
       },
       cache: "no-store",
     })
 
-    if (!res.ok) {
-      throw new Error("Failed to fetch awards")
-    }
+    if (!res.ok) await parseApiError(res)
 
     const data = await res.json()
-    if (!data.data) {
-      return []
-    }
-    return z.array(AwardResSchema).parse(data.data)
+    const parsed = z.array(AwardResSchema).nullable().parse(data.data)
+    return parsed || []
   },
 
   async createAward(
@@ -51,17 +50,14 @@ export const rankingService = {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-api-key": API_KEY || "",
+          "x-api-key": getApiKeyHeader(),
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(data),
       }
     )
 
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      throw new Error(err.message || "Failed to create award")
-    }
+    if (!res.ok) await parseApiError(res)
 
     const result = await res.json()
     return AwardResSchema.parse(result.data)
@@ -79,17 +75,14 @@ export const rankingService = {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          "x-api-key": API_KEY || "",
+          "x-api-key": getApiKeyHeader(),
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(data),
       }
     )
 
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      throw new Error(err.message || "Failed to update award")
-    }
+    if (!res.ok) await parseApiError(res)
 
     const result = await res.json()
     return AwardResSchema.parse(result.data)
@@ -102,15 +95,12 @@ export const rankingService = {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
-          "x-api-key": API_KEY || "",
+          "x-api-key": getApiKeyHeader(),
           Authorization: `Bearer ${token}`,
         },
       }
     )
 
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      throw new Error(err.message || "Failed to delete award")
-    }
+    if (!res.ok) await parseApiError(res)
   },
 }

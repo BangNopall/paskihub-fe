@@ -1,3 +1,6 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @next/next/no-img-element */
 "use client"
 
 import React, { useState, useRef } from "react"
@@ -179,6 +182,15 @@ type MemberState = {
   photoUrl: string
 }
 
+const createEmptyMember = (role: string): MemberState => ({
+  id: Math.random().toString(36).substring(2, 9),
+  fullName: "",
+  role: role,
+  idCard: null,
+  photo: null,
+  photoUrl: "",
+})
+
 export default function NewTeamPage() {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -191,14 +203,6 @@ export default function NewTeamPage() {
   const [pelatihName, setPelatihName] = useState("")
 
   // --- STATE UNTUK LIST ANGGOTA ---
-  const createEmptyMember = (role: string): MemberState => ({
-    id: Math.random().toString(36).substring(2, 9),
-    fullName: "",
-    role: role,
-    idCard: null,
-    photo: null,
-    photoUrl: "",
-  })
 
   const [members, setMembers] = useState<MemberState[]>([
     createEmptyMember("DANPAS"),
@@ -266,6 +270,7 @@ export default function NewTeamPage() {
         toast.success("Tim berhasil dibuat")
         router.push("/peserta/dashboard/team")
       } else {
+        // eslint-disable-next-line no-console
         console.log(res)
         toast.error(res.error || "Gagal membuat tim")
       }

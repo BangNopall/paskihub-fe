@@ -1,8 +1,10 @@
+import { getApiKeyHeader } from "@/lib/env"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { loginResponseSchema } from "@/schemas/auth.schema"
 
-const API_URL = process.env.API_BASE_URL || "http://localhost:3010"
-const API_KEY = process.env.API_KEY
+const API_URL =
+  process.env.API_BASE_URL ||
+  (process.env.NODE_ENV === "production" ? "" : "http://localhost:3010")
 
 export function getOrganizerUserId(session: {
   user?: { id?: string; organizerId?: string; parentId?: string }
@@ -38,7 +40,7 @@ export const authOptions: any = {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "x-api-key": API_KEY || "",
+              "x-api-key": getApiKeyHeader(),
             },
             body: JSON.stringify({
               email: credentials.email,
@@ -47,7 +49,10 @@ export const authOptions: any = {
           })
 
           if (!res.ok) {
-            throw new Error("Invalid credentials")
+            await res.json().catch(() => ({}))
+            if (res.status === 403) throw new Error("Banned")
+            if (res.status >= 500) throw new Error("ServerError")
+            throw new Error("InvalidCredentials")
           }
 
           const data = await res.json()
@@ -64,7 +69,14 @@ export const authOptions: any = {
             accessToken: parsed.data.token,
             accessTokenExpires: decoded?.exp ? decoded.exp * 1000 : 0,
           }
-        } catch {
+        } catch (error: any) {
+          if (
+            ["Banned", "ServerError", "InvalidCredentials"].includes(
+              error.message
+            )
+          ) {
+            throw error
+          }
           return null
         }
       },

@@ -41,10 +41,10 @@ export default async function WalletPage() {
   const [walletData, transactions, settings] = await Promise.all([
     walletService.getWalletInfo(session.accessToken, eventId),
     walletService.getWalletLogs(session.accessToken, eventId),
-    walletService.getPublicSettings(session.accessToken),
+    walletService.getPublicSettings(),
   ])
 
-  if (!walletData) {
+  if (!walletData || !settings) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center p-8 text-center">
         <AlertCircle className="mb-4 h-12 w-12 text-red-500" />

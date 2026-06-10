@@ -15,6 +15,22 @@ export async function topUpAction(eventId: string, formData: FormData) {
       }
     }
 
+    const proof = formData.get("proof") as File | null
+    if (!proof || proof.size === 0) {
+      return { success: false, message: "Bukti transfer wajib diunggah." }
+    }
+
+    if (proof.size > 5 * 1024 * 1024) {
+      return { success: false, message: "Ukuran file bukti maksimal 5MB." }
+    }
+
+    if (!["image/jpeg", "image/jpg", "image/png"].includes(proof.type)) {
+      return {
+        success: false,
+        message: "Format file bukti harus JPG atau PNG.",
+      }
+    }
+
     await walletService.requestTopUp(session.accessToken, eventId, formData)
 
     revalidatePath("/organizer/dashboard/wallet")
@@ -23,6 +39,7 @@ export async function topUpAction(eventId: string, formData: FormData) {
       message: "Pengajuan Top Up berhasil dikirim. Menunggu verifikasi admin.",
     }
   } catch (error: any) {
+    // eslint-disable-next-line no-console
     console.error("TopUp Error:", error)
     return {
       success: false,

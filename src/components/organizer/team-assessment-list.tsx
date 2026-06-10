@@ -275,7 +275,7 @@ export function TeamAssessmentList({
                   const logo_path = team.logo_path
                     ? team.logo_path.startsWith("http")
                       ? team.logo_path
-                      : process.env.NEXT_PUBLIC_API_URL + team.logo_path
+                      : process.env.NEXT_PUBLIC_API_BASE_URL + team.logo_path
                     : null
                   return (
                     <TableRow

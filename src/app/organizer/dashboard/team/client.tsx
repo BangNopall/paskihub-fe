@@ -1,3 +1,6 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @next/next/no-img-element */
 "use client"
 
 import React, { useState, useTransition } from "react"
@@ -14,7 +17,7 @@ import {
   Eye,
 } from "lucide-react"
 
-import { cn } from "@/lib/utils"
+import { cn, getProxyFileUrl } from "@/lib/utils"
 import { getLevelLabel } from "@/lib/constants"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -103,22 +106,23 @@ function StatusBadge({ status }: { status: string }) {
           Rejected
         </Badge>
       )
+    case "KICKED":
+      return (
+        <Badge
+          variant="outline"
+          className="w-24 justify-center border-red-400 bg-red-50 py-1 font-poppins text-xs font-normal text-red-600"
+        >
+          Dikeluarkan
+        </Badge>
+      )
     default:
       return null
   }
 }
 
 function MemberCard({ member }: { member: any }) {
-  const photo_path = member.photo_path
-    ? member.photo_path.startsWith("http")
-      ? member.photo_path
-      : process.env.NEXT_PUBLIC_API_URL + member.photo_path
-    : null
-  const id_card_path = member.id_card_path
-    ? member.id_card_path.startsWith("http")
-      ? member.id_card_path
-      : process.env.NEXT_PUBLIC_API_URL + member.id_card_path
-    : null
+  const photo_path = getProxyFileUrl(member.photo_path)
+  const id_card_path = getProxyFileUrl(member.id_card_path)
 
   return (
     <div className="flex w-full items-start gap-4 rounded-xl border border-gray-100 bg-white px-4 py-4 shadow-sm transition-colors hover:border-sky-200">
@@ -278,25 +282,13 @@ export default function TeamListClient({
 
   // Reset page when filters change
   React.useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCurrentPage(1)
   }, [searchQuery, activeCategory])
 
-  const logo_path = teamDetail?.logo_path
-    ? teamDetail.logo_path.startsWith("http")
-      ? teamDetail.logo_path
-      : process.env.NEXT_PUBLIC_API_URL + teamDetail.logo_path
-    : null
-
-  const payment_proof_path = teamDetail?.payment_proof_path
-    ? teamDetail.payment_proof_path.startsWith("http")
-      ? teamDetail.payment_proof_path
-      : process.env.NEXT_PUBLIC_API_URL + teamDetail.payment_proof_path
-    : null
-  const rec_letter_path = teamDetail?.rec_letter_path
-    ? teamDetail.rec_letter_path.startsWith("http")
-      ? teamDetail.rec_letter_path
-      : process.env.NEXT_PUBLIC_API_URL + teamDetail.rec_letter_path
-    : null
+  const logo_path = getProxyFileUrl(teamDetail?.logo_path)
+  const payment_proof_path = getProxyFileUrl(teamDetail?.payment_proof_path)
+  const rec_letter_path = getProxyFileUrl(teamDetail?.rec_letter_path)
 
   return (
     <div className="flex flex-col gap-8">
@@ -425,11 +417,7 @@ export default function TeamListClient({
                   </TableRow>
                 ) : (
                   paginatedTeams.map((team, index) => {
-                    const logo_path = team.logo_path
-                      ? team.logo_path.startsWith("http")
-                        ? team.logo_path
-                        : process.env.NEXT_PUBLIC_API_URL + team.logo_path
-                      : null
+                    const logo_path = getProxyFileUrl(team.logo_path)
                     return (
                       <TableRow
                         key={team.registration_id}

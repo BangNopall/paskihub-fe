@@ -9,6 +9,7 @@ export default async function AdminManagementPage() {
   try {
     admins = await adminService.fetchAdmins()
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Failed to fetch admins:", error)
   }
 

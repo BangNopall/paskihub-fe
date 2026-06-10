@@ -1,17 +1,19 @@
+import { getApiKeyHeader } from "@/lib/env"
 import {
   AdminDashboard,
   adminDashboardResponseSchema,
 } from "@/schemas/admin-dashboard.schema"
 
-const API_URL = process.env.API_BASE_URL || "http://localhost:3010"
-const API_KEY = process.env.API_KEY
+const API_URL =
+  process.env.API_BASE_URL ||
+  (process.env.NODE_ENV === "production" ? "" : "http://localhost:3010")
 
 class AdminDashboardService {
   async getDashboard(token: string): Promise<AdminDashboard> {
     const res = await fetch(`${API_URL}/api/v1/admin/dashboard`, {
       headers: {
         Authorization: `Bearer ${token}`,
-        "x-api-key": API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
       },
       cache: "no-store",
     })

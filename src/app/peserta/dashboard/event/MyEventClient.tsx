@@ -1,9 +1,12 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @next/next/no-img-element */
 "use client"
 
 import React, { useState, useRef, useTransition } from "react"
 import { format } from "date-fns"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import {
   Search,
   MapPin,
@@ -164,8 +167,33 @@ export default function MyEventClient({
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
 
-  const [searchQuery, setSearchQuery] = useState("")
-  const [locationFilter, setLocationFilter] = useState("all")
+  const searchParams = useSearchParams()
+  const [searchQuery, setSearchQuery] = useState(
+    searchParams.get("search") || ""
+  )
+  const [locationFilter, setLocationFilter] = useState(
+    searchParams.get("location") || "all"
+  )
+  const [debouncedSearch, setDebouncedSearch] = useState(searchQuery)
+
+  React.useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchQuery)
+    }, 500)
+    return () => clearTimeout(handler)
+  }, [searchQuery])
+
+  React.useEffect(() => {
+    const params = new URLSearchParams()
+    if (debouncedSearch) {
+      params.set("search", debouncedSearch)
+    }
+    if (locationFilter && locationFilter !== "all") {
+      params.set("location", locationFilter)
+    }
+    const query = params.toString() ? `?${params.toString()}` : ""
+    router.push(`/peserta/dashboard/event${query}`)
+  }, [debouncedSearch, locationFilter, router])
 
   const [isRegistrationModalOpen, setIsRegistrationModalOpen] =
     useState<boolean>(false)
@@ -223,6 +251,22 @@ export default function MyEventClient({
     setReuploadProof(null)
     setIsReuploadModalOpen(true)
   }
+
+  const defaultInstitutionType =
+    myTeams.length > 0 ? myTeams[0].institution_type : ""
+
+  const getMatchedLevel = (event: OpenEvent | null) => {
+    if (!event) return null
+    if (defaultInstitutionType) {
+      const matched = event.levels?.find((l) =>
+        l.name.toUpperCase().includes(defaultInstitutionType.toUpperCase())
+      )
+      if (matched) return matched
+    }
+    return event.levels?.[0]
+  }
+
+  const matchedLevelForDisplay = getMatchedLevel(selectedEventToRegister)
 
   const handleCloseReuploadModal = () => {
     setIsReuploadModalOpen(false)
@@ -305,7 +349,9 @@ export default function MyEventClient({
       }
     }
 
-    const levelId = selectedEventToRegister.levels?.[0]?.id
+    const matchedLevel = getMatchedLevel(selectedEventToRegister)
+
+    const levelId = matchedLevel?.id
 
     if (!levelId) {
       alert("Event ini tidak memiliki level kompetisi")
@@ -334,34 +380,19 @@ export default function MyEventClient({
   }
 
   // Filter exploreEvents based on searchQuery and locationFilter
-  const exploreEvents = initialOpenEvents.filter((ev) => {
-    if (
-      searchQuery &&
-      !ev.name.toLowerCase().includes(searchQuery.toLowerCase())
-    ) {
-      return false
-    }
-    if (
-      locationFilter !== "all" &&
-      ev.location &&
-      !ev.location.toLowerCase().includes(locationFilter.toLowerCase())
-    ) {
-      return false
-    }
-    return true
-  })
+  const exploreEvents = initialOpenEvents
 
   const logo_path = selectedEventToRegister?.logo_path
     ? selectedEventToRegister?.logo_path.startsWith("http")
       ? selectedEventToRegister?.logo_path
-      : process.env.NEXT_PUBLIC_API_URL +
+      : process.env.NEXT_PUBLIC_API_BASE_URL +
         "/" +
         selectedEventToRegister?.logo_path
     : null
   const poster_path = selectedEventToRegister?.poster_path
     ? selectedEventToRegister?.poster_path.startsWith("http")
       ? selectedEventToRegister?.poster_path
-      : process.env.NEXT_PUBLIC_API_URL +
+      : process.env.NEXT_PUBLIC_API_BASE_URL +
         "/" +
         selectedEventToRegister?.poster_path
     : null
@@ -434,7 +465,9 @@ export default function MyEventClient({
                 const logo_path = event.logo_path
                   ? event.logo_path.startsWith("http")
                     ? event.logo_path
-                    : process.env.NEXT_PUBLIC_API_URL + "/" + event.logo_path
+                    : process.env.NEXT_PUBLIC_API_BASE_URL +
+                      "/" +
+                      event.logo_path
                   : null
                 return (
                   <div
@@ -491,7 +524,7 @@ export default function MyEventClient({
                           <Banknote className="h-4 w-4 shrink-0 text-neutral-700" />
                           <span className="font-poppins text-sm font-semibold text-neutral-800">
                             {formatRupiah(
-                              parseInt(event.levels?.[0]?.regis_fee || "0")
+                              parseInt(getMatchedLevel(event)?.regis_fee || "0")
                             )}
                           </span>
                         </div>
@@ -549,7 +582,7 @@ export default function MyEventClient({
                         const logo_path = event.event_logo_path
                           ? event.event_logo_path.startsWith("http")
                             ? event.event_logo_path
-                            : process.env.NEXT_PUBLIC_API_URL +
+                            : process.env.NEXT_PUBLIC_API_BASE_URL +
                               "/" +
                               event.event_logo_path
                           : null
@@ -665,7 +698,7 @@ export default function MyEventClient({
                             <img
                               src={
                                 event.event_logo_path.startsWith("/")
-                                  ? process.env.NEXT_PUBLIC_API_URL +
+                                  ? process.env.NEXT_PUBLIC_API_BASE_URL +
                                     event.event_logo_path
                                   : event.event_logo_path
                               }
@@ -985,10 +1018,7 @@ export default function MyEventClient({
                           </span>
                           <span className="font-poppins text-xs font-semibold text-blue-600">
                             {formatRupiah(
-                              parseInt(
-                                selectedEventToRegister.levels?.[0]
-                                  ?.regis_fee || "0"
-                              )
+                              parseInt(matchedLevelForDisplay?.regis_fee || "0")
                             )}
                           </span>
                         </div>
@@ -1008,10 +1038,7 @@ export default function MyEventClient({
                           </span>
                           <span className="font-poppins text-xs font-semibold text-blue-600">
                             {formatRupiah(
-                              parseInt(
-                                selectedEventToRegister.levels?.[0]?.dp_fee ||
-                                  "0"
-                              )
+                              parseInt(matchedLevelForDisplay?.dp_fee || "0")
                             )}
                           </span>
                         </div>

@@ -1,3 +1,5 @@
+import { getApiKeyHeader } from "@/lib/env"
+import { parseApiError } from "@/lib/api-error"
 import {
   OpenEventSchema,
   ActiveEventSchema,
@@ -14,51 +16,61 @@ import type {
 } from "@/schemas/participant-event.schema"
 import { z } from "zod"
 
-const API_URL = process.env.API_BASE_URL || "http://localhost:3010"
-const API_KEY = process.env.API_KEY
+const API_URL =
+  process.env.API_BASE_URL ||
+  (process.env.NODE_ENV === "production" ? "" : "http://localhost:3010")
 
 export const participantEventService = {
-  async getOpenEvents(token: string): Promise<OpenEvent[]> {
-    const res = await fetch(`${API_URL}/api/v1/peserta/events/open`, {
-      method: "GET",
-      headers: {
-        "x-api-key": API_KEY || "",
-        Authorization: `Bearer ${token}`,
-      },
-      cache: "no-store",
-    })
+  async getOpenEvents(
+    token: string,
+    location?: string,
+    search?: string
+  ): Promise<OpenEvent[]> {
+    const params = new URLSearchParams()
+    if (location) params.append("location", location)
+    if (search) params.append("search", search)
+    const queryString = params.toString() ? `?${params.toString()}` : ""
+
+    const res = await fetch(
+      `${API_URL}/api/v1/peserta/events/open${queryString}`,
+      {
+        method: "GET",
+        headers: {
+          "x-api-key": getApiKeyHeader(),
+          Authorization: `Bearer ${token}`,
+        },
+        cache: "no-store",
+      }
+    )
+    if (!res.ok) await parseApiError(res)
     const json = await res.json()
-    if (!res.ok) return []
-    return z.array(OpenEventSchema).parse(json.data || [])
+    return z.array(OpenEventSchema).parse(json.data ?? [])
   },
 
   async getActiveEvents(token: string): Promise<ActiveEvent[]> {
     const res = await fetch(`${API_URL}/api/v1/peserta/events/active`, {
       method: "GET",
       headers: {
-        "x-api-key": API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
         Authorization: `Bearer ${token}`,
       },
       cache: "no-store",
     })
-    if (!res.ok) return []
+    if (!res.ok) await parseApiError(res)
     const json = await res.json()
-    return z.array(ActiveEventSchema).parse(json.data || [])
+    return z.array(ActiveEventSchema).parse(json.data ?? [])
   },
 
   async registerEvent(formData: FormData, token: string) {
     const res = await fetch(`${API_URL}/api/v1/peserta/events/register`, {
       method: "POST",
       headers: {
-        "x-api-key": API_KEY || "",
+        "x-api-key": getApiKeyHeader(),
         Authorization: `Bearer ${token}`,
       },
       body: formData,
     })
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      throw new Error(err.message || "Gagal mendaftar event")
-    }
+    if (!res.ok) await parseApiError(res)
     return res.json()
   },
 
@@ -68,16 +80,13 @@ export const participantEventService = {
       {
         method: "PUT",
         headers: {
-          "x-api-key": API_KEY || "",
+          "x-api-key": getApiKeyHeader(),
           Authorization: `Bearer ${token}`,
         },
         body: formData,
       }
     )
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      throw new Error(err.message || "Gagal upload pelunasan")
-    }
+    if (!res.ok) await parseApiError(res)
     return res.json()
   },
 
@@ -90,13 +99,13 @@ export const participantEventService = {
       {
         method: "GET",
         headers: {
-          "x-api-key": API_KEY || "",
+          "x-api-key": getApiKeyHeader(),
           Authorization: `Bearer ${token}`,
         },
         cache: "no-store",
       }
     )
-    if (!res.ok) return null
+    if (!res.ok) await parseApiError(res)
     const json = await res.json()
     return RegistrationDetailSchema.parse(json.data)
   },
@@ -110,13 +119,13 @@ export const participantEventService = {
       {
         method: "GET",
         headers: {
-          "x-api-key": API_KEY || "",
+          "x-api-key": getApiKeyHeader(),
           Authorization: `Bearer ${token}`,
         },
         cache: "no-store",
       }
     )
-    if (!res.ok) return null
+    if (!res.ok) await parseApiError(res)
     const json = await res.json()
     return AssessmentRecapSchema.parse(json.data)
   },
@@ -130,13 +139,13 @@ export const participantEventService = {
       {
         method: "GET",
         headers: {
-          "x-api-key": API_KEY || "",
+          "x-api-key": getApiKeyHeader(),
           Authorization: `Bearer ${token}`,
         },
         cache: "no-store",
       }
     )
-    if (!res.ok) return null
+    if (!res.ok) await parseApiError(res)
     const json = await res.json()
     return ParticipantScoreboardSchema.parse(json.data)
   },

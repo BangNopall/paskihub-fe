@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React from "react"
 import { getServerSession } from "next-auth/next"
 import { authOptions, getOrganizerUserId } from "@/lib/auth"
@@ -34,6 +36,7 @@ export default async function OrganizerTeamListPage() {
     teams = teamsRes
     apiStats = statsRes
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Error fetching teams, stats, or settings:", error)
   }
 

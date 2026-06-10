@@ -17,71 +17,49 @@ export default async function AssessmentSystemPage(props: {
   const session: any = await getServerSession(authOptions)
   if (!session) redirect("/auth/login")
 
+  let events
+  let assessmentData
+  let event
+  let eventId
+  let levels: { id: string; name: string }[] = []
+  let activeLevelId
+  let fetchError = false
+
   try {
     // 1. Fetch Events for current Organizer
-    const events = await profileService.getEventsByUserId(
+    events = await profileService.getEventsByUserId(
       session.accessToken,
       getOrganizerUserId(session)
     )
 
-    if (!events || events.length === 0) {
-      redirect("/auth/register/eo/data-form")
+    if (events && events.length > 0) {
+      event = events[0]
+      eventId = event.id
+      levels =
+        event.event_levels?.map((l: any) => ({
+          id: l.id,
+          name: l.name,
+        })) || []
+
+      if (levels.length > 0) {
+        // 2. Determine active level
+        activeLevelId = (searchParams.level as string) || levels[0].id
+
+        // 3. Fetch Assessment Data for the active level
+        assessmentData = await assessmentService.getUnifiedAssessment(
+          eventId,
+          activeLevelId,
+          session.accessToken
+        )
+      }
     }
-
-    const event = events[0]
-    const eventId = event.id
-    const levels =
-      event.event_levels?.map((l: any) => ({
-        id: l.id,
-        name: l.name,
-      })) || []
-
-    if (levels.length === 0) {
-      return (
-        <div className="flex flex-1 flex-col items-center justify-center p-8 text-center">
-          <div className="mb-4 h-12 w-12 text-amber-500">⚠️</div>
-          <h2 className="font-montserrat text-xl font-bold text-slate-900">
-            Jenjang Belum Ditentukan
-          </h2>
-          <p className="mt-2 text-slate-500">
-            Silahkan tambahkan jenjang tingkat (SD/SMP/SMA) di menu My Event
-            terlebih dahulu.
-          </p>
-        </div>
-      )
-    }
-
-    // 2. Determine active level
-    const activeLevelId = (searchParams.level as string) || levels[0].id
-
-    // 3. Fetch Assessment Data for the active level
-    const assessmentData = await assessmentService.getUnifiedAssessment(
-      eventId,
-      activeLevelId,
-      session.accessToken
-    )
-
-    return (
-      <div className="flex flex-1 flex-col">
-        <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 p-4 md:gap-8 md:p-6 lg:p-8">
-          {/* HEADER */}
-          <h1 className="font-montserrat text-2xl font-bold text-slate-900 md:text-3xl">
-            Sistem Penilaian
-          </h1>
-
-          <Suspense fallback={<div>Loading...</div>}>
-            <AssessmentSystemClient
-              eventId={eventId}
-              levels={levels}
-              activeLevelId={activeLevelId}
-              initialData={assessmentData}
-            />
-          </Suspense>
-        </div>
-      </div>
-    )
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Error in AssessmentSystemPage:", error)
+    fetchError = true
+  }
+
+  if (fetchError) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center p-8 text-center">
         <div className="mb-4 h-12 w-12 text-red-500">❌</div>
@@ -99,4 +77,43 @@ export default async function AssessmentSystemPage(props: {
       </div>
     )
   }
+
+  if (!events || events.length === 0) {
+    redirect("/auth/register/eo/data-form")
+  }
+
+  if (levels.length === 0) {
+    return (
+      <div className="flex flex-1 flex-col items-center justify-center p-8 text-center">
+        <div className="mb-4 h-12 w-12 text-amber-500">⚠️</div>
+        <h2 className="font-montserrat text-xl font-bold text-slate-900">
+          Jenjang Belum Ditentukan
+        </h2>
+        <p className="mt-2 text-slate-500">
+          Silahkan tambahkan jenjang tingkat (SD/SMP/SMA) di menu My Event
+          terlebih dahulu.
+        </p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex flex-1 flex-col">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 p-4 md:gap-8 md:p-6 lg:p-8">
+        {/* HEADER */}
+        <h1 className="font-montserrat text-2xl font-bold text-slate-900 md:text-3xl">
+          Sistem Penilaian
+        </h1>
+
+        <Suspense fallback={<div>Loading...</div>}>
+          <AssessmentSystemClient
+            eventId={eventId as string}
+            levels={levels}
+            activeLevelId={activeLevelId as string}
+            initialData={assessmentData || { violations: [], categories: [] }}
+          />
+        </Suspense>
+      </div>
+    </div>
+  )
 }

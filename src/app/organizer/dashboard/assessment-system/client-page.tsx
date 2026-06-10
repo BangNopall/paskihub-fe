@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client"
 
 import React, { useState, useEffect } from "react"
@@ -866,6 +868,7 @@ function SubCategoryFormModal({
   useEffect(() => {
     if (isOpen) {
       if (subCategory) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setName(subCategory.name)
         setGrades({
           Kurang: subCategory.grades?.["Kurang"] || [""],

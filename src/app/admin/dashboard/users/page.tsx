@@ -13,6 +13,7 @@ export default async function UserManagementPage() {
   try {
     users = await adminService.fetchAdminUsers()
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Gagal memuat data user:", error)
     isError = true
   }

@@ -1,12 +1,11 @@
 "use client"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { useState } from "react"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { useState, useEffect } from "react"
 import { getSession, signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 
 import { EyeIcon, EyeOffIcon } from "lucide-react"
-import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Montserrat } from "@/lib/fonts"
@@ -19,13 +18,30 @@ import { loginFormSchema, LoginFormData } from "@/schemas/auth.schema"
 const getDashboardPath = (role?: string | null) => {
   if (role === "ADMIN") return "/admin/dashboard"
   if (role === "ORGANIZER") return "/organizer/dashboard"
-  return "/peserta/dashboard"
+  if (role === "PESERTA") return "/peserta/dashboard"
+  return null
 }
 
 const Login = () => {
   const [isVisible, setIsVisible] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const error = params.get("error")
+    if (error === "SessionExpired") {
+      toast.error("Sesi Berakhir", {
+        description: "Sesi Anda telah berakhir. Silakan masuk kembali.",
+      })
+      window.history.replaceState(null, "", window.location.pathname)
+    } else if (error === "AccessDenied") {
+      toast.error("Akses Ditolak", {
+        description: "Anda tidak memiliki akses ke halaman tersebut.",
+      })
+      window.history.replaceState(null, "", window.location.pathname)
+    }
+  }, [])
 
   const {
     register,
@@ -46,15 +62,34 @@ const Login = () => {
       })
 
       if (res?.error) {
-        toast.error("Gagal Masuk", {
-          description: "Email atau password salah.",
-        })
+        let title = "Gagal Masuk"
+        let desc = "Email atau password salah."
+
+        if (res.error === "Banned") {
+          title = "Akses Ditolak"
+          desc = "Akun Anda tidak dapat digunakan. Silakan hubungi admin."
+        } else if (res.error === "ServerError") {
+          title = "Terjadi Kesalahan"
+          desc = "Terjadi masalah pada server. Coba lagi nanti."
+        } else if (res.error === "InvalidCredentials") {
+          title = "Gagal Masuk"
+          desc = "Email atau password salah."
+        }
+
+        toast.error(title, { description: desc })
       } else {
         toast.success("Berhasil", { description: "Anda berhasil masuk." })
         const session = (await getSession()) as {
           user?: { role?: string | null }
         } | null
-        router.replace(getDashboardPath(session?.user?.role))
+        const dashboardPath = getDashboardPath(session?.user?.role)
+        if (!dashboardPath) {
+          toast.error("Akses Ditolak", {
+            description: "Role akun tidak dikenali. Silakan hubungi admin.",
+          })
+          return
+        }
+        router.replace(dashboardPath)
         router.refresh()
       }
     } catch {
@@ -71,11 +106,11 @@ const Login = () => {
       <Card className="z-10 w-full max-w-[90%] border-none bg-glassmorphism-50 p-6 shadow-md sm:max-w-md sm:p-10 md:max-w-xl md:p-16 lg:max-w-2xl">
         <CardHeader className="gap-4 sm:gap-6">
           <div>
-            <CardTitle
+            <h1
               className={`${Montserrat.className} mb-1.5 text-center text-2xl font-bold text-dark-blue sm:text-3xl`}
             >
               Masuk ke PaskiHub
-            </CardTitle>
+            </h1>
           </div>
         </CardHeader>
         <CardContent>
@@ -93,10 +128,15 @@ const Login = () => {
                   id="userEmail"
                   placeholder="Masukan email Anda"
                   className={`h-10 sm:h-11 ${errors.email ? "border-red-500" : ""}`}
+                  aria-invalid={!!errors.email}
+                  aria-describedby={errors.email ? "email-error" : undefined}
                   {...register("email")}
                 />
                 {errors.email && (
-                  <p className="mt-1 text-xs text-red-500 sm:text-sm">
+                  <p
+                    id="email-error"
+                    className="mt-1 text-xs text-red-500 sm:text-sm"
+                  >
                     {errors.email.message}
                   </p>
                 )}
@@ -115,6 +155,10 @@ const Login = () => {
                     type={isVisible ? "text" : "password"}
                     placeholder="••••••••••••••••"
                     className={`h-10 pr-9 sm:h-11 ${errors.password ? "border-red-500" : ""}`}
+                    aria-invalid={!!errors.password}
+                    aria-describedby={
+                      errors.password ? "password-error" : undefined
+                    }
                     {...register("password")}
                   />
                   <Button
@@ -135,23 +179,17 @@ const Login = () => {
                   </Button>
                 </div>
                 {errors.password && (
-                  <p className="mt-1 text-xs text-red-500 sm:text-sm">
+                  <p
+                    id="password-error"
+                    className="mt-1 text-xs text-red-500 sm:text-sm"
+                  >
                     {errors.password.message}
                   </p>
                 )}
               </div>
 
               <div className="flex flex-col justify-between gap-4 pt-2 sm:flex-row sm:items-center sm:gap-y-2 sm:pt-0">
-                <div className="flex items-center gap-3">
-                  <Checkbox id="rememberMe" className="size-5 sm:size-6" />
-                  <Label
-                    htmlFor="rememberMe"
-                    className="text-sm text-muted-foreground sm:text-base"
-                  >
-                    {" "}
-                    Ingat saya
-                  </Label>
-                </div>
+                <div className="flex items-center gap-3"></div>
 
                 <Link
                   href="/auth/forgot-password"

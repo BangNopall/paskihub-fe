@@ -19,9 +19,19 @@ import {
 import { Icon } from "@iconify/react"
 import Link from "next/link"
 import { homeStatsService } from "@/services/home-stats.service"
+import type { HomeStats } from "@/schemas/home-stats.schema"
 
 export default async function HomePage() {
-  const stats = await homeStatsService.getStats()
+  let stats: HomeStats | null = null
+
+  try {
+    stats = await homeStatsService.getStats()
+  } catch {
+    stats = null
+  }
+
+  const formatStat = (value?: number) =>
+    stats ? value?.toLocaleString("id-ID") : "-"
 
   return (
     <div className="container mx-auto overflow-x-hidden px-6 sm:px-10 lg:px-12">
@@ -31,11 +41,11 @@ export default async function HomePage() {
         className="my-20 mt-32 flex h-full w-full flex-col items-center justify-center space-y-12 md:my-20 md:space-y-20"
       >
         <div className="flex max-w-4xl flex-col gap-4 text-center md:gap-5">
-          <div
+          <h1
             className={`text-5xl text-dark-blue sm:text-7xl lg:text-8xl ${Montserrat.className} leading-tight font-bold`}
           >
             PaskiHub
-          </div>
+          </h1>
           <div className="px-4 text-sm text-neutral-500 sm:text-base md:px-0">
             Kelola dan ikuti lomba Paskibra dalam satu platform untuk membuat
             seluruh proses lebih mudah
@@ -47,6 +57,7 @@ export default async function HomePage() {
             alt="Home"
             width={1000}
             height={1000}
+            priority
             className="h-full w-full rounded-2xl object-cover object-top-left shadow-lg md:rounded-4xl"
           />
           <div className="absolute -right-10 bottom-10 hidden w-32 transition-transform hover:scale-105 sm:block md:-right-20 md:bottom-20 md:w-50">
@@ -146,7 +157,7 @@ export default async function HomePage() {
         <div className="mx-auto grid w-full grid-cols-2 gap-4 rounded-3xl bg-primary-200 p-4 text-neutral-500 md:w-[90%] md:gap-6 md:rounded-4xl md:p-6 lg:w-[80%] lg:grid-cols-4">
           <div className="flex flex-col gap-2 rounded-2xl bg-white py-6 text-center shadow-sm transition-shadow hover:shadow-md md:py-8">
             <div className="text-2xl font-bold text-neutral-600 md:text-3xl lg:text-4xl">
-              {stats.total_events}
+              {formatStat(stats?.total_events)}
             </div>
             <div className="text-xs font-medium tracking-wide text-neutral-400 uppercase md:text-sm">
               Jumlah event
@@ -154,7 +165,7 @@ export default async function HomePage() {
           </div>
           <div className="flex flex-col gap-2 rounded-2xl bg-white py-6 text-center shadow-sm transition-shadow hover:shadow-md md:py-8">
             <div className="text-2xl font-bold text-neutral-600 md:text-3xl lg:text-4xl">
-              {stats.total_organizers}
+              {formatStat(stats?.total_organizers)}
             </div>
             <div className="text-xs font-medium tracking-wide text-neutral-400 uppercase md:text-sm">
               Event Organizer
@@ -162,7 +173,7 @@ export default async function HomePage() {
           </div>
           <div className="flex flex-col gap-2 rounded-2xl bg-white py-6 text-center shadow-sm transition-shadow hover:shadow-md md:py-8">
             <div className="text-2xl font-bold text-neutral-600 md:text-3xl lg:text-4xl">
-              {stats.total_participants}
+              {formatStat(stats?.total_participants)}
             </div>
             <div className="text-xs font-medium tracking-wide text-neutral-400 uppercase md:text-sm">
               Peserta
@@ -170,12 +181,17 @@ export default async function HomePage() {
           </div>
           <div className="flex flex-col gap-2 rounded-2xl bg-white py-6 text-center shadow-sm transition-shadow hover:shadow-md md:py-8">
             <div className="text-2xl font-bold text-neutral-600 md:text-3xl lg:text-4xl">
-              {stats.total_teams}
+              {formatStat(stats?.total_teams)}
             </div>
             <div className="text-xs font-medium tracking-wide text-neutral-400 uppercase md:text-sm">
               Tim
             </div>
           </div>
+          {!stats && (
+            <p className="col-span-2 text-center text-xs text-neutral-500 lg:col-span-4">
+              Statistik sedang tidak tersedia.
+            </p>
+          )}
         </div>
       </section>
 
@@ -318,7 +334,11 @@ export default async function HomePage() {
               <div className="text-sm leading-relaxed font-normal text-neutral-700 md:text-base">
                 Klik di sini untuk mendapatkan bantuan terkait PaskiHub
               </div>
-              <Link href="#" className="w-full sm:w-auto">
+              <Link
+                href="https://wa.me/6281234567890"
+                target="_blank"
+                className="w-full sm:w-auto"
+              >
                 <Button
                   variant={"secondary"}
                   className="flex w-full items-center justify-center gap-2 font-semibold sm:w-auto"

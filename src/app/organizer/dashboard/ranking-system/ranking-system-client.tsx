@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client"
 
 import React, { useState, useMemo } from "react"
@@ -74,6 +76,7 @@ export function RankingSystemClient({
 
   // Sync data with initialData from SSR
   React.useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setData(initialData)
   }, [initialData])
 

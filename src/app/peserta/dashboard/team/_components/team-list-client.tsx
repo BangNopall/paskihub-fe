@@ -1,3 +1,6 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @next/next/no-img-element */
 "use client"
 
 import React, { useState } from "react"
@@ -15,7 +18,7 @@ import {
   Pencil,
 } from "lucide-react"
 
-import { cn } from "@/lib/utils"
+import { cn, getProxyFileUrl } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
@@ -53,6 +56,61 @@ import { toast } from "sonner"
 // ==========================================
 // 3. UI HELPER COMPONENTS
 // ==========================================
+
+function getInitials(name: string): string {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0])
+    .join("")
+    .toUpperCase()
+}
+
+const AVATAR_GRADIENTS = [
+  "from-blue-400 to-indigo-500",
+  "from-emerald-400 to-teal-500",
+  "from-violet-400 to-purple-500",
+  "from-amber-400 to-orange-500",
+  "from-rose-400 to-pink-500",
+  "from-cyan-400 to-sky-500",
+]
+
+function getGradient(name: string): string {
+  let hash = 0
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash)
+  }
+  return AVATAR_GRADIENTS[Math.abs(hash) % AVATAR_GRADIENTS.length]
+}
+
+function AvatarPlaceholder({
+  name,
+  size = "md",
+}: {
+  name: string
+  size?: "sm" | "md" | "lg"
+}) {
+  const initials = getInitials(name)
+  const gradient = getGradient(name)
+  const sizeClasses = {
+    sm: "h-12 w-12 text-sm",
+    md: "h-14 w-14 text-base sm:h-16 sm:w-16 sm:text-lg",
+    lg: "h-32 w-32 text-3xl",
+  }
+
+  return (
+    <div
+      className={cn(
+        "flex shrink-0 items-center justify-center rounded-full bg-gradient-to-br font-poppins font-bold tracking-wide text-white select-none",
+        `${gradient}`,
+        sizeClasses[size]
+      )}
+    >
+      {initials || <ImageIcon className="h-5 w-5 text-white/70" />}
+    </div>
+  )
+}
 
 function StatusBadge({ status }: { status: string }) {
   const normalizedStatus = status.toUpperCase()
@@ -99,16 +157,12 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 function MemberCard({ member }: { member: ParticipantTeamMemberRes }) {
-  const API_URL =
-    process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3010"
-  const photoUrl = member.photo_path ? `${API_URL}${member.photo_path}` : null
-  const idCardUrl = member.id_card_path
-    ? `${API_URL}${member.id_card_path}`
-    : null
+  const photoUrl = getProxyFileUrl(member.photo_path)
+  const idCardUrl = getProxyFileUrl(member.id_card_path)
 
   return (
     <div className="flex w-full items-center gap-4 rounded-xl bg-gray-50 px-4 py-3">
-      <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-white bg-stone-200 shadow-sm">
+      <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-white shadow-sm">
         {photoUrl ? (
           <img
             src={photoUrl}
@@ -116,7 +170,14 @@ function MemberCard({ member }: { member: ParticipantTeamMemberRes }) {
             className="h-full w-full object-cover"
           />
         ) : (
-          <ImageIcon className="h-5 w-5 text-neutral-400" />
+          <div
+            className={cn(
+              "flex h-full w-full items-center justify-center bg-gradient-to-br font-poppins text-xs font-bold tracking-wide text-white",
+              getGradient(member.full_name)
+            )}
+          >
+            {getInitials(member.full_name)}
+          </div>
         )}
       </div>
       <div className="flex flex-1 flex-col">
@@ -169,9 +230,6 @@ export default function TeamListClient({
     { label: "Full Paid", value: "FULL_PAID" },
     { label: "Rejected", value: "REJECTED" },
   ]
-
-  const API_URL =
-    process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3010"
 
   const fetchDetail = async (id: string) => {
     setIsLoadingDetail(true)
@@ -318,15 +376,22 @@ export default function TeamListClient({
                     </TableCell>
                     <TableCell className="py-4">
                       <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-zinc-200">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg">
                           {team.logo_path ? (
                             <img
-                              src={`${API_URL}${team.logo_path}`}
+                              src={getProxyFileUrl(team.logo_path) || ""}
                               alt="Logo"
                               className="h-full w-full object-cover"
                             />
                           ) : (
-                            <ImageIcon className="h-5 w-5 text-neutral-400" />
+                            <div
+                              className={cn(
+                                "flex h-full w-full items-center justify-center rounded-lg bg-gradient-to-br font-poppins text-xs font-bold tracking-wide text-white",
+                                getGradient(team.name)
+                              )}
+                            >
+                              {getInitials(team.name)}
+                            </div>
                           )}
                         </div>
                         <div className="flex flex-col">
@@ -371,17 +436,19 @@ export default function TeamListClient({
         <DialogContent className="max-h-[90vh] w-full gap-0 overflow-y-auto rounded-3xl bg-white p-0 sm:min-w-xl sm:rounded-[40px]">
           <DialogHeader className="flex flex-row items-start justify-between space-y-0 border-b border-neutral-200 p-6 pb-4 sm:px-10 sm:pt-8">
             <div className="flex items-center gap-4 sm:gap-6">
-              <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full border-4 border-stone-200 bg-neutral-100 sm:h-16 sm:w-16">
-                {!isLoadingDetail && teamDetail?.logo_path ? (
+              {isLoadingDetail ? (
+                <div className="flex h-14 w-14 shrink-0 animate-pulse items-center justify-center rounded-full bg-neutral-200 sm:h-16 sm:w-16" />
+              ) : teamDetail?.logo_path ? (
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full border-4 border-stone-200 bg-neutral-100 sm:h-16 sm:w-16">
                   <img
-                    src={`${API_URL}${teamDetail.logo_path}`}
+                    src={getProxyFileUrl(teamDetail.logo_path) || ""}
                     alt="Logo"
                     className="h-full w-full object-cover"
                   />
-                ) : (
-                  <ImageIcon className="h-6 w-6 text-neutral-400" />
-                )}
-              </div>
+                </div>
+              ) : (
+                <AvatarPlaceholder name={teamDetail?.name || "Tim"} size="md" />
+              )}
               <div className="flex flex-col items-start gap-1">
                 <DialogTitle className="font-poppins text-lg font-semibold text-neutral-900 sm:text-xl">
                   {isLoadingDetail
@@ -472,7 +539,9 @@ export default function TeamListClient({
                           Surat Rekomendasi
                         </span>
                         <a
-                          href={`${API_URL}${teamDetail.rec_letter_path}`}
+                          href={
+                            getProxyFileUrl(teamDetail.rec_letter_path) || "#"
+                          }
                           target="_blank"
                           rel="noreferrer"
                           className="font-poppins text-xs text-blue-500 hover:underline"
@@ -481,7 +550,9 @@ export default function TeamListClient({
                         </a>
                       </div>
                       <a
-                        href={`${API_URL}${teamDetail.rec_letter_path}`}
+                        href={
+                          getProxyFileUrl(teamDetail.rec_letter_path) || "#"
+                        }
                         download
                         className="shrink-0"
                       >
@@ -522,17 +593,29 @@ export default function TeamListClient({
                     <h3 className="font-poppins text-base font-semibold text-neutral-800">
                       Logo Tim
                     </h3>
-                    <div className="flex h-32 w-32 items-center justify-center overflow-hidden rounded-xl border border-gray-200 bg-stone-100 shadow-sm">
-                      {teamDetail.logo_path ? (
+                    {teamDetail.logo_path ? (
+                      <div className="flex h-32 w-32 items-center justify-center overflow-hidden rounded-xl border border-gray-200 bg-stone-100 shadow-sm">
                         <img
-                          src={`${API_URL}${teamDetail.logo_path}`}
+                          src={getProxyFileUrl(teamDetail.logo_path) || ""}
                           alt="Logo Tim"
                           className="h-full w-full object-cover"
                         />
-                      ) : (
-                        <ImageIcon className="h-8 w-8 text-neutral-400" />
-                      )}
-                    </div>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-neutral-300 bg-neutral-50 px-6 py-8">
+                        <div
+                          className={cn(
+                            "flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br font-poppins text-xl font-bold tracking-wide text-white",
+                            getGradient(teamDetail.name)
+                          )}
+                        >
+                          {getInitials(teamDetail.name)}
+                        </div>
+                        <p className="font-poppins text-sm text-neutral-500">
+                          Tim ini belum memiliki logo
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </TabsContent>
               </Tabs>
