@@ -18,6 +18,9 @@
 # production
 /build
 
+# local agent worktrees
+/.worktrees/
+
 # misc
 .DS_Store
 *.pem
