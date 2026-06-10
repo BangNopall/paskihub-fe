@@ -21,15 +21,27 @@ const API_URL =
   (process.env.NODE_ENV === "production" ? "" : "http://localhost:3010")
 
 export const participantEventService = {
-  async getOpenEvents(token: string): Promise<OpenEvent[]> {
-    const res = await fetch(`${API_URL}/api/v1/peserta/events/open`, {
-      method: "GET",
-      headers: {
-        "x-api-key": getApiKeyHeader(),
-        Authorization: `Bearer ${token}`,
-      },
-      cache: "no-store",
-    })
+  async getOpenEvents(
+    token: string,
+    location?: string,
+    search?: string
+  ): Promise<OpenEvent[]> {
+    const params = new URLSearchParams()
+    if (location) params.append("location", location)
+    if (search) params.append("search", search)
+    const queryString = params.toString() ? `?${params.toString()}` : ""
+
+    const res = await fetch(
+      `${API_URL}/api/v1/peserta/events/open${queryString}`,
+      {
+        method: "GET",
+        headers: {
+          "x-api-key": getApiKeyHeader(),
+          Authorization: `Bearer ${token}`,
+        },
+        cache: "no-store",
+      }
+    )
     if (!res.ok) await parseApiError(res)
     const json = await res.json()
     return z.array(OpenEventSchema).parse(json.data ?? [])

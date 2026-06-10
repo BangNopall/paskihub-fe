@@ -220,7 +220,7 @@ function UpcomingEventItem({
 function DashboardContent({ data }: { data: OrganizerDashboard }) {
   return (
     <div className="flex flex-col gap-6 rounded-[24px] border border-sky-100 bg-gradient-to-b from-white/60 to-white/40 p-4 shadow-sm backdrop-blur-md md:gap-8 md:p-6">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <StatCard
           title="Total Event"
           value={data.stats.total_event.value}
@@ -233,13 +233,8 @@ function DashboardContent({ data }: { data: OrganizerDashboard }) {
         />
         <StatCard
           title="Saldo Koin"
-          value={data.stats.coin_balance.value.toLocaleString("id-ID")}
-          trend={`${data.stats.coin_balance.coins.toLocaleString("id-ID")} Koin`}
-        />
-        <StatCard
-          title="Pendapatan"
-          value={formatRupiah(data.stats.revenue.value)}
-          trend={data.stats.revenue.trend}
+          value={`${data.stats.coin_balance.coins.toLocaleString("id-ID")} Koin`}
+          trend={`${data.stats.coin_balance.value.toLocaleString("id-ID")} Saldo`}
         />
       </div>
 

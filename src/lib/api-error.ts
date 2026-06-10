@@ -43,11 +43,11 @@ export async function parseApiError(res: Response): Promise<never> {
   }
 
   const message =
+    asMessage(nestedError?.details) ||
+    asMessage(nestedError?.message) ||
+    asMessage(errorPayload.details) ||
     asMessage(errorPayload.message) ||
     asMessage(errorPayload.error) ||
-    asMessage(nestedError?.message) ||
-    asMessage(nestedError?.details) ||
-    asMessage(errorPayload.details) ||
     res.statusText ||
     `HTTP Error ${res.status}`
 

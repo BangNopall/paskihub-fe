@@ -60,8 +60,6 @@ export default async function OrganizerEventDetailPage() {
       : process.env.NEXT_PUBLIC_API_BASE_URL + "/" + event.poster_path
     : null
 
-  console.log(logo_path)
-  
   // Map API response to our EventData interface
   const initialData: EventData = {
     id: event.id,

@@ -447,10 +447,7 @@ export default function TeamListClient({
                   />
                 </div>
               ) : (
-                <AvatarPlaceholder
-                  name={teamDetail?.name || "Tim"}
-                  size="md"
-                />
+                <AvatarPlaceholder name={teamDetail?.name || "Tim"} size="md" />
               )}
               <div className="flex flex-col items-start gap-1">
                 <DialogTitle className="font-poppins text-lg font-semibold text-neutral-900 sm:text-xl">
